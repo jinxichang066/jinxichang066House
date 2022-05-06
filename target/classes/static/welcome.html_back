@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>
+        欢迎界面
+    </title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="css/main.css" media="all">
+    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" media="all">
+    <link rel="stylesheet" href="lib/bootstrap/js/bootstrap.min.js" media="all">
+</head>
+<body>
+<style type="text/css">
+    legend {
+        display: block;
+        width: 100px;
+        border-bottom: 0px;
+        font-family: "Microsoft YaHei", "Helvetica Neue";
+    }
+
+    legend a {
+        color: #666;
+    }
+
+    legend a:hover {
+        text-decoration: none;
+    }
+
+    .layui-table {
+        font-family: "Microsoft YaHei", "Helvetica Neue";
+    }
+
+    canvas {
+        width: 480px;
+        height: 270px;
+        border-radius: 4px;
+    }
+
+    .player {
+        width: 480px;
+        height: 270px;
+        float: left;
+        margin-left: 30px;
+        margin-top: 30px;
+    }
+
+</style>
+<div class="x-body" style="background-color: #f3f3f3; margin: 0;position:absolute">
+    <blockquote class="layui-elem-quote">
+        欢迎使用老金的系统！<span class="f-14">v1.0</span> &nbsp;&nbsp;登录次数：520
+    </blockquote>
+    <div id="radioDiv" class="col-md-12">
+        <label>监测模式:</label>
+        <label>
+            <input type="radio" name="value" value="VI" checked='checked'>可见光
+        </label>
+        <label>
+            <input type="radio" name="value" value="IR">红外
+        </label>
+    </div>
+
+    <div class="row">
+        <div id="div01" class="player">
+        </div>
+        <div id="div02" class="player">
+        </div>
+        <div id="div03" class="player">
+        </div>
+        <div id="div04" class="player">
+        </div>
+
+    </div>
+
+    <div class="col-md-12">
+        <xblock>
+            <button class="layui-btn layui-btn-danger" @click="delAll()">1个画面</button>
+            <button class="layui-btn layui-btn-danger" @click="admin_add('添加','communityadd.html','1000','600')">4个画面</button>
+            <button class="layui-btn layui-btn-danger" @click="admin_add('添加','communityadd.html','1000','600')">9个画面</button>
+        </xblock>
+    </div>
+
+</div>
+
+<script src="lib/layui/layui.js" charset="utf-8"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/echarts.min.js"></script>
+<script type="text/javascript" src="js/Decoder.js"></script>
+<script type="text/javascript" src="js/YUVCanvas.js"></script>
+<script type="text/javascript" src="js/Player.js"></script>
+
+<!--<script type="text/javascript">-->
+<!--    不能用-->
+<!--    $("#radioDiv input[type='radio']").click(function(){-->
+<!--        //1.先移除之前元素的checked-->
+<!--        $("#radioDiv input[type='radio']:checked").removeAttr("checked");-->
+<!--        //2.给当前点击的单选框加checked-->
+<!--        $(this).attr("checked","true");-->
+<!--        //3.测试打印值-->
+<!--        console.log($("#radioDiv input[type='radio']:checked").val());-->
+<!--    });-->
+<!--</script>-->
+
+
+<script type="text/javascript">
+    var property = {
+        size: {
+            width: 1280,
+            height: 720
+        }
+    };
+    // var player01 = new Player(property);
+    var player01 = new Player();
+    var player02 = new Player();
+    var player03 = new Player();
+    var player04 = new Player();
+
+    $("#div01").html(player01.canvas);
+    $("#div02").html(player02.canvas);
+    $("#div03").html(player03.canvas);
+    $("#div04").html(player04.canvas);
+
+    //修改元素的css属性
+    // var chi = $("#div01").children();
+    // chi.css("width","480px");
+    // chi.css("height","270px");
+
+    var strhost = "ws://183.162.230.158:7250/";
+    // Setup the WebSocket connection and start the player
+    var client = new WebSocket(strhost);
+
+
+    client.binaryType = 'arraybuffer';
+
+    client.onopen = function (evt) {
+        onOpen(evt)
+    };
+    client.onclose = function (evt) {
+        onClose(evt)
+    };
+    client.onmessage = function (evt) {
+        onMessage(evt)
+    };
+    client.onerror = function (evt) {
+        onError(evt)
+    };
+
+    function onOpen(evt) {
+
+        // alert("open");
+    }
+
+    function onClose(evt) {
+        alert("close");
+    }
+
+    function onMessage(evt) {
+        var b = evt.data;
+        var tag_msg = b.split('$');
+        if (tag_msg.length == 4 && tag_msg[1] == "WVideoX264VI") {
+            var tag_1 = jQuery.parseJSON(tag_msg[3]);
+            //var tag_2 = ;
+            let decode = window.atob(tag_1['Msg']['VideoData']);
+            var len = decode.length;
+            var bytes_1 = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                bytes_1[i] = decode.charCodeAt(i);
+            }
+            // player01.decode(bytes_1);
+            // player02.decode(bytes_1);
+            // player03.decode(bytes_1);
+            player04.decode(bytes_1);
+        } else {
+            if (b == "you are connected!") {
+                console.log(b);
+                var scrible_msg = 'create_subscriber$WVideoX264VI$G2021001${"Msg":{"TopicName":"WVideoX264VI","TopicDomain":"1001","TopicSource":"G2021001"},"TimeStamp":"20210220214742"}';
+                self.client.send(scrible_msg);
+
+            }
+        }
+
+        // var messageData = new Uint8Array(evt.data);
+        // player.decode(messageData);
+    }
+
+    function onError(evt) {
+        alert("error");
+    }
+
+</script>
+
+</body>
+</html>

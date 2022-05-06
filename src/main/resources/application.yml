@@ -1,0 +1,37 @@
+server:
+  port: 8888 #项目启动访问端口
+
+spring:
+  datasource: #连接数据库配置
+    druid:
+      url: jdbc:mysql://172.16.18.71:3309/heima-estate?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      #      url: jdbc:mysql://192.168.1.4:3306/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      username: root
+      password: 123456
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      driver-class-name: com.mysql.jdbc.Driver
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+  servlet:
+    multipart: #文件上传配置
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+logging:
+  config: classpath:logback-spring.xml
+
+mybatis-plus:
+  mapper-locations: classpath*:com/heima/estatemanagement/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    jdbc-type-for-null: null
+    #打开sql打印 默认是关闭的
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.heima.**.domain

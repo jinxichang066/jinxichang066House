@@ -1,0 +1,115 @@
+:root {
+    --btn-border: 1px solid #d9d9d9;
+    --li-border: 1px solid #d9d9d9;
+    --hover-border: 1px solid #409EFF;
+    --hover-color: #409EFF;
+}
+
+#pagination-ul {
+    list-style: none;
+    box-sizing: border-box;
+    float: right;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+#pagination-btn-left, #pagination-btn-right {
+    outline: none;
+    text-align: center;
+    box-sizing: border-box;
+    display: block;
+    padding: 0;
+    border: var(--btn-border);
+    background-color: #FFFFFF;
+    border-radius: 3px;
+}
+
+#pagination-btn-left {
+    margin-right: 5px;
+}
+
+#pagination-btn-right {
+    margin-left: 5px;
+}
+
+.isSelect:hover {
+    border: var(--hover-border) !important;
+}
+
+.isSelect:hover i::before{
+    border-color: var(--hover-color) !important;
+}
+
+#pagination-btn-left i,
+#pagination-btn-right i{
+    width: 30px;
+    height: 30px;
+    display: block;
+    position: relative;
+}
+
+#pagination-btn-left i::before,
+#pagination-btn-right i::before{
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: var(--btn-border);
+    border-bottom: var(--btn-border);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+}
+
+#pagination-btn-left i::before{
+    transform: translate(-30%, -50%) rotate(135deg);
+}
+
+#pagination-btn-right i::before{
+    transform: translate(-50%,-50%) rotate(-45deg);
+    border-color: #000000;
+}
+
+.isSelect i::before {
+    border-color: #000000 !important;
+}
+
+.noSelect i::before{
+    border-color: #d9d9d9 !important;
+}
+
+
+#pagination-ul li {
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+    border: var(--li-border);
+    border-radius: 3px;
+    margin: 0px 5px;
+    cursor: pointer;
+}
+
+#pagination-ul li a{
+    color: #000000;
+    cursor: pointer;
+}
+
+#pagination-ul li:hover{
+    border: var(--hover-border);
+}
+
+#pagination-ul li:hover a{
+    color: var(--hover-color);
+    opacity: 0.8;
+}
+
+.li-checked{
+    border: var(--hover-border) !important;
+    opacity: 1;
+}
+
+.a-checked{
+    color: var(--hover-color) !important;
+    font-weight: 600 !important;
+}

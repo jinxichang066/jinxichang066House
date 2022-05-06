@@ -1,0 +1,11 @@
+com\heima\estatemanagement\EstateManagementApplication.class
+com\heima\estatemanagement\config\MybatisPlusConfig.class
+com\heima\estatemanagement\common\StatusCode.class
+com\heima\estatemanagement\common\MessageConstant.class
+com\heima\estatemanagement\domain\Machine.class
+com\heima\estatemanagement\common\PageResult.class
+com\heima\estatemanagement\dao\MachineMapper.class
+com\heima\estatemanagement\service\MachineService.class
+com\heima\estatemanagement\controller\MachineController.class
+com\heima\estatemanagement\exception\GlobalExceptionHandler.class
+com\heima\estatemanagement\common\Result.class
