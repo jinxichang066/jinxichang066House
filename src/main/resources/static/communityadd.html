@@ -11,10 +11,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <link rel="stylesheet" href="/css/main.css" media="all">
-    <script type="text/javascript" src="/lib/loading/okLoading.js"></script>
+    <link rel="stylesheet" href="css/main.css" media="all">
     <!-- 引入ElementUI样式 -->
-    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 <div id="app">
@@ -51,11 +50,11 @@
 <script src="lib/layui/layui.js" charset="utf-8"></script>
 <script src="js/x-layui.js" charset="utf-8"></script>
 <!--导入Vue依赖包-->
-<script src="/static/js/vue.js" charset="utf-8"></script>
+<script src="js/vue.js" charset="utf-8"></script>
 <!-- 引入Element组件库 -->
-<script src="/js/index.js"></script>
+<script src="js/index.js"></script>
 <!--导入Axios依赖包-->
-<script src="/js/axios.js" charset="utf-8"></script>
+<script src="js/axios.js" charset="utf-8"></script>
 <script src="url.js" charset="utf-8"></script>
 <script type="text/javascript">
     var app = new Vue({
@@ -151,7 +150,6 @@
                 lement = layui.element();//面包导航
                 layer = layui.layer;//弹出层
                 form = layui.form();
-                okLoading.close($);
             });
             //获取父页面传递参数，小区ID
             this.community.id = this.getQueryString("id");

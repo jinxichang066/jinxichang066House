@@ -1,6 +1,6 @@
 var ok_load_options = {
 	time: 600,
-	content: "正在拼命加载中..."
+	content: "正在加载中..."
 };
 !function (content, options) {
 	function templateFun(options) {

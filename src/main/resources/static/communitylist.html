@@ -15,7 +15,7 @@
     <script type="text/javascript" src="lib/loading/okLoading.js"></script>
     <link rel="stylesheet" href="css/bootstrap.css">
     <!--导入ElementUI样式列表，css样式一般都在页面头部-->
-    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
 <div class="x-nav">
@@ -44,11 +44,9 @@
         <el-button type="primary" plain @click="searchMap.pageNum=1;search()">搜索</el-button>
     </div>
     <br>
-    <xblock>
-        <button class="layui-btn layui-btn-danger" @click="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
-        <button class="layui-btn" @click="admin_add('添加','communityadd.html','800','450')"><i class="layui-icon">&#xe608;</i>添加</button>
-        <!-- <span class="x-right" style="line-height:40px">共有数据：<span class="layui-badge">2</span> 条</span> -->
-    </xblock>
+    <button class="layui-btn layui-btn-danger" @click="delAll()"><i class="layui-icon">&#xe640;</i>批量删除</button>
+    <button class="layui-btn" @click="admin_add('添加','communityadd.html','800','450')"><i class="layui-icon">&#xe608;</i>添加</button>
+    <!-- <span class="x-right" style="line-height:40px">共有数据：<span class="layui-badge">2</span> 条</span> -->
     <table class="layui-table">
         <thead>
         <tr>
@@ -122,16 +120,16 @@
             :total="total">
     </el-pagination>
 </div>
-<script src="/lib/layui/layui.js" charset="utf-8"></script>
+<script src="lib/layui/layui.js" charset="utf-8"></script>
 <!--js脚本一般是放在页面尾部-->
 <!--Vue js脚本-->
-<script src="/js/vue.js" charset="utf-8"></script>
+<script src="js/vue.js" charset="utf-8"></script>
 <!--引入ElementUI组件库-->
-<script src="/js/index.js" charset="utf-8"></script>
+<script src="js/index.js" charset="utf-8"></script>
 <!--引入Axios js脚本-->
-<script src="/js/axios.js" charset="utf-8"></script>
+<script src="js/axios.js" charset="utf-8"></script>
 <!--引入时间插件包Momentjs-->
-<script src="/js/moment.min.js" charset="utf-8"></script>
+<script src="js/moment.min.js" charset="utf-8"></script>
 <script src="url.js" charset="utf-8"></script>
 <script>
     var app = new Vue({

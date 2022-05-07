@@ -1,10 +1,12 @@
 server:
   port: 8888 #项目启动访问端口
+  servlet:
+    context-path: /gasMonitor
 
 spring:
   datasource: #连接数据库配置
     druid:
-      url: jdbc:mysql://172.16.18.71:3309/heima-estate?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      url: jdbc:mysql://172.16.18.71:3309/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
       #      url: jdbc:mysql://192.168.1.4:3306/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
       username: root
       password: 123456
