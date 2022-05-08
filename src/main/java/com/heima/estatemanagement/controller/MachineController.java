@@ -38,6 +38,12 @@ public class MachineController {
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }
 
+    @RequestMapping("/searchAll")
+    public Result searchAll() {
+        List<Machine> machineList = machineService.searchAll();
+        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
+    }
+
     @RequestMapping("/findById")
     public Result findById(String id) {
         return machineService.findById(id);

@@ -13,12 +13,14 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" href="css/main.css" media="all">
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" media="all">
+    <link rel="stylesheet" href="css/base.css" media="all"> <!--初始化文件-->
+    <link rel="stylesheet" href="css/menu.css" media="all"> <!--主样式-->
     <!--导入ElementUI样式列表，css样式一般都在页面头部-->
     <link rel="stylesheet" href="css/index.css">
     <!--分页 pagination样式-->
     <link rel="stylesheet" href="css/pagination.css">
 </head>
-<body onload="playBtn(1);">
+<body onload="initMenu();">
 <style type="text/css">
     legend {
         display: block;
@@ -49,24 +51,24 @@
         width: 960px;
         height: 540px;
         float: left;
-        margin-left: 150px;
-        margin-top: 10px;
+        margin-left: 140px;
+        margin-top: 30px;
     }
 
     .player4 {
         width: 480px;
         height: 270px;
         float: left;
-        margin-left: 100px;
-        margin-top: 10px;
+        margin-left: 70px;
+        margin-top: 20px;
     }
 
     .player9 {
         width: 320px;
         height: 180px;
         float: left;
-        margin-left: 70px;
-        margin-top: 8px;
+        margin-left: 45px;
+        margin-top: 15px;
     }
 
 </style>
@@ -74,15 +76,41 @@
 <!--    欢迎使用气体遥测监测预警系统！-->
 <!--    &lt;!&ndash;        <span class="f-14">v1.0</span> &nbsp;&nbsp;登录次数：520&ndash;&gt;-->
 <!--</blockquote>-->
-<div class="x-body">
-    <div id="radioDiv" class="col-md-12">
-        <label>视频:</label>
-        <label>
-            <input type="radio" name="value" value="VI" checked='checked'>可见光
-        </label>
-        <label>
-            <input type="radio" name="value" value="IR">红外
-        </label>
+<div id="radioDiv">
+    <label style="margin-left: 15px;margin-top: 10px">视频:</label>
+    <label>
+        <input type="radio" name="value" value="VI" checked='checked'>可见光
+    </label>
+    <label>
+        <input type="radio" name="value" value="IR">红外
+    </label>
+</div>
+
+<div class="x-body" style="padding: 0px;height: 600px;border-radius: 0px;">
+    <div id="menu">
+        <!--隐藏菜单-->
+        <div id="ensconce">
+            <h2>
+                <img src="images/show.png" alt="">
+                设备列表
+            </h2>
+        </div>
+
+        <!--显示菜单-->
+        <div id="open">
+            <div class="navH">
+                设备列表
+                <span><img class="obscure" src="images/obscure.png" alt=""></span>
+            </div>
+            <div class="navBox" id="machineListDiv">
+                <!--                <div class="navDiv">-->
+                <!--                    <p><input type="checkbox" name="machineCkBox" id="MA1001"/>解决方法一</p>-->
+                <!--                </div>-->
+            </div>
+        </div>
+        <div id="open1" style="height: 5%;margin-bottom: 0px;">
+            <input type="button" class="confirmButton" value="确认"/>
+        </div>
     </div>
 
     <div id="video_back" class="row">
@@ -102,6 +130,7 @@
 
 <div class="col-md-12"></div>
 
+<script src="js/adapter.js"></script> <!--rem适配js-->
 <script src="lib/layui/layui.js" charset="utf-8"></script>
 <!--Vue js脚本-->
 <script src="js/vue.js" charset="utf-8"></script>
@@ -387,6 +416,67 @@
 
     }
 
+    function initMenu() {
+        axios.post(url + "/machine/searchAll").then((res) => {
+            let machineList = res.data.data;
+
+            if (machineList.length !== 0) {
+                let parent = document.getElementById("machineListDiv");
+                parent.innerHTML = '';
+
+                for (let i = 0; i < machineList.length; i++) {
+                    let machine = machineList[i];
+                    let machineId = machine.id;
+                    let machineName = machine.machineName;
+                    let state = machine.state;
+
+                    let div = document.createElement("div");
+                    div.className = "navDiv";
+
+                    let input = document.createElement("input");
+                    input.setAttribute("type", "checkbox");
+                    input.setAttribute("name", "machineCkBox");
+                    input.setAttribute("id", machineId);
+
+                    let value = machineName;
+                    if (state === "ONLINE") {
+                        value = value + "[" + "在线" + "]";
+                    } else {
+                        value = value + "[" + "离线" + "]";
+                    }
+                    let text = document.createTextNode(value);
+
+                    div.appendChild(input);
+                    div.appendChild(text);
+                    parent.appendChild(div);
+                }
+            }
+        });
+
+        // 隐藏菜单
+        var obscure = document.querySelector(".navH span");
+        var open = document.querySelector("#open");
+        var open1 = document.querySelector("#open1");
+        var ensconce = document.querySelector("#ensconce");
+        obscure.onclick = function () {
+            open.style.marginLeft = "-300px";
+            open1.style.marginLeft = "-300px";
+            setTimeout(function () {
+                ensconce.style.display = "block";
+            }, 350)
+        }
+        //显示菜单
+        var showC = document.querySelector("#ensconce h2");
+        showC.onclick = function () {
+            open.style.marginLeft = "0px";
+            open1.style.marginLeft = "0px";
+            setTimeout(function () {
+                ensconce.style.display = "none";
+            }, 100)
+        }
+
+        playBtn(1);
+    }
 </script>
 
 <script type="text/javascript">

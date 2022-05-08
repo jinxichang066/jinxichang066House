@@ -35,6 +35,10 @@ public class MachineService {
         return machineMapper.selectPage(page, Wrappers.lambdaQuery(Machine.class).orderByAsc(Machine::getCreateTime));
     }
 
+    public List<Machine> searchAll(){
+        return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
+    }
+
     public Result findById(String id) {
         Machine machine = machineMapper.selectById(id);
         return new Result(true, StatusCode.OK, MessageConstant.MACHINE_FIND_BY_ID_SUCCESS, machine);
