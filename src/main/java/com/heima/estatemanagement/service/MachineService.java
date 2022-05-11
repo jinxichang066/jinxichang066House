@@ -32,11 +32,15 @@ public class MachineService {
         int pageSize = (int) jsonObject.get("pageSize");
 
         Page<Machine> page = new Page<>(pageNum, pageSize);
-        return machineMapper.selectPage(page, Wrappers.lambdaQuery(Machine.class).orderByAsc(Machine::getCreateTime));
+        return machineMapper.selectPage(page, Wrappers.lambdaQuery(Machine.class).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
     }
 
-    public List<Machine> searchAll(){
+    public List<Machine> searchAll() {
         return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
+    }
+
+    public List<Machine> selectByIds(List<String> ids) {
+        return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).in(Machine::getId, ids).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
     }
 
     public Result findById(String id) {

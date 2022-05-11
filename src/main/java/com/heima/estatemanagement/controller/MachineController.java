@@ -44,6 +44,12 @@ public class MachineController {
         return new Result(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
     }
 
+    @RequestMapping("/selectByIds")
+    public Result selectByIds(@RequestBody List<String> ids) {
+        List<Machine> machineList = machineService.selectByIds(ids);
+        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
+    }
+
     @RequestMapping("/findById")
     public Result findById(String id) {
         return machineService.findById(id);
