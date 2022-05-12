@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,14 +68,26 @@ public class MachineService {
         if (machineMapper.selectCount(wrapper) > 0) {
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID);
         } else {
+            machine.setState(Machine.State.OFFLINE);
+            machine.setCreateTime(new Date());
+
             machineMapper.insert(machine);
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_ADD_SUCCESS);
         }
     }
 
     public Result update(Machine machine) {
-        machineMapper.updateById(machine);
-        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_UPDATE_SUCCESS);
+        LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId()).ne(Machine::getId, machine.getId());
+        if (machineMapper.selectCount(wrapper) > 0) {
+            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID_UPDATE);
+        } else {
+            machine.setModifyTime(new Date());
+
+            machineMapper.updateById(machine);
+            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_UPDATE_SUCCESS);
+        }
+
+
     }
 
     public Result delete(List<String> ids) {

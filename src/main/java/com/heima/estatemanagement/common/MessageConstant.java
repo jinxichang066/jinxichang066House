@@ -29,8 +29,14 @@ public class MessageConstant {
     public static final String MACHINE_FIND_BY_ID_SUCCESS = "获取设备信息成功！";
     public static final String MACHINE_ADD_SUCCESS = "新增设备信息成功！";
     public static final String MACHINE_DUP_MACHINE_ID = "已存在相同设备ID，请勿重复添加";
+    public static final String MACHINE_DUP_MACHINE_ID_UPDATE = "已存在相同设备ID，请检查后再修改";
     public static final String MACHINE_UPDATE_SUCCESS = "修改设备信息成功！";
     public static final String MACHINE_DELETE_SUCCESS = "删除设备信息成功！";
+
+    //---------------------------设备（Machine）操作消息提示信息---------------------------------------
+    public static final String HISTORY_SEARCH_SUCCESS = "查询历史记录信息成功！";
+    public static final String HISTORY_SEARCH_FAIL_DB_CONNECT_FAIL = "查询历史记录失败！设备端数据库服务访问失败";
+    public static final String HISTORY_SEARCH_FAIL_ERROR = "查询历史记录失败！服务内部错误";
 
 
 

@@ -86,26 +86,7 @@
             findById() {
                 axios.get(url + "/machine/findById?id=" + this.community.id).then((res) => {
                     this.community = res.data.data;
-                    this.fileList.push({url: "http://localhost/estate" + this.community.thumbnail});
                 });
-            },
-            handleSuccess(response, file, fileList) {
-                this.community.thumbnail = response.data;
-            },
-            handleRemove() {
-                axios.get("url+/estate/delfile?fileName=" + this.community.thumbnail).then((res) => {
-                    app.community.thumbnail = "";
-                    if (res.data.flag) {
-                        app.fileList = [];
-                        this.$message({
-                            message: '图片删除成功',
-                            type: 'success'
-                        });
-                    }
-                });
-            },
-            handlePreview(file) {
-                console.log(file);
             },
             //文件删除提示
             beforeRemove(file, fileList) {
@@ -118,6 +99,24 @@
                     this.handleRemove();
                 }
             },
+            isNullOrEmpty(str) {
+                // undefined
+                if (str === undefined) {
+                    return true;
+                }
+                // null
+                if (str === null) {
+                    return true;
+                }
+                // 空字符串
+                if (str === "") {
+                    return true;
+                }
+                // 判断是否全为空格
+                let regex = "^[ ]+$";
+                let re = new RegExp(regex);
+                return re.test(str);
+            },
             save() {
                 var method = "";
                 if (this.community.id != null) {
@@ -125,6 +124,36 @@
                 } else {
                     method = "add"
                 }
+
+                if (this.isNullOrEmpty(this.community.machineId)) {
+                    this.$message({
+                        message: "设备id不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.machineName)) {
+                    this.$message({
+                        message: "设备名称不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.machineUrl)) {
+                    this.$message({
+                        message: "设备URL不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.machineDesc)) {
+                    this.$message({
+                        message: "设备备注不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+
                 axios.post(url + "/machine/" + method, this.community).then((res) => {
                     if (res.data.flag) {
                         this.$message({
@@ -133,10 +162,14 @@
                         });
                     }
                 });
+
+                //2秒后关闭此子页面
+                setTimeout(function () {
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index)
+                }, 2000);
             },
-            imgUrl() {
-                return "http://localhost/estate" + app.community.thumbnail;
-            },
+
             getQueryString(name) {
                 let reg = `(^|&)${name}=([^&]*)(&|$)`
                 let r = window.location.search.substr(1).match(reg);
