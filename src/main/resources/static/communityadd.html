@@ -165,9 +165,9 @@
 
                 //2秒后关闭此子页面
                 setTimeout(function () {
-                    var index = parent.layer.getFrameIndex(window.name);
+                    let index = parent.layer.getFrameIndex(window.name);
                     parent.layer.close(index)
-                }, 2000);
+                }, 2500);
             },
 
             getQueryString(name) {

@@ -7,12 +7,3 @@
 - application.yml配置中修改数据库连接url
 - url.js中修改前端请求后端的url
 
-
-
-```json
-{
-    "code": 200,
-    "data": {},
-    "msg": "操作成功"
-}
-```

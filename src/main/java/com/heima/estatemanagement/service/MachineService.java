@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * 描述
@@ -64,12 +65,17 @@ public class MachineService {
     }
 
     public Result add(Machine machine) {
+        if (validMachineUrl(machine.getMachineUrl())) {
+            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
+        }
+
         LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId());
         if (machineMapper.selectCount(wrapper) > 0) {
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID);
         } else {
             machine.setState(Machine.State.OFFLINE);
             machine.setCreateTime(new Date());
+            machine.setMachineUrl(machine.getMachineUrl().trim());
 
             machineMapper.insert(machine);
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_ADD_SUCCESS);
@@ -77,17 +83,28 @@ public class MachineService {
     }
 
     public Result update(Machine machine) {
+        if (!validMachineUrl(machine.getMachineUrl())) {
+            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
+        }
+
         LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId()).ne(Machine::getId, machine.getId());
         if (machineMapper.selectCount(wrapper) > 0) {
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID_UPDATE);
         } else {
             machine.setModifyTime(new Date());
+            machine.setMachineUrl(machine.getMachineUrl().trim());
 
             machineMapper.updateById(machine);
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_UPDATE_SUCCESS);
         }
+    }
 
+    // 设备url判断是否ip地址格式
+    private boolean validMachineUrl(String url) {
+        String regex = "^([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5])." +
+                "([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5])$";
 
+        return Pattern.matches(regex, url);
     }
 
     public Result delete(List<String> ids) {
