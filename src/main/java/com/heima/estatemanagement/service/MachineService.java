@@ -1,5 +1,6 @@
 package com.heima.estatemanagement.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,8 @@ import com.heima.estatemanagement.common.StatusCode;
 import com.heima.estatemanagement.dao.MachineMapper;
 import com.heima.estatemanagement.domain.Machine;
 import com.heima.estatemanagement.dto.MachineSearchDTO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +28,7 @@ import java.util.regex.Pattern;
  * @author Jin Xichang
  * @date 2022/4/20
  **/
+@Slf4j
 @Service
 public class MachineService {
 
@@ -110,6 +114,30 @@ public class MachineService {
     public Result delete(List<String> ids) {
         machineMapper.deleteBatchIds(ids);
         return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DELETE_SUCCESS);
+    }
+
+    public List<Machine> loadAllMachine() {
+        return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).orderByAsc(Machine::getCreateTime));
+    }
+
+    @Scheduled(cron = "0 0/3 * * * ?")
+    public void checkMachineState() {
+        log.info("更新设备状态定时任务开启");
+        List<Machine> machineList = loadAllMachine();
+        if (CollectionUtil.isNotEmpty(machineList)) {
+            for (Machine machine : machineList) {
+                // 上线
+                boolean open = MyWebSocketClient.valid(machine.getMachineUrl());
+                if (open && machine.getState().equals(Machine.State.OFFLINE)) {
+                    machine.setState(Machine.State.ONLINE);
+                    machineMapper.updateById(machine);
+                } else if (!open && machine.getState().equals(Machine.State.ONLINE)) { // 下线
+                    machine.setState(Machine.State.OFFLINE);
+                    machineMapper.updateById(machine);
+                }
+            }
+        }
+        log.info("更新设备状态定时任务关闭");
     }
 
 }
