@@ -148,6 +148,9 @@
 <script type="text/javascript" src="url.js"></script>
 
 <script type="text/javascript">
+    //设备url只维护单纯的ip地址，ws前缀和ws端口号用默认的
+    var urlTemplate = "ws://ip:7250/";
+
     var pageNum = 1;
     var pageSize = 1;
     var totalCount = 0;
@@ -217,7 +220,7 @@
 
                 let machineUrl = machine.machineUrl;
                 try {
-                    let websocketClient = new WebSocket(machineUrl);
+                    let websocketClient = new WebSocket(urlTemplate.replace("ip", machineUrl));
                     playerMap[machineId] = player;
                     clientMap[machineId] = websocketClient;
                 } catch (e) {
@@ -306,7 +309,7 @@
 
                 let machineUrl = machine.machineUrl;
                 try {
-                    let websocketClient = new WebSocket(machineUrl);
+                    let websocketClient = new WebSocket(urlTemplate.replace("ip", machineUrl));
                     playerMap[machineId] = player;
                     clientMap[machineId] = websocketClient;
                 } catch (e) {
