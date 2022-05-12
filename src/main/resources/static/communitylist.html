@@ -29,7 +29,7 @@
 </div>
 <div class="x-body" id="app">
     <div>
-        <span class="demonstration">时间范围</span>
+        <span class="demonstration">创建时间</span>
         <el-date-picker
                 @change="dateChange"
                 v-model="selectDate"
@@ -39,7 +39,7 @@
                 end-placeholder="结束日期"
                 :picker-options="pickerOptions">
         </el-date-picker>
-        <span class="demonstration">搜索关键字</span>
+        <span class="demonstration">设备名称</span>
         <el-input v-model="searchMap.name" style="width: 20%" placeholder="请输入设备名称"></el-input>
         <el-button type="primary" plain @click="searchMap.pageNum=1;search()">搜索</el-button>
     </div>
@@ -171,7 +171,7 @@
         methods: {
             //分页条件查询小区列表
             search() {
-                axios.post(url + "/machine/search", this.searchMap).then((res) => {
+                axios.post(url + "/machine/searchCondition", this.searchMap).then((res) => {
                     app.communityList = res.data.data;
                     app.total = res.data.total;
                 });

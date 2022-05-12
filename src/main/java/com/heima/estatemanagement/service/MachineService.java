@@ -10,7 +10,9 @@ import com.heima.estatemanagement.common.Result;
 import com.heima.estatemanagement.common.StatusCode;
 import com.heima.estatemanagement.dao.MachineMapper;
 import com.heima.estatemanagement.domain.Machine;
+import com.heima.estatemanagement.dto.MachineSearchDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -33,6 +35,17 @@ public class MachineService {
 
         Page<Machine> page = new Page<>(pageNum, pageSize);
         return machineMapper.selectPage(page, Wrappers.lambdaQuery(Machine.class).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
+    }
+
+    public IPage<Machine> searchCondition(MachineSearchDTO machineSearchDTO) {
+        Page<Machine> page = new Page<>(machineSearchDTO.getPageNum(), machineSearchDTO.getPageSize());
+        LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class)
+                .gt(machineSearchDTO.getStartTime() != null, Machine::getCreateTime, machineSearchDTO.getStartTime())
+                .lt(machineSearchDTO.getEndTime() != null, Machine::getCreateTime, machineSearchDTO.getEndTime())
+                .like(!StringUtils.isEmpty(machineSearchDTO.getName().trim()), Machine::getMachineName, machineSearchDTO.getName())
+                .orderByDesc(Machine::getState)
+                .orderByAsc(Machine::getCreateTime);
+        return machineMapper.selectPage(page, wrapper);
     }
 
     public List<Machine> searchAll() {

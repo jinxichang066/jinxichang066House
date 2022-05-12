@@ -7,6 +7,7 @@ import com.heima.estatemanagement.common.PageResult;
 import com.heima.estatemanagement.common.Result;
 import com.heima.estatemanagement.common.StatusCode;
 import com.heima.estatemanagement.domain.Machine;
+import com.heima.estatemanagement.dto.MachineSearchDTO;
 import com.heima.estatemanagement.service.MachineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,6 +36,12 @@ public class MachineController {
     @RequestMapping("/search")
     public PageResult search(@RequestBody JSONObject jsonObject) {
         IPage<Machine> page = machineService.search(jsonObject);
+        return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
+    }
+
+    @RequestMapping("/searchCondition")
+    public PageResult searchCondition(@RequestBody MachineSearchDTO machineSearchDTO) {
+        IPage<Machine> page = machineService.searchCondition(machineSearchDTO);
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }
 
