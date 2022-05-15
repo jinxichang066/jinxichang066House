@@ -1,5 +1,6 @@
 package com.heima.estatemanagement.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.heima.estatemanagement.common.MessageConstant;
 import com.heima.estatemanagement.common.PageResult;
 import com.heima.estatemanagement.common.StatusCode;
@@ -54,31 +55,58 @@ public class HistoryService {
             log.info("连接数据库：{}", url);
             conn = DriverManager.getConnection(url, user, password);
 
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT count(1) as count from warninginfor where 1=1 ");
+            assembleCondition(historySearchDTO, sql);
+
             // 执行查询
-            System.out.println(" 实例化Statement对象...");
+            log.info("实例化Statement对象...");
             stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT id, scanmode, dtime, gasnames, firstdtime, lastdtime FROM warninginfor limit 6";
-            ResultSet rs = stmt.executeQuery(sql);
-
-            List<History> historyList = new ArrayList<>();
+            log.info("执行sql: {}", sql.toString());
+            ResultSet rs = stmt.executeQuery(sql.toString());
+            int count = 0;
             while (rs.next()) {
-                History history = new History();
                 // 通过字段检索
-                history.setId(rs.getInt("id"));
-                history.setScanMode(rs.getInt("scanmode"));
-                history.setDTime(rs.getDate("dtime"));
-                history.setGasNames(rs.getString("gasnames"));
-                history.setFirstDTime(rs.getDate("firstdtime"));
-                history.setLastDTime(rs.getDate("lastdtime"));
-
-                historyList.add(history);
+                count = rs.getInt("count");
             }
-            pageResult.setFlag(true);
-            pageResult.setCode(StatusCode.OK);
-            pageResult.setMessage(MessageConstant.HISTORY_SEARCH_SUCCESS);
-            pageResult.setData(historyList);
-            pageResult.setTotal(100L);
+            log.info("数据总条数为:{}", count);
+            if (count == 0) {
+                pageResult.setFlag(true);
+                pageResult.setCode(StatusCode.OK);
+                pageResult.setMessage(MessageConstant.HISTORY_SEARCH_SUCCESS);
+                pageResult.setData(new ArrayList<>());
+                pageResult.setTotal(0L);
+            } else {
+                StringBuilder sql1 = new StringBuilder();
+                sql1.append("SELECT id, scanmode, dtime, gasnames, firstdtime, lastdtime FROM warninginfor where 1=1 ");
+                assembleCondition(historySearchDTO, sql1);
+                //排序
+                sql1.append("order by dtime desc ");
+                //分页
+                sql1.append("limit ").append((historySearchDTO.getPageNum() - 1) * historySearchDTO.getPageSize()).append(",").append(historySearchDTO.getPageSize());
+
+                log.info("执行sql: {}", sql1.toString());
+                ResultSet rs1 = stmt.executeQuery(sql1.toString());
+                List<History> historyList = new ArrayList<>();
+                while (rs1.next()) {
+                    History history = new History();
+                    // 通过字段检索
+                    history.setId(rs1.getInt("id"));
+                    history.setScanMode(rs1.getInt("scanmode"));
+                    history.setDTime(rs1.getTimestamp("dtime"));
+                    history.setGasNames(rs1.getString("gasnames"));
+                    history.setFirstDTime(rs1.getTimestamp("firstdtime"));
+                    history.setLastDTime(rs1.getTimestamp("lastdtime"));
+
+                    historyList.add(history);
+                }
+                pageResult.setFlag(true);
+                pageResult.setCode(StatusCode.OK);
+                pageResult.setMessage(MessageConstant.HISTORY_SEARCH_SUCCESS);
+                pageResult.setData(historyList);
+                pageResult.setTotal((long) count);
+            }
+
 
             // 完成后关闭
             rs.close();
@@ -109,5 +137,18 @@ public class HistoryService {
         log.info("查询结束");
 
         return pageResult;
+    }
+
+    private void assembleCondition(HistorySearchDTO historySearchDTO, StringBuilder sql) {
+        if (historySearchDTO.getStartTime() != null) {
+            sql.append("and dtime >= ").append("'").append(DateUtil.format(historySearchDTO.getStartTime(), "yyyy-MM-dd HH:mm:ss")).append("' ");
+        }
+
+        if (historySearchDTO.getEndTime() != null) {
+            sql.append("and dtime <= ").append("'").append(DateUtil.format(historySearchDTO.getEndTime(), "yyyy-MM-dd HH:mm:ss")).append("' ");
+        }
+        if (historySearchDTO.getScanMode() != 0) {
+            sql.append("and scanmode = ").append(historySearchDTO.getScanMode()).append(" ");
+        }
     }
 }
