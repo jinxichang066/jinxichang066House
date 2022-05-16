@@ -21,6 +21,9 @@ spring:
     multipart: #文件上传配置
       max-file-size: 10MB
       max-request-size: 50MB
+  mvc:
+    favicon:
+      enabled: false #设置关闭springboot默认favicon
 
 jdbc:
   connection:
