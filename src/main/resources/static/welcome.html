@@ -104,7 +104,7 @@
             </div>
             <div class="navBox" id="machineListDiv">
                 <!--                <div class="navDiv">-->
-                <!--                    <p><input type="checkbox" name="machineCkBox" id="MA1001"/>解决方法一</p>-->
+                <!--                    <p><input type="checkbox" name="machineCkBox" id="MA1001"/>1号设备</p>-->
                 <!--                </div>-->
             </div>
         </div>
@@ -188,6 +188,7 @@
         console.log("show " + arr.length + " canvas!");
 
         axios.post(url + "/machine/selectByIds", arr).then((res) => {
+            console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;
             if (machineList.length === 0) {
@@ -240,7 +241,7 @@
                     client.close();
                 };
                 client.onerror = function (evt) {
-                    alert("websocket connection error!");
+                    console.log("websocket connect error!");
                 };
                 client.onmessage = function (evt) {
                     var b = evt.data;
@@ -275,6 +276,7 @@
             "pageSize": pageSize
         };
         axios.post(url + "/machine/search", jsonObject).then((res) => {
+            console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;
 
@@ -329,7 +331,8 @@
                     client.close();
                 };
                 client.onerror = function (evt) {
-                    alert("websocket connection error!");
+                    console.log("websocket connect error!");
+                    // alert("websocket connection error!");
                 };
                 client.onmessage = function (evt) {
                     var b = evt.data;
