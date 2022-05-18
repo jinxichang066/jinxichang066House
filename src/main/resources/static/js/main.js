@@ -25,6 +25,14 @@ $('.larry-side-menu').click(function() {
 
   	//监听导航点击
   	element.on('nav(side)', function(elem){
+  		// 2020.05.18 客户不需要多选项卡功能，并且删除选项卡栏
+  		// 通过清空layui的tabTitle和tabContent实现系统只支持单选项卡的效果
+		let tabTitle = document.getElementById("tabTitle");
+		tabTitle.innerHTML = '';
+		let tabContent = document.getElementById("tabContent");
+		tabContent.innerHTML = '';
+		// 通过清空layui的tabTitle和tabContent实现系统只支持单选项卡的效果
+
     	title = elem.find('cite').text();
     	url = elem.find('a').attr('_href');
     	// alert(url);
