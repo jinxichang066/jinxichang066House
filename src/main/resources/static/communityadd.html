@@ -84,7 +84,7 @@
         },
         methods: {
             findById() {
-                axios.get(url + "/machine/findById?id=" + this.community.id).then((res) => {
+                axios.get(apiPath + "/machine/findById?id=" + this.community.id).then((res) => {
                     this.community = res.data.data;
                 });
             },
@@ -154,7 +154,7 @@
                     return false;
                 }
 
-                axios.post(url + "/machine/" + method, this.community).then((res) => {
+                axios.post(apiPath + "/machine/" + method, this.community).then((res) => {
                     if (res.data.flag) {
                         this.$message({
                             message: res.data.message,

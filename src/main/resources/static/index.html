@@ -56,16 +56,16 @@
     <div class="layui-side layui-bg-black x-side show_list" style="left:0px;" id="table1">
         <div class="layui-side-scroll">
             <ul class="layui-nav layui-nav-tree site-demo-nav" lay-filter="side">
-                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="fa fa-camera"></i><cite>实时监控</cite> </a>
-                    <dl class="layui-nav-child">
-                        <dd class=""><a href="javascript:;" _href="welcome.html?id=516b98016fb0faf142e890e6b63db900"> <cite>1号设备</cite> </a></dd>
-                        <dd class=""><a href="javascript:;" _href="welcome.html?id=e6f277f22f5bb863213ffe756e3818d9"> <cite>2号设备</cite> </a></dd>
+                <li class="layui-nav-item layui-nav-itemed"><a class="javascript:;" href="javascript:;"> <i class="fa fa-camera"></i><cite>实时监控</cite> </a>
+                    <dl id="dlMachineList" class="layui-nav-child">
+                        <!--                        <dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=516b98016fb0faf142e890e6b63db900"> <cite>1号设备</cite> </a></dd>-->
+                        <!--                        <dd class=""><a href="javascript:;" _href="welcome.html?id=e6f277f22f5bb863213ffe756e3818d9"> <cite>2号设备</cite> </a></dd>-->
                     </dl>
                 </li>
                 <li class="layui-nav-item"><a class="javascript:;" href="javascript:;" _href="historylist.html"> <i class="fa fa-history"></i><cite>历史记录</cite>
                 </a>
                 </li>
-                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="layui-icon">&#xe614;</i><cite>系统设置</cite> </a>
+                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="fa fa-cogs"></i><cite>系统设置</cite> </a>
                     <dl class="layui-nav-child">
                         <dd class=""><a href="javascript:;" _href="communitylist.html"> <cite>设备管理</cite> </a></dd>
                         <dd class=""><a href="javascript:;" _href="system.html"> <cite>系统设置</cite> </a></dd>
@@ -84,35 +84,44 @@
             <!--            <li class="layui-this"> 实时监控 <i class="layui-icon layui-unselect layui-tab-close">ဆ</i></li>-->
         </ul>
         <div id="tabContent" class="layui-tab-content site-demo site-demo-body">
-            <!--            <div class="layui-tab-item layui-show">-->
-            <!--                <iframe frameborder="0" src="welcome.html" class="x-iframe"></iframe>-->
-            <!--            </div>-->
+            <div class="layui-tab-item layui-show">
+                <iframe frameborder="0" src="welcome.html?id=516b98016fb0faf142e890e6b63db900" class="x-iframe"></iframe>
+            </div>
         </div>
     </div>
     <div class="site-mobile-shade"></div>
 </div>
+
+<!--引入Axios js脚本-->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="url.js"></script>
+
+<script>
+
+    axios.post(apiPath + "/machine/searchAll").then((res) => {
+        let machineList = res.data.data;
+        if (machineList.length !== 0) {
+            let parent = document.getElementById("dlMachineList");
+            let dd = '';
+            for (let i = 0; i < machineList.length; i++) {
+                let machine = machineList[i];
+                if (i === 0) {
+                    dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
+                } else {
+                    dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
+                }
+
+            }
+            parent.innerHTML = dd;
+        }
+    });
+</script>
 
 <script src="lib/layui/layui.js" charset="utf-8"></script>
 <script src="js/main.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/x-layui.js" charset="utf-8"></script>
 
-<script>
-    // location.href="login.html";
-</script>
-
-<script>
-    $(".daohang").click(function () {
-        var table = $(this).attr("ids");
-        var ids = $(".show_list").attr("id");
-        $("#" + ids + "").addClass("hide_lits");
-        $("#" + ids + "").removeClass("show_list");
-        $("" + table + "").removeClass("hide_lits");
-        $("" + table + "").addClass("show_list");
-    })
-
-
-</script>
 <script>
     layui.use(['laydate', 'element', 'laypage', 'layer'], function () {
         $ = layui.jquery;//jquery
@@ -124,6 +133,7 @@
         //以上模块根据需要引入
 
     });
+
 
     /**
      * 退出登陆
@@ -156,6 +166,7 @@
         x_admin_show(title, url, w, h);
     }
 </script>
+
 <script>
     //顶部时间
     function getTime() {

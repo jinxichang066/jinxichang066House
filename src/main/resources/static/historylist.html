@@ -158,7 +158,7 @@
                     let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
                     correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
-                    axios.post(url + "/history/search", correctSearchMap).then((res) => {
+                    axios.post(apiPath + "/history/search", correctSearchMap).then((res) => {
                         app.communityList = res.data.data;
                         if (app.communityList != null && app.communityList.length !== 0) {
                             for (let i = 0; i < app.communityList.length; i++) {
@@ -186,7 +186,7 @@
                         //把选中的ID封装到集合中
                         this.checkedIDs.push(id);
                         //执行删除操作
-                        axios.post(url + "/machine/del", this.checkedIDs).then((res) => {
+                        axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
                             if (res.data.flag) {
                                 this.$message({
                                     type: 'success',
@@ -216,7 +216,7 @@
                         type: 'warning'
                     }).then(() => {
                         //执行删除操作
-                        axios.post(url + "/machine/del", this.checkedIDs).then((res) => {
+                        axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
                             if (res.data.flag) {
                                 this.$message({
                                     type: 'success',
@@ -369,7 +369,7 @@
                     });
                 });
                 //<el-select>控件加载数据源，即设备列表
-                axios.post(url + "/machine/searchAll").then((res) => {
+                axios.post(apiPath + "/machine/searchAll").then((res) => {
                     let machineList = res.data.data;
                     if (machineList != null && machineList.length !== 0) {
                         for (let i = 0; i < machineList.length; i++) {

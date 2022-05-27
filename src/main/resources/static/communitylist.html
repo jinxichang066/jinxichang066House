@@ -171,7 +171,7 @@
         methods: {
             //分页条件查询小区列表
             search() {
-                axios.post(url + "/machine/searchCondition", this.searchMap).then((res) => {
+                axios.post(apiPath + "/machine/searchCondition", this.searchMap).then((res) => {
                     app.communityList = res.data.data;
                     app.total = res.data.total;
                 });
@@ -186,7 +186,7 @@
                     //把选中的ID封装到集合中
                     this.checkedIDs.push(id);
                     //执行删除操作
-                    axios.post(url + "/machine/del", this.checkedIDs).then((res) => {
+                    axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
                         if (res.data.flag) {
                             this.$message({
                                 type: 'success',
@@ -215,7 +215,7 @@
                     type: 'warning'
                 }).then(() => {
                     //执行删除操作
-                    axios.post(url + "/machine/del", this.checkedIDs).then((res) => {
+                    axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
                         if (res.data.flag) {
                             this.$message({
                                 type: 'success',

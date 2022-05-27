@@ -187,7 +187,7 @@
     function generateCanvasFromMenu(arr) {
         console.log("show " + arr.length + " canvas!");
 
-        axios.post(url + "/machine/selectByIds", arr).then((res) => {
+        axios.post(apiPath + "/machine/selectByIds", arr).then((res) => {
             console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;
@@ -275,7 +275,7 @@
             "pageNum": pageNum,
             "pageSize": pageSize
         };
-        axios.post(url + "/machine/search", jsonObject).then((res) => {
+        axios.post(apiPath + "/machine/search", jsonObject).then((res) => {
             console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;
@@ -543,7 +543,10 @@
     }
 
     function initMenu() {
-        axios.post(url + "/machine/searchAll").then((res) => {
+        let id = getQueryVariable("id");
+        console.log("id:"+id);
+
+        axios.post(apiPath + "/machine/searchAll").then((res) => {
             let machineList = res.data.data;
 
             if (machineList.length !== 0) {
@@ -602,6 +605,17 @@
         }
 
         playBtn(1);
+    }
+
+    function getQueryVariable(variable)
+    {
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (let i=0;i<vars.length;i++) {
+            let pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return false;
     }
 </script>
 
