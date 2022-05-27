@@ -84,9 +84,9 @@
             <!--            <li class="layui-this"> 实时监控 <i class="layui-icon layui-unselect layui-tab-close">ဆ</i></li>-->
         </ul>
         <div id="tabContent" class="layui-tab-content site-demo site-demo-body">
-            <div class="layui-tab-item layui-show">
-                <iframe frameborder="0" src="welcome.html?id=516b98016fb0faf142e890e6b63db900" class="x-iframe"></iframe>
-            </div>
+            <!--                        <div class="layui-tab-item layui-show">-->
+            <!--                            <iframe frameborder="0" src="welcome.html?id=516b98016fb0faf142e890e6b63db900" class="x-iframe"></iframe>-->
+            <!--                        </div>-->
         </div>
     </div>
     <div class="site-mobile-shade"></div>
@@ -95,34 +95,51 @@
 <!--引入Axios js脚本-->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="url.js"></script>
+<script src="js/jquery.min.js"></script>
 
 <script>
 
-    axios.post(apiPath + "/machine/searchAll").then((res) => {
-        let machineList = res.data.data;
-        if (machineList.length !== 0) {
-            let parent = document.getElementById("dlMachineList");
-            let dd = '';
-            for (let i = 0; i < machineList.length; i++) {
-                let machine = machineList[i];
-                if (i === 0) {
-                    dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
-                } else {
-                    dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
-                }
+    //初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
+    $.ajaxSettings.async = false;
 
+    $.ajax({
+        type: "post",
+        url: apiPath + "/machine/searchAll",
+        data: {e: 1},
+        dataType: "json",
+        success: function (res) {
+            let machineList = res.data;
+            if (machineList.length !== 0) {
+                //菜单
+                let dlMachineList = document.getElementById("dlMachineList");
+                let dd = '';
+                for (let i = 0; i < machineList.length; i++) {
+                    let machine = machineList[i];
+                    if (i === 0) {
+                        dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
+                    } else {
+                        dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
+                    }
+                }
+                dlMachineList.innerHTML = dd;
+
+                //tabContent
+                let tabContent = document.getElementById("tabContent");
+                let firstMachine = machineList[0];
+                tabContent.innerHTML = '<div class="layui-tab-item layui-show"><iframe frameborder="0" src="welcome.html?id=' + firstMachine.id + '" class="x-iframe"></iframe></div>';
             }
-            parent.innerHTML = dd;
         }
-    });
+    })
+
 </script>
 
 <script src="lib/layui/layui.js" charset="utf-8"></script>
 <script src="js/main.js"></script>
-<script src="js/jquery.min.js"></script>
+
 <script src="js/x-layui.js" charset="utf-8"></script>
 
 <script>
+
     layui.use(['laydate', 'element', 'laypage', 'layer'], function () {
         $ = layui.jquery;//jquery
         laydate = layui.laydate;//日期插件
@@ -133,7 +150,6 @@
         //以上模块根据需要引入
 
     });
-
 
     /**
      * 退出登陆
