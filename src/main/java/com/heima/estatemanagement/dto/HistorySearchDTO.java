@@ -24,6 +24,8 @@ public class HistorySearchDTO {
 
     private String machineUrl;
 
+    private String gasnames;
+
     private int pageNum;
 
     private int pageSize;

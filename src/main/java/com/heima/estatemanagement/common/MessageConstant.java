@@ -34,10 +34,12 @@ public class MessageConstant {
     public static final String MACHINE_DELETE_SUCCESS = "删除设备信息成功！";
     public static final String MACHINE_URL_NOT_MATCH = "设备URL必须为IP地址格式！";
 
-    //---------------------------设备（Machine）操作消息提示信息---------------------------------------
+    //---------------------------历史记录（History）操作消息提示信息---------------------------------------
     public static final String HISTORY_SEARCH_SUCCESS = "查询历史记录信息成功！";
     public static final String HISTORY_SEARCH_FAIL_DB_CONNECT_FAIL = "查询历史记录失败！设备端数据库服务访问失败";
     public static final String HISTORY_SEARCH_FAIL_ERROR = "查询历史记录失败！服务内部错误";
 
+    //---------------------------气体（GasSpec）操作消息提示信息---------------------------------------
+    public static final String GAS_SPEC_NAME_LIST_SUCCESS = "查询气体名称列表信息成功！";
 
 }

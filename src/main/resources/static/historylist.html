@@ -28,24 +28,31 @@
 </div>
 <div class="x-body" id="app">
     <div>
-        <span class="demonstration">报警时间</span>
-        <el-date-picker
-                @change="dateChange"
-                v-model="selectDate"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                :picker-options="pickerOptions">
-        </el-date-picker>
-        <span class="demonstration">监测模式</span>
-        <el-select v-model="searchMap.scanMode" placeholder="请选择">
-            <el-option v-for="item in scanModeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-        <span class="demonstration">设备名称</span>
+        <span class="demonstration">设备</span>
         <el-select v-model="searchMap.machineUrl" placeholder="请选择">
             <el-option v-for="item in machineOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
+        <span class="demonstration">时间</span>
+        <el-date-picker
+                @change="dateChange"
+                v-model="selectDate"
+                type="datetimerange"
+                range-separator="-"
+                start-placeholder="开始时间"
+                end-placeholder="结束时间"
+                :picker-options="pickerOptions">
+        </el-date-picker>
+        <span class="demonstration">监测模式</span>
+        <el-select v-model="searchMap.scanMode" placeholder="请选择" style="width: 150px">
+            <el-option v-for="item in scanModeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+        <span class="demonstration">气体</span>
+        <el-autocomplete
+                v-model="searchMap.gasnames"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入气体名称"
+                @select="handleSelect">
+        </el-autocomplete>
         <el-button type="primary" plain @click="searchMap.pageNum=1;search();">搜索</el-button>
     </div>
     <!-- <span class="x-right" style="line-height:40px">共有数据：<span class="layui-badge">2</span> 条</span> -->
@@ -107,292 +114,327 @@
 <script src="url.js" charset="utf-8"></script>
 <script>
     var app = new Vue({
-            el: "#app",//声明当前Vue在页面的作用域
-            data: {
-                checkedIDs: [],
-                communityList: [],
-                total: 10,
-                searchMap: {"startTime": "", "endTime": "", "scanMode": "", "machineUrl": "", "pageNum": 1, "pageSize": 6},
-                selectDate: ['', ''],
-                pickerOptions: {
-                    shortcuts: [{
-                        text: '最近一周',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近一个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }, {
-                        text: '最近三个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }]
-                },
-                scanModeOptions: [
-                    {"label": "全部模式", "value": 0},
-                    {"label": "定标模式", "value": 1},
-                    {"label": "定点模式", "value": 2},
-                    {"label": "扫描模式", "value": 3},
-                    {"label": "警戒模式", "value": 4}
-                ],
-                machineOptions: []
+        el: "#app",//声明当前Vue在页面的作用域
+        data: {
+            gasNameList: [],
+            state: '',
+            timeout: null,
+            checkedIDs: [],
+            communityList: [],
+            total: 10,
+            searchMap: {"startTime": "", "endTime": "", "scanMode": "", "machineUrl": "", "gasnames": "", "pageNum": 1, "pageSize": 6},
+            selectDate: ['', ''],
+            pickerOptions: {
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }]
             },
-            methods: {
-                //分页条件查询小区列表
-                search() {
-                    // 因为option控件的value属性不能重复的问题，在之前加载machineUrl的时候拼接了"^+index"
-                    // 使用前要剔除
-                    let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
-                    correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
+            scanModeOptions: [
+                {"label": "全部模式", "value": 0},
+                {"label": "定点模式", "value": 2},
+                {"label": "扇扫模式", "value": 3},
+                {"label": "警戒模式", "value": 4}
+            ],
+            machineOptions: []
+        },
+        methods: {
+            //分页条件查询小区列表
+            search() {
+                // 因为option控件的value属性不能重复的问题，在之前加载machineUrl的时候拼接了"^+index"
+                // 使用前要剔除
+                let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
+                correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
-                    axios.post(apiPath + "/history/search", correctSearchMap).then((res) => {
-                        app.communityList = res.data.data;
-                        if (app.communityList != null && app.communityList.length !== 0) {
-                            for (let i = 0; i < app.communityList.length; i++) {
-                                let scanMode = app.communityList[i].scanMode;
-                                app.communityList[i].scanMode = this.getScanMode(scanMode);
-                            }
-                        }
-                        app.total = res.data.total;
-                    });
-                },
-                getScanMode(scanMode) {
-                    for (let i = 0; i < app.scanModeOptions.length; i++) {
-                        if (app.scanModeOptions[i].value === scanMode) {
-                            return app.scanModeOptions[i].label;
-                        }
-                    }
-                },
-                //单个删除
-                del_one(id) {
-                    this.$confirm('请问您是否要删除该设备信息?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }).then(() => {
-                        //把选中的ID封装到集合中
-                        this.checkedIDs.push(id);
-                        //执行删除操作
-                        axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
-                            if (res.data.flag) {
-                                this.$message({
-                                    type: 'success',
-                                    message: '删除成功!'
-                                });
-                            }
-                            //删除成功，把选中的ID列表置为空
-                            this.checkedIDs = [];
-                            //把页面置为1，重新获取列表数据
-                            this.searchMap.pageNum = 1;
-                            this.search();
-                        });
-
-                    }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除'
-                        });
-                    });
-                }
-                ,
-                //多选删除
-                delAll() {
-                    this.$confirm('请问您是否要删除选中设备信息?', '提示', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning'
-                    }).then(() => {
-                        //执行删除操作
-                        axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
-                            if (res.data.flag) {
-                                this.$message({
-                                    type: 'success',
-                                    message: '删除成功!'
-                                });
-                            }
-                            //删除成功，把选中的ID列表置为空
-                            this.checkedIDs = [];
-                            //把页面置为1，重新获取列表数据
-                            this.searchMap.pageNum = 1;
-                            this.search();
-                        });
-                    }).catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除'
-                        });
-                    });
-                }
-                ,
-                urlImg(url) {
-                    return "http://localhost/estate" + url;
-                }
-                ,
-                //全选、全不选方法
-                allChecked: function () {
-                    if (this.checkedIDs.length === this.communityList.length) {
-                        // 全不选
-                        this.checkedIDs = [];
-
-                    } else {
-                        this.checkedIDs = [];
-                        // 全选
-                        this.communityList.forEach((item) => {
-                            this.checkedIDs.push(item.id); // 与checkbox的value统一
-                        })
-                    }
-                }
-                ,
-                //handleSizeChange每页数量发生变化后触发的方法
-                handleSizeChange(pageSize) {
-                    this.searchMap.pageSize = pageSize;
-                    this.search();
-                }
-                ,
-                //handleCurrentChange页码变化触发方法
-                handleCurrentChange(pageNum) {
-                    this.searchMap.pageNum = pageNum;
-                    this.search();
-                }
-                ,
-                //时间区间发生改变，searcHMap中时间区间条件也要变化
-                dateChange() {
-                    //没有选择时间区间或者清理时间条件，当前时间区间为空字符串
-                    if (this.selectDate == null || this.selectDate.length == 0) {
-                        this.searchMap.startTime = '';
-                        this.searchMap.endTime = '';
-                    } else {
-                        //当时间区间不为空，往searchMap中添加条件
-                        if (this.selectDate[0] != null && this.selectDate[0] != '') {
-                            this.searchMap.startTime = this.dateFormat(this.selectDate[0]);
-
-                        }
-                        if (this.selectDate[1] != null && this.selectDate[1] != '') {
-                            this.searchMap.endTime = this.dateFormat(this.selectDate[1]);
+                axios.post(apiPath + "/history/search", correctSearchMap).then((res) => {
+                    app.communityList = res.data.data;
+                    if (app.communityList != null && app.communityList.length !== 0) {
+                        for (let i = 0; i < app.communityList.length; i++) {
+                            let scanMode = app.communityList[i].scanMode;
+                            app.communityList[i].scanMode = this.getScanMode(scanMode);
                         }
                     }
-
-                }
-                ,
-                //日期格式化方法
-                //date 要进行格式的日期 ；format 格式化的样式
-                dateFormat(date, format) {
-                    //默认格式化字符串"YYYY-MM-DD HH:mm:ss"
-                    if (format == null || format == '') {
-                        format = "YYYY-MM-DD HH:mm:ss";
+                    app.total = res.data.total;
+                });
+            },
+            getScanMode(scanMode) {
+                for (let i = 0; i < app.scanModeOptions.length; i++) {
+                    if (app.scanModeOptions[i].value === scanMode) {
+                        return app.scanModeOptions[i].label;
                     }
-                    return moment(date).format(format);
-                }
-                ,
-                /*添加*/
-                admin_add(title, url, w, h) {
-                    this.x_admin_show(title, url, w, h);
-                }
-                ,
-                //编辑
-                community_edit(title, url, id, w, h) {
-                    url = url + "?id=" + id;
-                    this.x_admin_show(title, url, w, h);
-                }
-                ,
-                /*弹出层*/
-                /*
-                    参数解释：
-                    title	标题
-                    url		请求的url
-                    id		需要操作的数据id
-                    w		弹出层宽度（缺省调默认值）
-                    h		弹出层高度（缺省调默认值）
-                */
-                x_admin_show(title, url, width, height) {
-                    if (title == null || title == '') {
-                        title = false;
-                    }
-                    ;
-                    if (url == null || url == '') {
-                        url = "404.html";
-                    }
-                    ;
-                    if (width == null || width == '') {
-                        width = 800;
-                    }
-                    ;
-                    if (height == null || height == '') {
-                        height = ($(window).height() - 50);
-                    }
-                    ;
-
-                    layer.open({
-                        type: 2,
-                        area: [width + 'px', height + 'px'],
-                        fix: false, //不固定
-                        maxmin: true,
-                        shadeClose: true,
-                        shade: 0.4,
-                        title: title,
-                        content: url,
-                        cancel: function (index, layero) {
-                            //使用右上角x关闭弹窗层，回调方法，重新加载页面数据，让修改或者新增的数据立马显示在页面上
-                            app.search();
-                        }
-                    });
-                }
-                ,
-                /*关闭弹出框口*/
-                x_admin_close() {
-                    var index = parent.layer.getFrameIndex(window.name);
-                    parent.layer.close(index);
                 }
             },
-            created: function () {//Vue生命周期方法，加载页面时会执行该方法
-                layui.use(['laydate', 'element', 'laypage', 'layer'], function () {
-                    $ = layui.jquery;//jquery
-                    layer = layui.layer;//弹出层
-                    okLoading.close($);
-                    layer.ready(function () { //为了layer.ext.js加载完毕再执行
-                        layer.photos({
-                            photos: '#x-img'
-                        });
+            //单个删除
+            del_one(id) {
+                this.$confirm('请问您是否要删除该设备信息?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    //把选中的ID封装到集合中
+                    this.checkedIDs.push(id);
+                    //执行删除操作
+                    axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
+                        if (res.data.flag) {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        }
+                        //删除成功，把选中的ID列表置为空
+                        this.checkedIDs = [];
+                        //把页面置为1，重新获取列表数据
+                        this.searchMap.pageNum = 1;
+                        this.search();
+                    });
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
                     });
                 });
-                //<el-select>控件加载数据源，即设备列表
-                axios.post(apiPath + "/machine/searchAll").then((res) => {
-                    let machineList = res.data.data;
-                    if (machineList != null && machineList.length !== 0) {
-                        for (let i = 0; i < machineList.length; i++) {
-                            let option = {};
-                            // machineUrl需要作为<el-option>控件的value属性，也就是option代表的值(label是显示的值)，value属性不允许重复。
-                            // 但是因为不同设备可能会存在machineUrl一样的情况，只能出此下策，拼接一个"^+index"作为唯一标志
-                            // 后续在使用option控件绑定的searchMap.machineUrl时将唯一标志再剔除
-                            option.value = machineList[i].machineUrl + "^" + i;
-                            option.label = machineList[i].machineName + "[" + machineList[i].state + "]";
-
-                            this.machineOptions.push(option);
+            }
+            ,
+            //多选删除
+            delAll() {
+                this.$confirm('请问您是否要删除选中设备信息?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    //执行删除操作
+                    axios.post(apiPath + "/machine/del", this.checkedIDs).then((res) => {
+                        if (res.data.flag) {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
                         }
-
-                        console.log("默认：" + machineList[0].machineName)
-                        this.searchMap.machineUrl = machineList[0].machineUrl + "^" + 0;
-                    }
-
-                    //初始页面获取小区列表信息
-                    this.search();
+                        //删除成功，把选中的ID列表置为空
+                        this.checkedIDs = [];
+                        //把页面置为1，重新获取列表数据
+                        this.searchMap.pageNum = 1;
+                        this.search();
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
                 });
+            }
+            ,
+            urlImg(url) {
+                return "http://localhost/estate" + url;
+            }
+            ,
+            //全选、全不选方法
+            allChecked: function () {
+                if (this.checkedIDs.length === this.communityList.length) {
+                    // 全不选
+                    this.checkedIDs = [];
+
+                } else {
+                    this.checkedIDs = [];
+                    // 全选
+                    this.communityList.forEach((item) => {
+                        this.checkedIDs.push(item.id); // 与checkbox的value统一
+                    })
+                }
+            }
+            ,
+            //handleSizeChange每页数量发生变化后触发的方法
+            handleSizeChange(pageSize) {
+                this.searchMap.pageSize = pageSize;
+                this.search();
+            }
+            ,
+            //handleCurrentChange页码变化触发方法
+            handleCurrentChange(pageNum) {
+                this.searchMap.pageNum = pageNum;
+                this.search();
+            }
+            ,
+            //时间区间发生改变，searcHMap中时间区间条件也要变化
+            dateChange() {
+                //没有选择时间区间或者清理时间条件，当前时间区间为空字符串
+                if (this.selectDate == null || this.selectDate.length == 0) {
+                    this.searchMap.startTime = '';
+                    this.searchMap.endTime = '';
+                } else {
+                    //当时间区间不为空，往searchMap中添加条件
+                    if (this.selectDate[0] != null && this.selectDate[0] != '') {
+                        this.searchMap.startTime = this.dateFormat(this.selectDate[0]);
+
+                    }
+                    if (this.selectDate[1] != null && this.selectDate[1] != '') {
+                        this.searchMap.endTime = this.dateFormat(this.selectDate[1]);
+                    }
+                }
 
             }
-        });
+            ,
+            //日期格式化方法
+            //date 要进行格式的日期 ；format 格式化的样式
+            dateFormat(date, format) {
+                //默认格式化字符串"YYYY-MM-DD HH:mm:ss"
+                if (format == null || format == '') {
+                    format = "YYYY-MM-DD HH:mm:ss";
+                }
+                return moment(date).format(format);
+            }
+            ,
+            /*添加*/
+            admin_add(title, url, w, h) {
+                this.x_admin_show(title, url, w, h);
+            }
+            ,
+            //编辑
+            community_edit(title, url, id, w, h) {
+                url = url + "?id=" + id;
+                this.x_admin_show(title, url, w, h);
+            }
+            ,
+            /*弹出层*/
+            /*
+                参数解释：
+                title	标题
+                url		请求的url
+                id		需要操作的数据id
+                w		弹出层宽度（缺省调默认值）
+                h		弹出层高度（缺省调默认值）
+            */
+            x_admin_show(title, url, width, height) {
+                if (title == null || title == '') {
+                    title = false;
+                }
+                ;
+                if (url == null || url == '') {
+                    url = "404.html";
+                }
+                ;
+                if (width == null || width == '') {
+                    width = 800;
+                }
+                ;
+                if (height == null || height == '') {
+                    height = ($(window).height() - 50);
+                }
+                ;
+
+                layer.open({
+                    type: 2,
+                    area: [width + 'px', height + 'px'],
+                    fix: false, //不固定
+                    maxmin: true,
+                    shadeClose: true,
+                    shade: 0.4,
+                    title: title,
+                    content: url,
+                    cancel: function (index, layero) {
+                        //使用右上角x关闭弹窗层，回调方法，重新加载页面数据，让修改或者新增的数据立马显示在页面上
+                        app.search();
+                    }
+                });
+            }
+            ,
+            /*关闭弹出框口*/
+            x_admin_close() {
+                var index = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(index);
+            },
+
+            querySearchAsync(queryString, cb) {
+                var gasNameList = this.gasNameList;
+                var results = queryString ? gasNameList.filter(this.createStateFilter(queryString)) : gasNameList;
+
+                clearTimeout(this.timeout);
+                this.timeout = setTimeout(() => {
+                    cb(results);
+                }, 3000 * Math.random());
+            },
+            createStateFilter(queryString) {
+                return (state) => {
+                    return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                };
+            },
+            handleSelect(item) {
+                // console.log(item);
+            },
+        },
+        created: function () {//Vue生命周期方法，加载页面时会执行该方法
+            layui.use(['laydate', 'element', 'laypage', 'layer'], function () {
+                $ = layui.jquery;//jquery
+                layer = layui.layer;//弹出层
+                okLoading.close($);
+                layer.ready(function () { //为了layer.ext.js加载完毕再执行
+                    layer.photos({
+                        photos: '#x-img'
+                    });
+                });
+            });
+
+            //加载气体名称搜索框数据源
+            axios.post(apiPath + "/history/getGasNameList").then((res) => {
+                let gasNameList = res.data.data;
+                if (gasNameList != null && gasNameList.length !== 0) {
+                    for (let i = 0; i < gasNameList.length; i++) {
+                        let gas = {};
+                        gas.value = gasNameList[i];
+                        gas.address = gasNameList[i];
+                        this.gasNameList.push(gas);
+                    }
+                }
+            });
+
+            //<el-select>控件加载数据源，即设备列表和监测模式
+            this.searchMap.scanMode = this.scanModeOptions[0].value;
+            axios.post(apiPath + "/machine/searchAll").then((res) => {
+                let machineList = res.data.data;
+                if (machineList != null && machineList.length !== 0) {
+                    for (let i = 0; i < machineList.length; i++) {
+                        let option = {};
+                        // machineUrl需要作为<el-option>控件的value属性，也就是option代表的值(label是显示的值)，value属性不允许重复。
+                        // 但是因为不同设备可能会存在machineUrl一样的情况，只能出此下策，拼接一个"^+index"作为唯一标志
+                        // 后续在使用option控件绑定的searchMap.machineUrl时将唯一标志再剔除
+                        option.value = machineList[i].machineUrl + "^" + i;
+                        option.label = machineList[i].machineName;
+
+                        this.machineOptions.push(option);
+                    }
+
+                    console.log("默认：" + machineList[0].machineName)
+                    this.searchMap.machineUrl = machineList[0].machineUrl + "^" + 0;
+                }
+
+                //初始页面获取历史信息
+                this.search();
+            });
+
+        }
+    });
 
 </script>
 
