@@ -16,6 +16,48 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <!--导入ElementUI样式列表，css样式一般都在页面头部-->
     <link rel="stylesheet" href="css/index.css">
+
+    <style>
+        .my-table {
+            width: 100%;
+            margin: 10px 0;
+            background-color: #fff;
+        }
+
+        .my-table thead {
+            display: table-header-group;
+            vertical-align: middle;
+            border-color: inherit;
+        }
+
+        .my-table td, .my-table th {
+            border-color: #f1f1f1;
+            text-align: center;
+            border: 1px solid #e2e2e2;
+        }
+
+        thead .my-table td, .my-table th {
+            border-right-color: #e3e3e3;
+        }
+
+        .my-table thead tr {
+            background-color: #f1f1f1;
+        }
+
+        .layui-btn-normal{
+            width: 50px;
+            height: 20px;
+        }
+        .layui-btn-disabled{
+            width: 50px;
+            height: 20px;
+        }
+
+        .el-button--mini, .el-button--mini.is-round {
+            padding: 1px 8px;
+        }
+    </style>
+
 </head>
 <body>
 <div class="x-nav">
@@ -56,13 +98,14 @@
         <el-button type="primary" plain @click="searchMap.pageNum=1;search();">搜索</el-button>
     </div>
     <!-- <span class="x-right" style="line-height:40px">共有数据：<span class="layui-badge">2</span> 条</span> -->
-    <table class="layui-table">
+    <!--    <table class="layui-table">-->
+    <table class="my-table">
         <thead>
         <tr>
-            <th style="width: 70px">
+            <th style="width: 150px;">
                 监测模式
             </th>
-            <th style="width: 110px">
+            <th style="width: 200px">
                 记录时间
             </th>
             <th>
@@ -71,21 +114,19 @@
             <th>
                 报警时间
             </th>
-            <th style="width: 20px">
+            <th style="width: 90px">
                 图像
             </th>
         </tr>
         </thead>
         <tbody id="x-img">
         <tr v-for="(community,index) in communityList">
-            <td>{{community.scanMode}}</td>
-            <td>{{community.dTime}}</td>
-            <td>{{community.gasNames}}</td>
-            <td>{{community.firstDTime}}-{{community.lastDTime}}</td>
-            <td class="td-status">
-               <span :class="community.status == 0?'layui-btn layui-btn-normal':'layui-btn layui-btn-disabled'">
-                    查看
-                </span>
+            <td style="height: 20px;line-height: 20px">{{community.scanMode}}</td>
+            <td style="height: 20px;line-height: 20px">{{community.dTime}}</td>
+            <td style="height: 20px;line-height: 20px">{{community.gasNames}}</td>
+            <td style="height: 20px;line-height: 20px">{{community.firstDTime}}-{{community.lastDTime}}</td>
+            <td style="height: 20px;line-height: 20px">
+                <el-button size="mini" type="primary" icon="el-icon-search"></el-button>
             </td>
         </tr>
         </tbody>
@@ -96,7 +137,7 @@
             @current-change="handleCurrentChange"
             :page-size="searchMap.pageSize"
             layout="prev, pager, next,sizes"
-            :page-sizes="[6]"
+            :page-sizes="[20]"
             style="text-align: right;"
             :total="total">
     </el-pagination>
@@ -122,7 +163,7 @@
             checkedIDs: [],
             communityList: [],
             total: 10,
-            searchMap: {"startTime": "", "endTime": "", "scanMode": "", "machineUrl": "", "gasnames": "", "pageNum": 1, "pageSize": 6},
+            searchMap: {"startTime": "", "endTime": "", "scanMode": "", "machineUrl": "", "gasnames": "", "pageNum": 1, "pageSize": 20},
             selectDate: ['', ''],
             pickerOptions: {
                 shortcuts: [{
