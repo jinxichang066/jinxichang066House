@@ -13,8 +13,6 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" href="css/main.css" media="all">
     <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" media="all">
-    <link rel="stylesheet" href="css/base.css" media="all"> <!--初始化文件-->
-    <link rel="stylesheet" href="css/menu.css" media="all"> <!--主样式-->
     <!--导入ElementUI样式列表，css样式一般都在页面头部-->
     <link rel="stylesheet" href="css/index.css">
     <!--分页 pagination样式-->
@@ -87,32 +85,6 @@
 </div>
 
 <div class="x-body" style="padding: 0px;height: 600px;border-radius: 0px;">
-    <div id="menu">
-        <!--隐藏菜单-->
-        <div id="ensconce">
-            <h2>
-                <img src="images/show.png" alt="">
-                设备列表
-            </h2>
-        </div>
-
-        <!--显示菜单-->
-        <div id="open">
-            <div class="navH">
-                设备列表
-                <span><img class="obscure" src="images/obscure.png" alt=""></span>
-            </div>
-            <div class="navBox" id="machineListDiv">
-                <!--                <div class="navDiv">-->
-                <!--                    <p><input type="checkbox" name="machineCkBox" id="MA1001"/>1号设备</p>-->
-                <!--                </div>-->
-            </div>
-        </div>
-        <div id="open1" style="height: 5%;margin-bottom: 0px;">
-            <input type="button" class="confirmButton" value="播放选中设备" onclick="playMenu()"/>
-        </div>
-    </div>
-
     <div id="video_back" class="row">
     </div>
 </div>
@@ -130,7 +102,6 @@
 
 <div class="col-md-12"></div>
 
-<script src="js/adapter.js"></script> <!--rem适配js-->
 <script src="lib/layui/layui.js" charset="utf-8"></script>
 <!--Vue js脚本-->
 <script src="js/vue.js" charset="utf-8"></script>
@@ -169,103 +140,6 @@
         pageNum = 1;
         pageSize = size;
         generateCanvas(true);
-    }
-
-    //从侧边栏设备列表进入播放，传入选中的设备ids
-    function playMenu() {
-        let arr = getCheckBoxIds();
-        if (arr.length === 0 || arr.length > 9) {
-            console.log("选择的设备数量应在1-9之间");
-            return false;
-        }
-
-        generateCanvasFromMenu(arr);
-
-        cancelCheckedBox();
-    }
-
-    function generateCanvasFromMenu(arr) {
-        console.log("show " + arr.length + " canvas!");
-
-        axios.post(apiPath + "/machine/selectByIds", arr).then((res) => {
-            console.log("获取监测设备list:");
-            console.log(res.data.data);
-            let machineList = res.data.data;
-            if (machineList.length === 0) {
-                console.log("未获取到设备信息!");
-                return false;
-            }
-
-            let parent = document.getElementById("video_back");
-            parent.innerHTML = '';
-            for (let key in playerMap) {
-                let prePlayer = playerMap[key];
-                let preClient = clientMap[key];
-                preClient.close();
-                preClient = null;
-                prePlayer = null;
-            }
-            playerMap = {};
-            clientMap = {};
-
-            for (let i = 0; i < machineList.length; i++) {
-                let machine = machineList[i];
-                let machineId = machine.id;
-
-                let div = document.createElement("div");
-                div.id = machineId;
-                div.className = getCanvasDivStyle(machineList.length);
-                let player = new Player();
-                div.appendChild(player.canvas);
-                parent.appendChild(div);
-
-                let machineUrl = machine.machineUrl;
-                try {
-                    let websocketClient = new WebSocket(urlTemplate.replace("ip", machineUrl));
-                    playerMap[machineId] = player;
-                    clientMap[machineId] = websocketClient;
-                } catch (e) {
-                    console.log(e)
-                }
-            }
-
-            for (let key in playerMap) {
-                let canvasPlayer = playerMap[key];
-                let client = clientMap[key];
-                client.binaryType = 'arraybuffer';
-                client.onopen = function (evt) {
-                    // alert("open");
-                };
-                client.onclose = function (evt) {
-                    console.log("websocket connection closed!");
-                    client.close();
-                };
-                client.onerror = function (evt) {
-                    console.log("websocket connect error!");
-                };
-                client.onmessage = function (evt) {
-                    var b = evt.data;
-                    var tag_msg = b.split('$');
-                    if (tag_msg.length == 4 && tag_msg[1] == "WVideoX264VI") {
-                        var tag_1 = jQuery.parseJSON(tag_msg[3]);
-                        //var tag_2 = ;
-                        let decode = window.atob(tag_1['Msg']['VideoData']);
-                        var len = decode.length;
-                        var bytes_1 = new Uint8Array(len);
-                        for (var i = 0; i < len; i++) {
-                            bytes_1[i] = decode.charCodeAt(i);
-                        }
-                        canvasPlayer.decode(bytes_1);
-                    } else {
-                        if (b == "you are connected!") {
-                            console.log(b);
-                            var scrible_msg = 'create_subscriber$WVideoX264VI$G2021001${"Msg":{"TopicName":"WVideoX264VI","TopicDomain":"1001","TopicSource":"G2021001"},"TimeStamp":"20210220214742"}';
-                            client.send(scrible_msg);
-                        }
-                    }
-                };
-            }
-        });
     }
 
     function generateCanvas(initPaginationFlag) {
@@ -358,30 +232,6 @@
             }
         });
 
-    }
-
-    function getCheckBoxIds() {
-        let checkedArr = [];
-
-        let arr = document.getElementsByName("machineCkBox");
-        if (arr.length === 0) {
-            return checkedArr;
-        }
-
-        for (let i in arr) {
-            if (arr[i].checked) {
-                checkedArr.push(arr[i].id);
-            }
-        }
-
-        return checkedArr;
-    }
-
-    function cancelCheckedBox() {
-        let arr = document.getElementsByName("machineCkBox");
-        for (let i in arr) {
-            arr[i].checked = false;
-        }
     }
 
     function getCanvasDivStyle(pageSize) {
@@ -545,64 +395,6 @@
     function initMenu() {
         let id = getQueryVariable("id");
         console.log("id:"+id);
-
-        axios.post(apiPath + "/machine/searchAll").then((res) => {
-            let machineList = res.data.data;
-
-            if (machineList.length !== 0) {
-                let parent = document.getElementById("machineListDiv");
-                parent.innerHTML = '';
-
-                for (let i = 0; i < machineList.length; i++) {
-                    let machine = machineList[i];
-                    let machineId = machine.id;
-                    let machineName = machine.machineName;
-                    let state = machine.state;
-
-                    let div = document.createElement("div");
-                    div.className = "navDiv";
-
-                    let input = document.createElement("input");
-                    input.setAttribute("type", "checkbox");
-                    input.setAttribute("name", "machineCkBox");
-                    input.setAttribute("id", machineId);
-
-                    let value = machineName;
-                    if (state === "ONLINE") {
-                        value = value + "[" + "在线" + "]";
-                    } else {
-                        value = value + "[" + "离线" + "]";
-                    }
-                    let text = document.createTextNode(value);
-
-                    div.appendChild(input);
-                    div.appendChild(text);
-                    parent.appendChild(div);
-                }
-            }
-        });
-
-        // 隐藏菜单
-        var obscure = document.querySelector(".navH span");
-        var open = document.querySelector("#open");
-        var open1 = document.querySelector("#open1");
-        var ensconce = document.querySelector("#ensconce");
-        obscure.onclick = function () {
-            open.style.marginLeft = "-300px";
-            open1.style.marginLeft = "-300px";
-            setTimeout(function () {
-                ensconce.style.display = "block";
-            }, 350)
-        }
-        //显示菜单
-        var showC = document.querySelector("#ensconce h2");
-        showC.onclick = function () {
-            open.style.marginLeft = "0px";
-            open1.style.marginLeft = "0px";
-            setTimeout(function () {
-                ensconce.style.display = "none";
-            }, 100)
-        }
 
         playBtn(1);
     }
