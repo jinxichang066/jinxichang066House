@@ -70,7 +70,7 @@
                 设备备注
             </th>
             <th>
-                创建时间
+                启用时间
             </th>
             <th>
                 操作
@@ -91,7 +91,7 @@
                 </span>
             </td>
             <td>{{community.machineDesc}}</td>
-            <td>{{community.createTime}}</td>
+            <td>{{community.startTime}}</td>
             <td class="td-manage">
                 <a style="text-decoration:none" @click="community.status == 0?admin_stop(community.id):admin_start(community.id)" href="javascript:;" :title="community.status == 0?'停用':'启用'">
                     <i class="layui-icon" v-if="community.status == 0">&#xe601;</i>

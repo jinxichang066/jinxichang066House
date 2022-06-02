@@ -17,15 +17,15 @@
 </head>
 <body>
 <div id="app">
-    <div class="x-nav">
-            <span class="layui-breadcrumb">
-              <a><cite>首页</cite></a>
-              <a><cite>系统设置</cite></a>
-              <a><cite>{{title}}</cite></a>
-            </span>
-        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新"><i class="layui-icon"
-                                                                                                                                                                   style="line-height:30px">ဂ</i></a>
-    </div>
+<!--    <div class="x-nav">-->
+<!--            <span class="layui-breadcrumb">-->
+<!--              <a><cite>首页</cite></a>-->
+<!--              <a><cite>系统设置</cite></a>-->
+<!--              <a><cite>{{title}}</cite></a>-->
+<!--            </span>-->
+<!--        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新"><i class="layui-icon"-->
+<!--                                                                                                                                                                   style="line-height:30px">ဂ</i></a>-->
+<!--    </div>-->
     <div class="x-body">
         <el-form :model="community" :rules="rules" ref="communityFormRef" label-width="120px" class="demo-ruleForm">
             <el-form-item label="设备ID" prop="machineId">
@@ -39,6 +39,9 @@
             </el-form-item>
             <el-form-item label="设备备注" prop="machineDesc">
                 <el-input v-model="community.machineDesc" placeholder="请输入设备备注"></el-input>
+            </el-form-item>
+            <el-form-item label="启用日期" prop="machineStartTime">
+                <el-date-picker v-model="community.startTime" type="date" placeholder="请选择日期" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="save()" style="text-align: center">保存</el-button>

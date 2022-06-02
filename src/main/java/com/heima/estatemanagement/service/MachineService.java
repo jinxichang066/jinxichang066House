@@ -69,7 +69,7 @@ public class MachineService {
     }
 
     public Result add(Machine machine) {
-        if (validMachineUrl(machine.getMachineUrl())) {
+        if (!validMachineUrl(machine.getMachineUrl())) {
             return new Result(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
         }
 
@@ -105,8 +105,7 @@ public class MachineService {
 
     // 设备url判断是否ip地址格式
     private boolean validMachineUrl(String url) {
-        String regex = "^([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5]).([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5])." +
-                "([0-9]|[1-9][0-9]|1[0-9]{1,2}|2[0-4][0-9]|25[0-5])$";
+        String regex = "^((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})(\\.((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}$";
 
         return Pattern.matches(regex, url);
     }
@@ -122,7 +121,7 @@ public class MachineService {
 
     @Scheduled(cron = "0 0/3 * * * ?")
     public void checkMachineState() {
-        log.info("更新设备状态定时任务开启");
+        log.info("更新设备状态定时任务开始");
         List<Machine> machineList = loadAllMachine();
         if (CollectionUtil.isNotEmpty(machineList)) {
             for (Machine machine : machineList) {
@@ -137,7 +136,7 @@ public class MachineService {
                 }
             }
         }
-        log.info("更新设备状态定时任务关闭");
+        log.info("更新设备状态定时任务结束");
     }
 
 }

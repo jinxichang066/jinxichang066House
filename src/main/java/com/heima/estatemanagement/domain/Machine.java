@@ -29,6 +29,9 @@ public class Machine {
 
     private String machineDesc;
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date startTime;
+
     @TableField(value = "createBy", fill = FieldFill.INSERT)
     private String createBy;
 
