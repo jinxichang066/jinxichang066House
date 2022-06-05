@@ -139,24 +139,41 @@
     //从Pagination进入播放，pageNum根据传入参数确定，pageSize不变
     function playPagination(num) {
         pageNum = num;
-        generateCanvas(false);
+        generateCanvas(false, "");
     }
 
     //从Btn进入播放，pageNum置为1，pageSize根据传入参数确定1/4/9宫格
     function playBtn(size) {
         pageNum = 1;
         pageSize = size;
-        generateCanvas(true);
+        generateCanvas(true, "");
     }
 
-    function generateCanvas(initPaginationFlag) {
+    //从菜单进入播放，pageNum默认为1，pageSize默认为1，但是会传入设备id
+    function playMenu(id) {
+        generateCanvas(true, id);
+    }
+
+    function generateCanvas(initPaginationFlag, id) {
         console.log("show " + pageSize + " canvas!");
 
-        let jsonObject = {
-            "pageNum": pageNum,
-            "pageSize": pageSize
-        };
-        axios.post(apiPath + "/machine/search", jsonObject).then((res) => {
+        let path = "";
+        let jsonObject = {};
+
+        if (id === "") {
+            path = apiPath + "/machine/search";
+            jsonObject = {
+                "pageNum": pageNum,
+                "pageSize": pageSize
+            };
+        } else {
+            path = apiPath + "/machine/searchOneList"
+            jsonObject = {
+                "id": id
+            };
+        }
+
+        axios.post(path, jsonObject).then((res) => {
             console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;
@@ -407,7 +424,7 @@
         let id = getQueryVariable("id");
         console.log("id:" + id);
 
-        playBtn(1);
+        playMenu(id);
     }
 
     function getQueryVariable(variable) {

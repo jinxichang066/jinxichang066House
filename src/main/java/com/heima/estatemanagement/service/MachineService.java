@@ -18,8 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -41,6 +40,22 @@ public class MachineService {
 
         Page<Machine> page = new Page<>(pageNum, pageSize);
         return machineMapper.selectPage(page, Wrappers.lambdaQuery(Machine.class).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
+    }
+
+    public IPage<Machine> searchOneList(JSONObject jsonObject) {
+        IPage<Machine> list = new Page<>();
+
+        Integer total = machineMapper.selectCount(Wrappers.lambdaQuery(Machine.class));
+        list.setTotal(total);
+
+        Machine machine = machineMapper.selectById(jsonObject.getString("id"));
+        if (Objects.isNull(machine)) {
+            list.setRecords(new ArrayList<>());
+        } else {
+            list.setRecords(Collections.singletonList(machine));
+        }
+
+        return list;
     }
 
     public IPage<Machine> searchCondition(MachineSearchDTO machineSearchDTO) {

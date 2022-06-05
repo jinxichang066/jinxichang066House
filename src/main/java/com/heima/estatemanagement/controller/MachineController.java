@@ -39,6 +39,13 @@ public class MachineController {
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }
 
+
+    @RequestMapping("/searchOneList")
+    public PageResult searchOneList(@RequestBody JSONObject jsonObject) {
+        IPage<Machine> page = machineService.searchOneList(jsonObject);
+        return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
+    }
+
     @RequestMapping("/searchCondition")
     public PageResult searchCondition(@RequestBody MachineSearchDTO machineSearchDTO) {
         IPage<Machine> page = machineService.searchCondition(machineSearchDTO);
