@@ -69,6 +69,13 @@
         margin-top: 15px;
     }
 
+    .divMachineName {
+        position: absolute;
+        margin-left: 10px;
+        margin-top: 5px;
+        color: white;
+    }
+
 </style>
 <!--<blockquote class="layui-elem-quote" style="margin-top: 20px;margin-left: 15px">-->
 <!--    欢迎使用气体遥测监测预警系统！-->
@@ -179,6 +186,10 @@
                 let div = document.createElement("div");
                 div.id = machineId;
                 div.className = getCanvasDivStyle(pageSize);
+                let divMachineName = document.createElement("div");
+                divMachineName.innerText = machine.machineName;
+                divMachineName.className = "divMachineName";
+                div.appendChild(divMachineName);
                 let player = new Player();
                 div.appendChild(player.canvas);
                 parent.appendChild(div);
@@ -394,18 +405,19 @@
 
     function initMenu() {
         let id = getQueryVariable("id");
-        console.log("id:"+id);
+        console.log("id:" + id);
 
         playBtn(1);
     }
 
-    function getQueryVariable(variable)
-    {
+    function getQueryVariable(variable) {
         let query = window.location.search.substring(1);
         let vars = query.split("&");
-        for (let i=0;i<vars.length;i++) {
+        for (let i = 0; i < vars.length; i++) {
             let pair = vars[i].split("=");
-            if(pair[0] == variable){return pair[1];}
+            if (pair[0] == variable) {
+                return pair[1];
+            }
         }
         return false;
     }
