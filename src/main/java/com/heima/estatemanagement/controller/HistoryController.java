@@ -3,14 +3,12 @@ package com.heima.estatemanagement.controller;
 import com.heima.estatemanagement.common.PageResult;
 import com.heima.estatemanagement.common.Result;
 import com.heima.estatemanagement.dto.HistorySearchDTO;
-import com.heima.estatemanagement.dto.ImageSearchDTO;
 import com.heima.estatemanagement.service.GasSpecService;
 import com.heima.estatemanagement.service.HistoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Jin Xichang
@@ -32,8 +30,8 @@ public class HistoryController {
     }
 
     @RequestMapping("/getImage")
-    public void getImage(@RequestBody ImageSearchDTO imageSearchDTO) {
-        historyService.getImage(imageSearchDTO);
+    public void getImage(@RequestParam String machineUrl, @RequestParam String warningInfoId, @RequestParam String mode, HttpServletResponse response) {
+        historyService.getImage(machineUrl, warningInfoId, mode, response);
 
     }
 
