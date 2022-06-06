@@ -84,10 +84,10 @@
 <div id="radioDiv">
     <label style="margin-left: 15px;margin-top: 10px">视频:</label>
     <label>
-        <input type="radio" name="value" value="VI" checked='checked'>可见光
+        <input type="radio" name="videoType" value="VI" checked='checked'>可见光
     </label>
     <label>
-        <input type="radio" name="value" value="IR">红外
+        <input type="radio" name="videoType" value="IR">红外
     </label>
 </div>
 
@@ -126,6 +126,23 @@
 <script type="text/javascript" src="url.js"></script>
 
 <script type="text/javascript">
+    var videoType = "VI";
+
+    // radio添加事件监听，切换视频模式时执行
+    var videoTypeArr = document.getElementsByName("videoType");
+    videoTypeArr[0].onclick = function () {
+        videoType = videoTypeArr[0].value;
+        generateCanvas(false, id);
+    };
+    videoTypeArr[1].onclick = function () {
+        videoType = videoTypeArr[1].value;
+        generateCanvas(false, id);
+    };
+
+    // 从导航菜单进入播放页时传入设备的id。用于判定后续切换视频模式时是否根据id加载
+    // 从Pagination进入播放，从Btn进入播放时，会清空id
+    var id = "";
+
     //设备url只维护单纯的ip地址，ws前缀和ws端口号用默认的
     var urlTemplate = "ws://ip:7250/";
 
@@ -136,14 +153,16 @@
     var playerMap = {};
     var clientMap = {};
 
-    //从Pagination进入播放，pageNum根据传入参数确定，pageSize不变
+    //从Pagination进入播放，pageNum根据传入参数确定，pageSize不变，将id清空
     function playPagination(num) {
+        id = "";
         pageNum = num;
         generateCanvas(false, "");
     }
 
-    //从Btn进入播放，pageNum置为1，pageSize根据传入参数确定1/4/9宫格
+    //从Btn进入播放，pageNum置为1，pageSize根据传入参数确定1/4/9宫格，将id清空
     function playBtn(size) {
+        id = "";
         pageNum = 1;
         pageSize = size;
         generateCanvas(true, "");
@@ -252,7 +271,8 @@
                     } else {
                         if (b == "you are connected!") {
                             console.log(b);
-                            var scrible_msg = 'create_subscriber$WVideoX264VI$G2021001${"Msg":{"TopicName":"WVideoX264VI","TopicDomain":"1001","TopicSource":"G2021001"},"TimeStamp":"20210220214742"}';
+                            var scrible_msg =
+                                'create_subscriber$WVideoX264' + videoType + '$G2021001${"Msg":{"TopicName":"WVideoX264' + videoType + '","TopicDomain":"1001","TopicSource":"G2021001"},"TimeStamp":"20210220214742"}';
                             client.send(scrible_msg);
                         }
                     }
@@ -421,7 +441,7 @@
     }
 
     function initMenu() {
-        let id = getQueryVariable("id");
+        id = getQueryVariable("id");
         console.log("id:" + id);
 
         playMenu(id);
