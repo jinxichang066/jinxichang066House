@@ -1,5 +1,6 @@
 package com.heima.estatemanagement.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.servlet.ServletUtil;
@@ -7,6 +8,7 @@ import com.heima.estatemanagement.common.MessageConstant;
 import com.heima.estatemanagement.common.PageResult;
 import com.heima.estatemanagement.common.StatusCode;
 import com.heima.estatemanagement.domain.History;
+import com.heima.estatemanagement.domain.PointInfo;
 import com.heima.estatemanagement.dto.HistorySearchDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 /**
  * @author Jin Xichang
@@ -155,7 +157,6 @@ public class HistoryService {
         return conn;
     }
 
-
     private void assembleCondition(HistorySearchDTO historySearchDTO, StringBuilder sql) {
         if (historySearchDTO.getStartTime() != null) {
             sql.append("and dtime >= ").append("'").append(DateUtil.format(historySearchDTO.getStartTime(), "yyyy-MM-dd HH:mm:ss")).append("' ");
@@ -180,18 +181,24 @@ public class HistoryService {
             conn = getConnection(machineUrl);
 
             StringBuilder sql = new StringBuilder();
-            if (mode.equals(IR)) {
-                sql.append("SELECT imageir from warninginfor where id=").append(warningInfoId);
-            } else {
-                sql.append("SELECT imagevi from warninginfor where id=").append(warningInfoId);
-            }
+            sql.append("SELECT imagevi, imageir, gasnum, gasindexs, gascolors from warninginfor where id=").append(warningInfoId);
 
             // 执行查询
-            log.info("实例化Statement对象...");
+            log.info("[{}]实例化Statement对象...", mode);
             stmt = conn.createStatement();
-            log.info("执行sql: {}", sql.toString());
+            log.info("[{}]执行sql: {}", mode, sql.toString());
             ResultSet rs = stmt.executeQuery(sql.toString());
             if (rs.next()) {
+                //从warningInfo中得到气体与对应的颜色map
+                Map<String, String> indexColorMap = new HashMap<>();
+                String pointInfoGasIndex = rs.getString("gasindexs");
+                String pointInfoGasColors = rs.getString("gascolors");
+                List<String> pointInfoGasIndexList = Arrays.asList(pointInfoGasIndex.split("\\|"));
+                List<String> pointInfoGasColorsList = Arrays.asList(pointInfoGasColors.split("\\|"));
+                for (int i = 0; i < pointInfoGasIndexList.size(); i++) {
+                    indexColorMap.put(pointInfoGasIndexList.get(i), pointInfoGasColorsList.get(i));
+                }
+
                 // 获取图片的字节数组
                 Blob blob;
                 if (mode.equals(IR)) {
@@ -203,19 +210,61 @@ public class HistoryService {
 
                 // 使用ImageIO处理图像
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
-                Graphics g = image.getGraphics();
-                //g.setColor(new Color());
-                g.setColor(Color.YELLOW);//画笔颜⾊
-                g.drawRect(100, 100, 100, 100);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                g.dispose();
+
+                String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames from pointinfor where waringid = " + warningInfoId;
+                ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
+                List<PointInfo> pointInfoList = new ArrayList<>();
+                while (pointInfoRs.next()) {
+                    PointInfo pointInfo = new PointInfo();
+                    pointInfo.setId(pointInfoRs.getInt("id"));
+                    pointInfo.setWarningId(pointInfoRs.getInt("waringid"));
+                    pointInfo.setPointx_0(pointInfoRs.getInt("pointx_0"));
+                    pointInfo.setPointy_0(pointInfoRs.getInt("pointy_0"));
+                    pointInfo.setFovx_0(pointInfoRs.getInt("fovx_0"));
+                    pointInfo.setFovy_0(pointInfoRs.getInt("fovy_0"));
+                    pointInfo.setPointx_1(pointInfoRs.getInt("pointx_1"));
+                    pointInfo.setPointy_1(pointInfoRs.getInt("pointy_1"));
+                    pointInfo.setFovx_1(pointInfoRs.getInt("fovx_1"));
+                    pointInfo.setFovy_1(pointInfoRs.getInt("fovy_1"));
+                    pointInfo.setGasindexs(pointInfoRs.getString("gasindexs"));
+                    pointInfo.setGasnames(pointInfoRs.getString("gasnames"));
+
+                    pointInfoList.add(pointInfo);
+                }
+                if (CollectionUtil.isNotEmpty(pointInfoList)) {
+                    // 从众多pointInfo中[随机]取出一条
+                    PointInfo pointInfo = pointInfoList.get(new Random().nextInt(pointInfoList.size()));
+                    // 从这个pointInfo中的众多气体中[随机]选择一个,因为不选择一个的话，多个气体的矩形框会绘制到一起
+                    // todo 这个最终的逻辑需要跟客户确认
+                    List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
+                    String index = indexList.get(new Random().nextInt(indexList.size()));
+                    // 从上边的map中获取颜色
+                    String color = indexColorMap.get(index);
+                    log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
+
+                    // 使用Graphics绘制矩形
+                    Graphics g = image.getGraphics();
+                    g.setColor(new Color(Integer.parseInt(color)));//画笔颜⾊
+                    if (mode.equals(VI)) {
+                        g.drawRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                    } else {
+                        g.drawRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                    }
+                    g.dispose();
+                }
+
                 // 写到输出流
                 ByteArrayOutputStream out = new ByteArrayOutputStream();//
                 ImageIO.write(image, "jpeg", out);
 
                 // 写回response
                 ServletUtil.write(response, new ByteArrayInputStream(out.toByteArray()));
+
+                // 关闭pointInfo的查询
+                pointInfoRs.close();
             }
             // 完成后关闭
+            // 关闭warningInfo的查询
             rs.close();
             stmt.close();
             conn.close();
@@ -241,7 +290,7 @@ public class HistoryService {
                 se.printStackTrace();
             }
         }
-        log.info("查询结束");
+        log.info("[{}]查询结束", mode);
 
     }
 
