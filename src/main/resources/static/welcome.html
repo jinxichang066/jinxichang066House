@@ -46,27 +46,32 @@
     }
 
     .player1 {
-        width: 960px;
-        height: 540px;
-        float: left;
-        margin-left: 150px;
-        margin-top: 30px;
+        width: 80%;
+        /*width: 960px;*/
+        /*height: 540px;*/
+        /*float: left;*/
+        margin-left: 8%;
+        /*margin-top: 30px;*/
     }
 
     .player4 {
-        width: 480px;
-        height: 270px;
-        float: left;
-        margin-left: 105px;
-        margin-top: 20px;
+        width: 40%;
+        /*width: 480px;*/
+        /* height: 270px; */
+        /* float: left; */
+        margin-left: 5%;
+        /* margin-top: 20px;*/
+        display: inline-block;
     }
 
     .player9 {
-        width: 320px;
-        height: 180px;
-        float: left;
-        margin-left: 80px;
-        margin-top: 15px;
+        width: 25%;
+        /*width: 320px;*/
+        /* height: 180px; */
+        /* float: left; */
+        margin-left: 6%;
+        /* margin-top: 20px;*/
+        display: inline-block;
     }
 
     .divMachineName {
@@ -91,8 +96,8 @@
     </label>
 </div>
 
-<div class="x-body" style="padding: 0px;height: 600px;border-radius: 0px;">
-    <div id="video_back" class="row">
+<div class="x-body" style="padding: 0px;border-radius: 0px;">
+    <div id="video_back" style="padding-top: 1%;">
     </div>
 </div>
 <div class="x-body" style="height: 200px;border-radius: 0px">
@@ -219,17 +224,34 @@
                 let machine = machineList[i];
                 let machineId = machine.id;
 
+                // 包含播放器的div id为设备id class根据pageSize决定
                 let div = document.createElement("div");
                 div.id = machineId;
                 div.className = getCanvasDivStyle(pageSize);
+
+                // 设备名称标签
                 let divMachineName = document.createElement("div");
                 divMachineName.innerText = machine.machineName;
                 divMachineName.className = "divMachineName";
                 div.appendChild(divMachineName);
+
+                // canvas播放器
                 let player = new Player();
-                div.appendChild(player.canvas);
+                let canvas = player.canvas;
+                if(videoType === "VI"){
+                    canvas.width = 1280;
+                    canvas.height = 720;
+                }
+                if(videoType === "IR"){
+                    canvas.width = 640;
+                    canvas.height = 512;
+                }
+                div.appendChild(canvas);
+
+                // 将包含播放器的div加入到父div中
                 parent.appendChild(div);
 
+                // 维护播放器对象、websocket连接对象
                 let machineUrl = machine.machineUrl;
                 try {
                     let websocketClient = new WebSocket(urlTemplate.replace("ip", machineUrl));
