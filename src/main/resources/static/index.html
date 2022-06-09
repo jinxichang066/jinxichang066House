@@ -98,6 +98,16 @@
 <script src="js/jquery.min.js"></script>
 
 <script>
+    function getMachineState(machineState) {
+        if (machineState === "ONLINE") {
+            return "在线";
+        } else {
+            return "离线";
+        }
+    }
+</script>
+
+<script>
 
     //初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
     $.ajaxSettings.async = false;
@@ -116,9 +126,11 @@
                 for (let i = 0; i < machineList.length; i++) {
                     let machine = machineList[i];
                     if (i === 0) {
-                        dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
+                        dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
+                            '</cite> </a></dd>';
                     } else {
-                        dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>';
+                        dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
+                            ' </cite> </a></dd>';
                     }
                 }
                 dlMachineList.innerHTML = dd;
