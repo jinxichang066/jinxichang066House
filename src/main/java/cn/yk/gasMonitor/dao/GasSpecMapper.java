@@ -5,8 +5,6 @@ import cn.yk.gasMonitor.domain.GasSpec;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 描述
- *
  * @author Jin Xichang
  * @date 2022/5/29
  **/

@@ -8,8 +8,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * 描述
- *
  * @author Jin Xichang
  * @date 2022/5/13
  **/

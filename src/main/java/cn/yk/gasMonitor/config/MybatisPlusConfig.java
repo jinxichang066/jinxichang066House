@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 描述
+ * MB配置
  *
  * @author Jin Xichang
  * @date 2022/4/21

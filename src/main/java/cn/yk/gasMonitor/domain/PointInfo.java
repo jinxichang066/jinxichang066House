@@ -3,8 +3,6 @@ package cn.yk.gasMonitor.domain;
 import lombok.Data;
 
 /**
- * 点位信息
- *
  * @author Jin Xichang
  * @date 2022/6/7
  **/

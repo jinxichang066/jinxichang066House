@@ -1,9 +1,11 @@
 package cn.yk.gasMonitor.common;
 
 /**
- * @Auth: zhuan
- * @Desc: 标准返回码code
- */
+ * 返回结果Code码
+ *
+ * @author Jin Xichang
+ * @date 2022/4/21
+ **/
 public class StatusCode {
 
     public static final int OK=2000;//成功

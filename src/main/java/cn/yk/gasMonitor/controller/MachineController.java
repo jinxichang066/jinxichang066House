@@ -19,8 +19,6 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 描述
- *
  * @author Jin Xichang
  * @date 2022/4/20
  **/

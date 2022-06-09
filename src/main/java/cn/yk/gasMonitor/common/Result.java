@@ -3,9 +3,11 @@ package cn.yk.gasMonitor.common;
 import java.io.Serializable;
 
 /**
- * @Auth: zhuan
- * @Desc: 不分页-标准返回结果
- */
+ * 返回结果(不分页)
+ *
+ * @author Jin Xichang
+ * @date 2022/4/21
+ **/
 public class Result implements Serializable {
 
     private static final long serialVersionUID = -2435089504958177374L;

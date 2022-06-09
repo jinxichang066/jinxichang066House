@@ -22,8 +22,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * 描述
- *
  * @author Jin Xichang
  * @date 2022/4/20
  **/

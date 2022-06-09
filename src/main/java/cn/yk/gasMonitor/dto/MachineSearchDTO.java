@@ -6,7 +6,6 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- *
  * @author Jin Xichang
  * @date 2022/5/12
  **/

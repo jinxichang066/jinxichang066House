@@ -1,9 +1,12 @@
 package cn.yk.gasMonitor.common;
 
+
 /**
- * @Auth: zhuan
- * @Desc: 返回结果消息提示常量类
- */
+ * 消息常量
+ *
+ * @author Jin Xichang
+ * @date 2022/4/21
+ **/
 public class MessageConstant {
     //---------------------------小区（Community）操作消息提示信息---------------------------------------
     public static final String COMMUNITY_SEARCH_SUCCESS = "查询小区列表信息成功！";
