@@ -8,12 +8,12 @@
         <version>2.1.14.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.heima</groupId>
-    <artifactId>estate-management</artifactId>
+    <groupId>cn.yk</groupId>
+    <artifactId>gasMonitor</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>gasMonitor</name>
-    <description>黑马智慧物业管理系统</description>
+    <description>气体遥测监测预警平台</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -84,6 +84,14 @@
             <artifactId>hutool-all</artifactId>
             <version>5.4.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.fasterxml/classmate -->
+        <dependency>
+            <groupId>com.fasterxml</groupId>
+            <artifactId>classmate</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+
 
         <!--junit测试-->
         <dependency>

@@ -37,7 +37,7 @@ logging:
   config: classpath:logback-spring.xml
 
 mybatis-plus:
-  mapper-locations: classpath*:com/heima/estatemanagement/**/*.xml
+  mapper-locations: classpath*:cn/yk/gasMonitor/**/*.xml
   global-config:
     db-config:
       id-type: auto
@@ -47,4 +47,4 @@ mybatis-plus:
     jdbc-type-for-null: null
     #打开sql打印 默认是关闭的
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-aliases-package: com.heima.**.domain
+  type-aliases-package: cn.yk.**.domain
