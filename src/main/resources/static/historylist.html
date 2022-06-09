@@ -93,6 +93,9 @@
                 v-model="searchMap.gasnames"
                 :fetch-suggestions="querySearchAsync"
                 placeholder="请输入气体名称"
+                clearable
+                :debounce="0"
+                :trigger-on-focus="true"
                 @select="handleSelect">
         </el-autocomplete>
         <el-button type="primary" plain @click="searchMap.pageNum=1;search();">搜索</el-button>
