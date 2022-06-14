@@ -71,7 +71,7 @@
 
     <div>
         <span class="demonstration">设备</span>
-        <el-select v-model="searchMap.machineUrl" placeholder="请选择">
+        <el-select v-model="searchMap.machineUrl" placeholder="请选择" style="width: 150px;">
             <el-option v-for="item in machineOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
         <span class="demonstration">时间</span>
@@ -85,7 +85,7 @@
                 :picker-options="pickerOptions">
         </el-date-picker>
         <span class="demonstration">监测模式</span>
-        <el-select v-model="searchMap.scanMode" placeholder="请选择" style="width: 150px">
+        <el-select v-model="searchMap.scanMode" placeholder="请选择" style="width: 120px">
             <el-option v-for="item in scanModeOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
         <span class="demonstration">气体</span>
@@ -96,7 +96,8 @@
                 clearable
                 :debounce="0"
                 :trigger-on-focus="true"
-                @select="handleSelect">
+                @select="handleSelect"
+                style="width: 180px;">
         </el-autocomplete>
         <el-button type="primary" plain @click="searchMap.pageNum=1;search();">搜索</el-button>
     </div>
