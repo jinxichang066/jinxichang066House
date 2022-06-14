@@ -108,6 +108,20 @@
 </script>
 
 <script>
+    let logged = 0; //未登录
+    let query = window.location.search.substring(1);
+    let vars = query.split("&");
+    for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split("=");
+        if (pair[0] === "logged") {
+            logged = 1;
+        }
+    }
+
+    if(logged === 0){
+        window.location.href = "login.html";
+    }
+
 
     //初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
     $.ajaxSettings.async = false;
