@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <!--导入ElementUI样式列表，css样式一般都在页面头部-->
     <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/imageBox.css">
 
     <style>
         .my-table {
@@ -44,6 +45,7 @@
             background-color: #f1f1f1;
         }
 
+        /*查看图片按钮的格式*/
         .el-button--mini, .el-button--mini.is-round {
             padding: 1px 8px;
         }
@@ -60,14 +62,6 @@
                                                                                                                                                                style="line-height:30px">ဂ</i></a>
 </div>
 <div class="x-body" id="app">
-
-    <!--顶层图片-->
-    <div id="pictures" style="position: fixed; text-align: center; width: 100%; height: 100%; top: 0; z-index: 9999; display: none;">
-        <div style="padding-top: 8%">
-            <a id="a_vi" href="javascript:$('#pictures').fadeOut();"><img id="imageVI" src="" width="50%" alt="可见光图片不存在"/></a>
-            <a id="a_ir" href="javascript:$('#pictures').fadeOut();"><img id="imageIR" src="" width="35%" alt="红外图片不存在"/></a>
-        </div>
-    </div>
 
     <div>
         <span class="demonstration">设备</span>
@@ -147,6 +141,15 @@
     </el-pagination>
 </div>
 
+<!-- 图片弹窗 -->
+<div id="imageDiv" class="modal">
+    <!-- 关闭按钮 -->
+    <span id="closeBtn" class="close" onclick="document.getElementById('imageDiv').style.display='none'">&times;</span>
+    <!-- 弹窗内容 -->
+    <img class="modal-content" style="max-width: 960px" id="img01" onerror="document.getElementById('img01').style.display='none'">
+    <img class="modal-content" style="max-width: 640px" id="img02" onerror="document.getElementById('img02').style.display='none'">
+</div>
+
 
 <script src="lib/layui/layui.js" charset="utf-8"></script>
 <!--js脚本一般是放在页面尾部-->
@@ -222,21 +225,30 @@
         },
         methods: {
             getImage(warningInfoId, viWidth, viHeight, irWidth, irHeight) {
+                // 获取修正后的设备url
                 let correctMachineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
-                let imageVI = document.getElementById("imageVI");
-                imageVI.src = apiPath + "/history/getImage?machineUrl=" + correctMachineUrl + "&warningInfoId=" + warningInfoId + "&mode=" + "VI";
-                let imageIR = document.getElementById("imageIR");
-                imageIR.src = apiPath + "/history/getImage?machineUrl=" + correctMachineUrl + "&warningInfoId=" + warningInfoId + "&mode=" + "IR";
+                // 获取图片弹窗
+                let modal = document.getElementById('imageDiv');
 
-                $('#pictures').fadeIn();
+                let modalImg01 = document.getElementById("img01");
+                let modalIma02 = document.getElementById("img02");
 
-                // var img = document.createElement('img');
-                // img.src = apiPath + "/history/getVIImage?machineUrl=" + machineUrl + "&warningInfoId=" + warningInfoId;
-                // img.alt = "图片不存在，请检查后台数据完整性";
-                // img.width = viWidth;
-                // img.height = viHeight;
-                // document.body.appendChild(img);
+                modal.style.display = "block";
+                modalImg01.style.display = "block";
+                modalIma02.style.display = "block";
+                modalImg01.src = apiPath + "/history/getImage?machineUrl=" + correctMachineUrl + "&warningInfoId=" + warningInfoId + "&mode=" + "VI";
+                modalIma02.src = apiPath + "/history/getImage?machineUrl=" + correctMachineUrl + "&warningInfoId=" + warningInfoId + "&mode=" + "IR";
+
+                // 获取 <span> 元素，设置关闭按钮
+                let span = document.getElementById("closeBtn");
+
+                // 当点击 (x), 关闭弹窗
+                span.onclick = function () {
+                    modal.style.display = "none";
+                    modalImg01.style.display = "none";
+                    modalIma02.style.display = "none";
+                }
             },
 
             //分页条件查询小区列表
@@ -511,7 +523,6 @@
                 //初始页面获取历史信息
                 this.search();
             });
-
         }
     });
 
