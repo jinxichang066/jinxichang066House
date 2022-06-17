@@ -118,8 +118,9 @@
         }
     }
 
-    if(logged === 0){
-        window.location.href = "login.html";
+    if (logged === 0) {
+        location.href = "login.html";
+        console.log("尚未登录，请先登录");
     }
 
 
@@ -183,25 +184,28 @@
      */
     function logout() {
 
-        $.ajax({
-            type: "post",
-            url: "xxxxx",
-            data: {e: 1},
-            dataType: "json",
-            success: function (data) {
-                if (data.status == 1) {
-                    layer.msg(data.info, {icon: 1, time: 1000});
-                    setTimeout("window.location.href='xxxx'", 2000);
-                    return false;
-                    return false;
-                } else {
-                    layer.msg(data.info, {icon: 5, time: 2000});
-                    return false;
-                }
-            }
+        // $.ajax({
+        //     type: "post",
+        //     url: "xxxxx",
+        //     data: {e: 1},
+        //     dataType: "json",
+        //     success: function (data) {
+        //         if (data.status == 1) {
+        //             layer.msg(data.info, {icon: 1, time: 1000});
+        //             setTimeout("window.location.href='xxxx'", 2000);
+        //             return false;
+        //             return false;
+        //         } else {
+        //             layer.msg(data.info, {icon: 5, time: 2000});
+        //             return false;
+        //         }
+        //     }
+        //
+        // })
+        // return false;
 
-        })
-        return false;
+        location.href = "login.html";
+
     }
 
     function one_set(title, url, w, h) {
