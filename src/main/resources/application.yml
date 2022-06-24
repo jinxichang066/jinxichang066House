@@ -6,8 +6,8 @@ server:
 spring:
   datasource: #连接数据库配置
     druid:
-      #      url: jdbc:mysql://172.16.18.71:3309/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
-      url: jdbc:mysql://192.168.1.4:3306/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      url: jdbc:mysql://172.16.18.71:3309/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
+      #      url: jdbc:mysql://192.168.1.4:3306/gasMonitor?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false
       username: root
       password: 123456
       initial-size: 5
