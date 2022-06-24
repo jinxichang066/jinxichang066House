@@ -1,153 +1,150 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>
-        监控首页
-    </title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
-    <link rel="stylesheet" href="css/main.css" media="all">
-    <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.css" media="all">
-    <!--导入ElementUI样式列表，css样式一般都在页面头部-->
-    <link rel="stylesheet" href="css/index.css">
-    <!--分页 pagination样式-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beid - Responsive HTML5 Template</title>
+
+    <!-- CSS -->
+    <link href="css/fonts/fontawesome/all.min.css" rel="stylesheet">
+    <link href="css/fonts/beid.css" rel="stylesheet">
+
+    <link href="css/main.css" rel="stylesheet">
+<!--    <link href="assets/css/styles.css" rel="stylesheet">-->
+
+    <!-- JQVMAP -->
+    <link href="plugins/jqvmap/jqvmap.min.css" rel="stylesheet">
+
+    <!-- dateRangePicker -->
+    <link href="plugins/daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="icon" href="img/favicon.png">
+
+    <!-- Fonts -->
+    <link href="fonts/inter/inter.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <link rel="stylesheet" href="css/pagination.css">
+
+    <!--[if lt IE 9]>
+    <script src="http://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script crossorigin="anonymous" src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.js"></script>
+
+    <script src="js/logout.js"></script>
+    <script src="js/time.js"></script>
+    <script src="js/welcome.js"></script>
+    <script src="url.js"></script>
+    <!-- import element-ui CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import layui CSS -->
+    <link rel="stylesheet" href="plugins/layui/css/layui.css">
+    <!-- 查看图片 -->
+    <link rel="stylesheet" href="css/imageBox.css">
 </head>
-<body onload="initMenu();">
-<style type="text/css">
-    legend {
-        display: block;
-        width: 100px;
-        border-bottom: 0px;
-        font-family: "Microsoft YaHei", "Helvetica Neue";
-    }
 
-    legend a {
-        color: #666;
-    }
+<body class="body" background= "img/bg1.png">
 
-    legend a:hover {
-        text-decoration: none;
-    }
+<div class="main-container" style="">
+    <div class="overflow-hidden" style="">
+        <div id="card" class="page-content-fl">
+            <div class="row flex-wrap align-items-center px-6 py-5" style="border-bottom: 1px solid rgba(42, 242, 112, 0.2);">
+                <div class="col">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2">
+                            <label class="mb-0">可见光</label>
+                        </div>
+                        <div class="custom-switch custom-switch-outline">
+                            <input type="checkbox" class="custom-switch-input" id="switchOutline-fie" onclick="changeVideoType()">
+                            <label class="custom-switch-label" for="switchOutline-fie"></label>
+                        </div>
+                        <div class="ml-2">
+                            <label class="mb-0">红外</label>
+                        </div>
+                    </div>
+                </div>
 
-    .layui-table {
-        font-family: "Microsoft YaHei", "Helvetica Neue";
-    }
+                <div id="pagination-box">
+                    <ul id="pagination-ul" style="margin-bottom: -0.18rem">
+                    </ul>
+                </div>
+                <div class="col-12 col-lg-auto">
+                    <a class="el-icon-s-platform" onclick="playBtn(1)" style="font-size: 25px; color:white;cursor:pointer" title="1个画面"></a>
+                    <a class="el-icon-menu" onclick="playBtn(4)" style="font-size: 25px; color:white;cursor:pointer" title="4个画面"></a>
+                    <a class="el-icon-s-grid" onclick="playBtn(9)" style="font-size: 25px; color:white;cursor:pointer" title="9个画面"></a>
+                </div>
+            </div>
 
-    canvas {
-        width: 100%;
-        height: 100%;
-        border-radius: 4px;
-    }
+            <div class="container-fluid p-0">
+                <div class="row panel-top-line">
+                    <div class="col">
+                        <div class="py-7">
+                            <div>
+                                <div id="video_back" class="panel-row row no-gutters justify-content-center">
+                                    <!--                                        <div class="panel-col col-md-4" style="border: 1px solid rgba(42, 242, 112, 0.2);">-->
+                                    <!--                                            <div id="516b98016fb0faf142e890e6b63db900" class="card" style="border-radius: 0px;">-->
 
-    .player1 {
-        width: 80%;
-        /*width: 960px;*/
-        /*height: 540px;*/
-        /*float: left;*/
-        margin-left: 8%;
-        /*margin-top: 30px;*/
-    }
+                                    <!--                                            </div>-->
+                                    <!--                                        </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    .player4 {
-        width: 40%;
-        /*width: 480px;*/
-        /* height: 270px; */
-        /* float: left; */
-        margin-left: 5%;
-        /* margin-top: 20px;*/
-        display: inline-block;
-    }
+        </div>
 
-    .player9 {
-        width: 25%;
-        /*width: 320px;*/
-        /* height: 180px; */
-        /* float: left; */
-        margin-left: 6%;
-        /* margin-top: 20px;*/
-        display: inline-block;
-    }
-
-    .divMachineName {
-        position: absolute;
-        margin-left: 10px;
-        margin-top: 5px;
-        color: white;
-    }
-
-</style>
-<!--<blockquote class="layui-elem-quote" style="margin-top: 20px;margin-left: 15px">-->
-<!--    欢迎使用气体遥测监测预警系统！-->
-<!--    &lt;!&ndash;        <span class="f-14">v1.0</span> &nbsp;&nbsp;登录次数：520&ndash;&gt;-->
-<!--</blockquote>-->
-<div id="radioDiv">
-    <label style="margin-left: 15px;margin-top: 10px">视频:</label>
-    <label>
-        <input type="radio" name="videoType" value="VI" checked='checked'>可见光
-    </label>
-    <label>
-        <input type="radio" name="videoType" value="IR">红外
-    </label>
-</div>
-
-<div class="x-body" style="padding: 0px;border-radius: 0px;">
-    <div id="video_back" style="padding-top: 1%;">
-    </div>
-</div>
-<div class="x-body" style="height: 200px;border-radius: 0px">
-    <button class="layui-btn layui-btn-danger" onclick="playBtn(1)">1个画面</button>
-    <button class="layui-btn layui-btn-danger" onclick="playBtn(4)">4个画面</button>
-    <button class="layui-btn layui-btn-danger" onclick="playBtn(9)">9个画面</button>
-
-    <div id="pagination-box" style="margin-top: 50px;margin-right:80px;float: right;">
-        <ul id="pagination-ul">
-        </ul>
+        <!-- footer -->
+        <footer id="footer" class="footer">
+            <div class="container-fluid">
+                <div class="row gutters-y align-items-center">
+                    <div class="col-md-6 col-lg-5">
+                        <div class="px-3 fw-400">
+                            © 2022 LiJian. All rights Reserved</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- /.footer -->
     </div>
 </div>
 
-
-<div class="col-md-12"></div>
-
-<script src="lib/layui/layui.js" charset="utf-8"></script>
-<!--Vue js脚本-->
-<script src="js/vue.js" charset="utf-8"></script>
-<!--引入ElementUI组件库-->
-<script src="js/index.js" charset="utf-8"></script>
-<!--引入Axios js脚本-->
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<!--引入时间插件包Momentjs-->
-<script src="js/moment.min.js" charset="utf-8"></script>
+<!-- jQuery -->
 <script src="js/jquery.min.js"></script>
-<script src="js/echarts.min.js"></script>
-<script type="text/javascript" src="js/Decoder.js"></script>
-<script type="text/javascript" src="js/YUVCanvas.js"></script>
-<script type="text/javascript" src="js/Player.js"></script>
-<script type="text/javascript" src="url.js"></script>
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Moment -->
+<script src="plugins/lib/moment/moment.min.js"></script>
+<!-- User JS -->
+<script src="js/scripts.js"></script>
+<!-- Main JS -->
+<script src="js/main.js" id="_mainJS" data-plugins="load"></script>
+<!-- Modules -->
+<script src="js/modules.js"></script>
 
-<script type="text/javascript">
-    var videoType = "VI";
+<script crossorigin="anonymous" src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.js"></script>
+<script src="js/pagination.js"></script>
+<script src="js/Decoder.js"></script>
+<script src="js/YUVCanvas.js"></script>
+<script src="js/Player.js"></script>
 
-    // radio添加事件监听，切换视频模式时执行
-    var videoTypeArr = document.getElementsByName("videoType");
-    videoTypeArr[0].onclick = function () {
-        videoType = videoTypeArr[0].value;
-        generateCanvas(false, id);
-    };
-    videoTypeArr[1].onclick = function () {
-        videoType = videoTypeArr[1].value;
-        generateCanvas(false, id);
-    };
-
-    // 从导航菜单进入播放页时传入设备的id。用于判定后续切换视频模式时是否根据id加载
+<script>
+    // 设备id 判断是从首页加载，还是点击设备列表
+    // 从设备列表进入播放页时传入设备的id。用于判定后续切换视频模式时是否根据id加载
     // 从Pagination进入播放，从Btn进入播放时，会清空id
-    var id = "";
+    var id = getQueryVariable("id");
 
+    // 初始化播放模式
+    var videoType = "VI";
     //设备url只维护单纯的ip地址，ws前缀和ws端口号用默认的
     var urlTemplate = "ws://ip:7250/";
 
@@ -158,31 +155,15 @@
     var playerMap = {};
     var clientMap = {};
 
-    //从Pagination进入播放，pageNum根据传入参数确定，pageSize不变，将id清空
-    function playPagination(num) {
-        id = "";
-        pageNum = num;
-        generateCanvas(false, "");
-    }
-
-    //从Btn进入播放，pageNum置为1，pageSize根据传入参数确定1/4/9宫格，将id清空
-    function playBtn(size) {
-        id = "";
-        pageNum = 1;
-        pageSize = size;
-        generateCanvas(true, "");
-    }
-
-    //从菜单进入播放，pageNum默认为1，pageSize默认为1，但是会传入设备id
-    function playMenu(id) {
-        generateCanvas(true, id);
-    }
+    //加载页面时直接进入视频播放
+    generateCanvas(true, id);
 
     function generateCanvas(initPaginationFlag, id) {
         console.log("show " + pageSize + " canvas!");
 
         let path = "";
         let jsonObject = {};
+        let requestHeader = {};
 
         if (id === "") {
             path = apiPath + "/machine/search";
@@ -197,7 +178,7 @@
             };
         }
 
-        axios.post(path, jsonObject).then((res) => {
+        axios.post(path, jsonObject, requestHeader).then((res) => {
             console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;
@@ -225,31 +206,39 @@
                 let machineId = machine.id;
 
                 // 包含播放器的div id为设备id class根据pageSize决定
+                let divGrid = document.createElement("div");
+                divGrid.className = getCanvasDivStyle(machineList.length);
+                divGrid.style.cssText = "border: 1px solid rgba(42, 242, 112, 0.2);";
+
                 let div = document.createElement("div");
                 div.id = machineId;
-                div.className = getCanvasDivStyle(pageSize);
+                div.className = "card";
+                div.style.cssText = "border-radius: 0px;";
+                // div.className = getCanvasDivStyle(pageSize);
 
                 // 设备名称标签
                 let divMachineName = document.createElement("div");
                 divMachineName.innerText = machine.machineName;
-                divMachineName.className = "divMachineName";
-                div.appendChild(divMachineName);
+                divMachineName.style.cssText = "position: absolute;margin-left: 10px;margin-top: 5px;color: white;z-index: 999";
+
+                divGrid.appendChild(divMachineName);
 
                 // canvas播放器
                 let player = new Player();
                 let canvas = player.canvas;
-                if(videoType === "VI"){
+                if (videoType === "VI") {
                     canvas.width = 1280;
                     canvas.height = 720;
                 }
-                if(videoType === "IR"){
+                if (videoType === "IR") {
                     canvas.width = 640;
                     canvas.height = 512;
                 }
                 div.appendChild(canvas);
+                divGrid.appendChild(div);
 
-                // 将包含播放器的div加入到父div中
-                parent.appendChild(div);
+                // 将包含播放器的divGrid加入到父div中
+                parent.appendChild(divGrid);
 
                 // 维护播放器对象、websocket连接对象
                 let machineUrl = machine.machineUrl;
@@ -303,191 +292,56 @@
         });
 
     }
+</script>
+
+<script>
+
+    //从Pagination进入播放，pageNum根据传入参数确定，pageSize不变，将id清空
+    function playPagination(num) {
+        id = "";
+        pageNum = num;
+        generateCanvas(false, "");
+    }
+
+    //从Btn进入播放，pageNum置为1，pageSize根据传入参数确定1/4/9宫格，将id清空
+    function playBtn(size) {
+        id = "";
+        pageNum = 1;
+        pageSize = size;
+        generateCanvas(true, "");
+    }
+
+    function changeVideoType() {
+        let btn_type = document.getElementById("switchOutline-fie")
+        videoType = btn_type.checked ? "IR" : "VI";
+
+        generateCanvas(false, id);
+    }
 
     function getCanvasDivStyle(pageSize) {
-        if (pageSize === 1) {
-            return "player1";
-        } else if (pageSize > 1 && pageSize <= 4) {
-            return "player4";
-        } else if (pageSize > 4) {
-            return "player9";
+        let divClass;
+
+        if (videoType === "VI") {
+            if (pageSize === 1) {
+                divClass = "panel-col col-md-9";
+            } else if (pageSize > 1 && pageSize <= 4) {
+                divClass = "panel-col col-md-6";
+            } else if (pageSize > 4) {
+                divClass = "panel-col col-md-4";
+            }
+        } else {
+            if (pageSize === 1) {
+                divClass = "panel-col col-md-6";
+            } else if (pageSize > 1 && pageSize <= 4) {
+                divClass = "panel-col col-md-6";
+            } else if (pageSize > 4) {
+                divClass = "panel-col col-md-4";
+            }
         }
+
+        return divClass;
     }
 
-    function initPagination() {
-        let paginationUlEvent = document.getElementById("pagination-ul");
-        paginationUlEvent.innerHTML = '';
-        let leftButton = document.createElement("button");
-        let rightButton = document.createElement("button");
-        let leftIcon = document.createElement("i");
-        let rightIcon = document.createElement("i");
-        let clickIndex = 0;
-
-        leftButton.id = "pagination-btn-left";
-        leftButton.style.cursor = "not-allowed";
-        leftButton.appendChild(leftIcon);
-        paginationUlEvent.appendChild(leftButton);
-
-        let totalPageNum = pageTotal();
-        for (let j = 1; j < totalPageNum + 1; j++) {
-            let li = document.createElement("li");
-            let a = document.createElement("a");
-            if (j === 1) {
-                li.className = "li-checked";
-                a.className = "a-checked";
-            }
-            a.innerHTML = j;
-            li.appendChild(a);
-            paginationUlEvent.appendChild(li);
-        }
-
-        rightButton.id = "pagination-btn-right";
-        rightButton.className = "isSelect";
-        rightButton.style.cursor = "pointer";
-        rightButton.appendChild(rightIcon);
-        paginationUlEvent.appendChild(rightButton);
-
-
-        let liEvent = document.getElementsByTagName("li");
-        let aEvent = document.getElementsByTagName("a");
-        for (let i = 0; i < liEvent.length; i++) {
-            liEvent[i].onclick = function (e) {
-                removeCheckedClass();
-                liEvent[i].className = "li-checked";
-                aEvent[i].className = "a-checked";
-                clickIndex = i;
-                //展示选定页数据
-                playPagination(i + 1);
-                console.log("pageNum:" + (i + 1));
-                switch (i) {
-                    case 0: {
-                        leftButton.style.cursor = "not-allowed";
-                        rightButton.style.cursor = "pointer";
-                        leftButton.className = "noSelect";
-                        rightButton.className = "isSelect";
-                    }
-                        break;
-                    case (liEvent.length - 1): {
-                        leftButton.style.cursor = "pointer";
-                        rightButton.style.cursor = "not-allowed";
-                        leftButton.className = "isSelect";
-                        rightButton.className = "noSelect";
-                    }
-                        break;
-                    default: {
-                        leftButton.style.cursor = "pointer";
-                        rightButton.style.cursor = "pointer";
-                        leftButton.className = "isSelect";
-                        rightButton.className = "isSelect";
-                    }
-                }
-            }
-        }
-
-        function pageTotal() {
-            if (pageSize !== 0 && totalCount % pageSize === 0) {
-                return totalCount / pageSize
-            } else if (pageSize !== 0 && totalCount % pageSize !== 0) {
-                return Math.ceil(totalCount / pageSize);
-            } else return 0;
-        }
-
-        function removeCheckedClass() {
-            for (let i = 0; i < liEvent.length; i++) {
-                if (liEvent[i].className == "li-checked") {
-                    liEvent[i].className = "";
-                    aEvent[i].className = "";
-                }
-            }
-        }
-
-        function clickButtonEvent(i) {
-            //展示上一页/下一页数据
-            playPagination(i + 1);
-            console.log("pageNum:" + (i + 1));
-            removeCheckedClass();
-            liEvent[i].className = "li-checked";
-            aEvent[i].className = "a-checked";
-            clickIndex = i;
-            switch (i) {
-                case 0: {
-                    leftButton.style.cursor = "not-allowed";
-                    rightButton.style.cursor = "pointer";
-                    leftButton.className = "noSelect";
-                    rightButton.className = "isSelect";
-                }
-                    break;
-                case (liEvent.length - 1): {
-                    leftButton.style.cursor = "pointer";
-                    rightButton.style.cursor = "not-allowed";
-                    leftButton.className = "isSelect";
-                    rightButton.className = "noSelect";
-                }
-                    break;
-                default: {
-                    leftButton.style.cursor = "pointer";
-                    rightButton.style.cursor = "pointer";
-                    leftButton.className = "isSelect";
-                    rightButton.className = "isSelect";
-                }
-            }
-        }
-
-        leftButton.onclick = function () {
-            console.log(leftButton.style)
-            if (leftButton.style.cursor == "not-allowed") {
-                return false;
-            } else if (leftButton.style.cursor == "pointer") {
-                if (clickIndex <= 0) {
-                    return false;
-                } else {
-                    let index = clickIndex - 1;
-                    clickButtonEvent(index);
-                }
-            }
-        }
-
-        rightButton.onclick = function () {
-            if (rightButton.style.cursor == "not-allowed") {
-                return false;
-            } else if (rightButton.style.cursor == "pointer") {
-                if (clickIndex >= liEvent.length - 1) {
-                    return false;
-                } else {
-                    let index = clickIndex + 1;
-                    clickButtonEvent(index);
-                }
-            }
-        }
-
-    }
-
-    function initMenu() {
-        id = getQueryVariable("id");
-        console.log("id:" + id);
-
-        playMenu(id);
-    }
-
-    function getQueryVariable(variable) {
-        let query = window.location.search.substring(1);
-        let vars = query.split("&");
-        for (let i = 0; i < vars.length; i++) {
-            let pair = vars[i].split("=");
-            if (pair[0] == variable) {
-                return pair[1];
-            }
-        }
-        return false;
-    }
 </script>
-
-<script type="text/javascript">
-    //修改元素的css属性
-    // var chi = $("#div01").children();
-    // chi.css("width","480px");
-    // chi.css("height","270px");
-</script>
-
 </body>
 </html>

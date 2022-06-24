@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -6,13 +6,15 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="old/static/favicon.ico" type="image/x-icon"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <script type="text/javascript" src="lib/loading/okLoading.js"></script>
-    <link rel="stylesheet" href="css/main.css" media="all">
-    <link rel="stylesheet" href="css/font.css">
+    <script type="text/javascript" src="old/lib/loading/okLoading.js"></script>
+    <link rel="stylesheet" href="old/css/main.css" media="all">
+    <link rel="stylesheet" href="old/css/font.css">
+
+
 </head>
 <style>
     .show_list {
@@ -29,14 +31,14 @@
         <div class="layui-main">
             <div class="admin-logo-box">
                 <div class="larry-side-menu">
-                    <img src="images/ss.png" width="44px" height="44px" alt="">
+                    <img src="old/images/ss.png" width="44px" height="44px" alt="">
                 </div>
-                <img src="images/logo.svg" class="logo" width="183px" alt="">
+                <img src="old/images/logo.svg" class="logo" width="183px" alt="">
             </div>
 
             <ul class="layui-nav" lay-filter="">
                 <li class="layui-nav-item" id="time" style="margin-right: 50px;font-weight: 300;font-size: 16px;color: #fff;position: absolute;left: -250px;top: 0"></li>
-                <li class="layui-nav-item"><img src="./images/tx.svg" class="layui-circle" width="35px" height="35px" alt=""></li>
+                <li class="layui-nav-item"><img src="img/avatar/user_head.jpg" class="layui-circle" width="35px" height="35px" alt=""></li>
 
                 <li class="layui-nav-item"><a href="javascript:;">admin</a>
                     <dl class="layui-nav-child">
@@ -62,12 +64,12 @@
                         <!--                        <dd class=""><a href="javascript:;" _href="welcome.html?id=e6f277f22f5bb863213ffe756e3818d9"> <cite>2号设备</cite> </a></dd>-->
                     </dl>
                 </li>
-                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;" _href="historylist.html"> <i class="fa fa-history"></i><cite>历史记录</cite>
+                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;" _href="history.html"> <i class="fa fa-history"></i><cite>历史记录</cite>
                 </a>
                 </li>
                 <li class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="fa fa-cogs"></i><cite>系统设置</cite> </a>
                     <dl class="layui-nav-child">
-                        <dd class=""><a href="javascript:;" _href="communitylist.html"> <cite>设备管理</cite> </a></dd>
+                        <dd class=""><a href="javascript:;" _href="machine.html"> <cite>设备管理</cite> </a></dd>
                         <dd class=""><a href="javascript:;" _href="system.html"> <cite>出厂配置</cite> </a></dd>
                         <dd class=""><a href="javascript:;" _href="one_set.html"> <cite>个人设置</cite> </a></dd>
                     </dl>
@@ -95,7 +97,7 @@
 <!--引入Axios js脚本-->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="url.js"></script>
-<script src="js/jquery.min.js"></script>
+<script src="old/js/jquery.min.js"></script>
 
 <script>
     function getMachineState(machineState) {
@@ -108,6 +110,21 @@
 </script>
 
 <script>
+    let logged = 0; //未登录
+    let query = window.location.search.substring(1);
+    let vars = query.split("&");
+    for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split("=");
+        if (pair[0] === "logged") {
+            logged = 1;
+        }
+    }
+
+    if (logged === 0) {
+        location.href = "login.html";
+        console.log("尚未登录，请先登录");
+    }
+
 
     //初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
     $.ajaxSettings.async = false;
@@ -145,10 +162,10 @@
 
 </script>
 
-<script src="lib/layui/layui.js" charset="utf-8"></script>
-<script src="js/main.js"></script>
+<script src="old/lib/layui/layui.js" charset="utf-8"></script>
+<script src="old/js/main.js"></script>
 
-<script src="js/x-layui.js" charset="utf-8"></script>
+<script src="old/js/x-layui.js" charset="utf-8"></script>
 
 <script>
 
@@ -169,25 +186,28 @@
      */
     function logout() {
 
-        $.ajax({
-            type: "post",
-            url: "xxxxx",
-            data: {e: 1},
-            dataType: "json",
-            success: function (data) {
-                if (data.status == 1) {
-                    layer.msg(data.info, {icon: 1, time: 1000});
-                    setTimeout("window.location.href='xxxx'", 2000);
-                    return false;
-                    return false;
-                } else {
-                    layer.msg(data.info, {icon: 5, time: 2000});
-                    return false;
-                }
-            }
+        // $.ajax({
+        //     type: "post",
+        //     url: "xxxxx",
+        //     data: {e: 1},
+        //     dataType: "json",
+        //     success: function (data) {
+        //         if (data.status == 1) {
+        //             layer.msg(data.info, {icon: 1, time: 1000});
+        //             setTimeout("window.location.href='xxxx'", 2000);
+        //             return false;
+        //             return false;
+        //         } else {
+        //             layer.msg(data.info, {icon: 5, time: 2000});
+        //             return false;
+        //         }
+        //     }
+        //
+        // })
+        // return false;
 
-        })
-        return false;
+        location.href = "login.html";
+
     }
 
     function one_set(title, url, w, h) {

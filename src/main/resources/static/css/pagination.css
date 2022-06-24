@@ -27,10 +27,12 @@
 
 #pagination-btn-left {
     margin-right: 5px;
+    margin-bottom: 0.2rem;
 }
 
 #pagination-btn-right {
     margin-left: 5px;
+    margin-bottom: 0.2rem;
 }
 
 .isSelect:hover {

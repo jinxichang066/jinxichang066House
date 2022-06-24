@@ -1,55 +1,157 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>系统登录</title>
-  <link rel="stylesheet" href="css/login.css">
-  <script type="text/javascript" src="js/jquery.min.js"></script>
-  <script src="./lib/layui/layui.js" charset="utf-8"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>气体遥测监测预警系统</title>
+
+    <!-- CSS -->
+    <link href="css/fonts/fontawesome/all.min.css" rel="stylesheet">
+    <link href="css/fonts/beid.css" rel="stylesheet">
+
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+    <!-- JQVMAP -->
+    <link href="plugins/jqvmap/jqvmap.min.css" rel="stylesheet">
+
+    <!-- dateRangePicker -->
+    <link href="plugins/daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="old/favicon.ico" type="image/x-icon"/>
+
+    <!-- Fonts -->
+    <link href="fonts/inter/inter.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <link href="css/longbow.css" rel="stylesheet">
+    <link href="css/imageBox.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="http://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+
 </head>
-<body class="login-bg">
+<body class="body">
 
-    <div class="login">
-        <div class="message">系统登录</div>
-        <div id="darkbannerwrap"></div>
-        <form method="post" class="layui-form" >
-            <input name="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
-            <hr class="hr15">
-            <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
-            <hr class="hr15">
-            <input value="登录" lay-submit lay-filter="login" style="width:100%;" type="submit">
-            <hr class="hr20" >
-        </form>
+<!-- main -->
+<main>
+
+    <!-- main content -->
+    <div class="main-container app-wow">
+
+        <div class="container h-100">
+            <div class="row align-items-center h-100">
+                <div class="col-12 mx-auto">
+                    <div class="py-8">
+                        <div class="auth-box">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center justify-content-center warning-gradient text-secondary px-4 py-6 h-100">
+                                        <div class="text-center">
+                                            <h4 class="text-uppercase">欢迎使用</h4>
+                                            <h4 class="text-uppercase"></h4>
+                                            <h3 class="text-uppercase display-3">气体遥测监测预警平台</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="px-4 pr-md-7 py-6 pl-md-0">
+                                        <h4 class="mb-6 text-light">Login</h4>
+                                        <div>
+                                            <form class="input-light">
+                                                <div class="input-group mb-5">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" lay-verify="required" name="usercode" placeholder="请输入用户名">
+                                                </div>
+                                                <div class="input-group mb-5">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                                    </div>
+                                                    <input type="password" class="form-control" name="password" placeholder="请输入密码">
+                                                </div>
+                                                <div class="form-group d-flex justify-content-between">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" class="custom-control-input" checked="" id="rememberMeCheck">
+                                                        <label class="custom-control-label" for="rememberMeCheck">记住密码</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group d-flex mb-0 mt-6">
+                                                    <!--                                <button class="btn btn-warning" type="submit">Login</button>-->
+                                                    <a class="btn btn-outline-primary" onclick="login()" style="font-size: 0.9rem;width: 100%;">
+                                                        <i class="fas fa-chevron-circle-right mr-2"></i>登录
+                                                    </a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <script>
-            layui.use(['form'],
-            function() {
-                $ = layui.jquery;
-                var form = layui.form(),
-                layer = layui.layer;
+</main>
 
-                //监听提交
-                form.on('submit(login)',
-                function(data) {
-                    //alert(1);
-                    /*console.log(data);*/
-                    layer.alert(JSON.stringify(data.field), {
-                      title: '点击确定进入平台'
-                    },function  () {
-                        location.href = "index.html";
-                    })
-                    return false;
+<div id="longbow">
+    <!-- 关闭按钮 -->
+    <span id="closeBtn" class="close" onclick="document.getElementById('longbow').style.display='none'">&times;</span>
+    <div class="container-fluid">
+        <div class="form-row">
+            <div class="col-12">
+                <div class="slidercaptcha card">
+                    <div class="card-header"><span>请完成安全验证</span></div>
+                    <div class="card-body">
+                        <div id="captcha"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/longbow.js"></script>
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
 
+<!-- User JS -->
+<script src="js/scripts.js"></script>
 
-                });
+<!-- Main JS -->
+<script src="js/main.js" id="_mainJS" data-plugins="load"></script>
 
-            });
+<!-- Modules -->
+<script src="js/modules.js"></script>
+<script>
+    $('#captcha').sliderCaptcha(
+        {
+            repeatIcon: 'fa fa-redo',
+            setSrc: function () {
+                return '';
+            },
+            onSuccess: function () {
+                document.getElementById("longbow").style.display = "none";
+                //todo 判断登录结果
+                window.location.href = "index.html?logged=1";
+            }
+        });
 
-        </script>
-
-
-    <!-- 底部结束 -->
-
+    function login() {
+        let div = document.getElementById(`longbow`)
+        div.style.display = "block";
+    }
+</script>
 </body>
 </html>
