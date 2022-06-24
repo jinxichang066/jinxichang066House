@@ -577,12 +577,12 @@ function initChart(chartItems) {
         if ( (document.querySelector('[data-carousel="owl-carousel"]')) || (document.getElementsByClassName('owl-carousel')) ) {
             var owl_carousel_js = document.createElement("script");
             owl_carousel_js.src = 'assets/plugins/owl.carousel/owl.carousel.min.js';
-            document.body.insertBefore( owl_carousel_js, _mainJS);
+            // document.body.insertBefore( owl_carousel_js, _mainJS);
         }
 
     }
 
-    //----------- Google Map ---------- ×îÐÂ×îÈ«×îºÃµÄBootstrapÄ£°å£ºhttp://www.bootstrapMB.com
+    //----------- Google Map ---------- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½Ãµï¿½BootstrapÄ£ï¿½å£ºhttp://www.bootstrapMB.com
   if ( document.querySelector('[data-map]') ) { 
     var GM_item = document.querySelector('[data-map]'),
         GM_map  = document.createElement("script"),
