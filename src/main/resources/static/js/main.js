@@ -570,7 +570,7 @@ function initChart(chartItems) {
         if ( document.querySelector('[data-scrollbar]') ) {
             var nicescroll_js = document.createElement("script");
             nicescroll_js.src = 'assets/plugins/scrollbar/jquery.nicescroll.min.js';
-            document.body.insertBefore(nicescroll_js, _mainJS);
+            // document.body.insertBefore(nicescroll_js, _mainJS);
         }
 
         // Carousel
@@ -858,18 +858,18 @@ function initChart(chartItems) {
           if( $(this).attr('data-scrollbar-zindex') ) {
             nicescroll.zindex = parseInt($(this).attr('data-scrollbar-zindex'), 10);
           }
-          $(this).niceScroll({
-            cursorcolor: nicescroll.cursorcolor,
-            cursorborder: nicescroll.cursorborder,
-            cursorwidth: nicescroll.cursorwidth,
-            hwacceleration: nicescroll.hwacceleration,
-            iframeautoresize: nicescroll.iframeautoresize,
-            disableoutline: nicescroll.disableoutline,
-            smoothscroll: nicescroll.smoothscroll,
-            enablescrollonselection: nicescroll.enablescrollonselection,
-            enableobserver: nicescroll.enableobserver,
-            zindex: nicescroll.zindex
-          });
+          // $(this).niceScroll({
+          //   cursorcolor: nicescroll.cursorcolor,
+          //   cursorborder: nicescroll.cursorborder,
+          //   cursorwidth: nicescroll.cursorwidth,
+          //   hwacceleration: nicescroll.hwacceleration,
+          //   iframeautoresize: nicescroll.iframeautoresize,
+          //   disableoutline: nicescroll.disableoutline,
+          //   smoothscroll: nicescroll.smoothscroll,
+          //   enablescrollonselection: nicescroll.enablescrollonselection,
+          //   enableobserver: nicescroll.enableobserver,
+          //   zindex: nicescroll.zindex
+          // });
         });
     }
 
