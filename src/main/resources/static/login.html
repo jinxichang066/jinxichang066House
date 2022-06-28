@@ -72,13 +72,13 @@
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text"><i class="fas fa-user"></i></span>
                                                     </div>
-                                                    <input type="text" class="form-control" lay-verify="required" name="usercode" placeholder="请输入用户名">
+                                                    <input type="text" class="form-control" lay-verify="required" id="userName" placeholder="请输入用户名">
                                                 </div>
                                                 <div class="input-group mb-5">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                                     </div>
-                                                    <input type="password" class="form-control" name="password" placeholder="请输入密码">
+                                                    <input type="password" class="form-control" id="password" placeholder="请输入密码">
                                                 </div>
                                                 <div class="form-group d-flex justify-content-between">
                                                     <div class="custom-control custom-checkbox">
@@ -134,7 +134,14 @@
 
 <!-- Modules -->
 <script src="js/modules.js"></script>
+
+<script src="js/md5.js"></script>
+<script src="url.js"></script>
+
 <script>
+    var userName;
+    var password;
+
     $('#captcha').sliderCaptcha(
         {
             repeatIcon: 'fa fa-redo',
@@ -143,12 +150,42 @@
             },
             onSuccess: function () {
                 document.getElementById("longbow").style.display = "none";
-                //todo 判断登录结果
-                window.location.href = "index.html?logged=1";
+
+                // 判断登录结果
+                $.ajaxSettings.async = false;
+                $.ajax({
+                    type: "post",
+                    url: apiPath + "/login/login",
+                    data: {"userName": userName, "password": password},
+                    dataType: "json",
+                    success: function (res) {
+                        if (res.code === 2000) {
+                            window.location.href = "index.html";
+                        } else {
+                            alert(res.message);
+                            window.location.href = "login.html";
+                        }
+                    }
+                })
             }
         });
 
     function login() {
+        let name = document.getElementById("userName").value;
+        userName = name.replace(/(^\s*)|(\s*$)/g, "");
+        let pass = document.getElementById("password").value;
+        password = pass.replace(/(^\s*)|(\s*$)/g, "");
+
+        if (userName === null || userName === "") {
+            alert("用户名不能为空")
+            return false;
+        }
+        if (password === null || password === "") {
+            alert("密码不能为空")
+            return false;
+        }
+
+        password = hex_md5(password);
         let div = document.getElementById(`longbow`)
         div.style.display = "block";
     }
