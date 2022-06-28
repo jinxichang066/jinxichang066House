@@ -22,18 +22,18 @@ public class Token {
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date loginTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date operateTime;
 
     private String userId;
 
-    @TableField(value = "menuIdList", typeHandler = JsonStringArrayTypeHandler.class)
+    @TableField(typeHandler = JsonStringArrayTypeHandler.class)
     private List<String> menuIdList;
 
-    @TableField(value = "roleIdList", typeHandler = JsonStringArrayTypeHandler.class)
+    @TableField(typeHandler = JsonStringArrayTypeHandler.class)
     private List<String> roleIdList;
 
     private String user;

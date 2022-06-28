@@ -92,6 +92,7 @@
 <script src="old/js/main.js"></script>
 <script src="old/js/x-layui.js" charset="utf-8"></script>
 <script src="js/time.js"></script>
+<script src="js/auth.js"></script>
 
 <script>
     function getMachineState(machineState) {
@@ -104,31 +105,21 @@
 </script>
 
 <script>
-    let logged = 0; //未登录
-    let query = window.location.search.substring(1);
-    let vars = query.split("&");
-    for (let i = 0; i < vars.length; i++) {
-        let pair = vars[i].split("=");
-        if (pair[0] === "logged") {
-            logged = 1;
-        }
-    }
-
-    if (logged === 0) {
-        location.href = "login.html";
-        console.log("尚未登录，请先登录");
-    }
-
-
-    //初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
+    // 初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
     $.ajaxSettings.async = false;
 
     $.ajax({
         type: "post",
         url: apiPath + "/machine/searchAll",
-        data: {e: 1},
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('gasToken', getGasToken());
+        },
+        data: {},
         dataType: "json",
         success: function (res) {
+            // 验证登录状态
+            doAuth(res);
+
             let machineList = res.data;
             if (machineList.length !== 0) {
                 //菜单
@@ -155,7 +146,6 @@
     })
 
 </script>
-
 
 
 <script>

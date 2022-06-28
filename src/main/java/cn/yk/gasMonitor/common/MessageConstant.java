@@ -36,6 +36,7 @@ public class MessageConstant {
     public static final String GAS_SPEC_NAME_LIST_SUCCESS = "查询气体名称列表信息成功！";
 
     //---------------------------登录操作消息提示信息---------------------------------------
+    public static final String LOGIN_EXPIRED = "登录信息失效，请重新登陆！";
     public static final String LOGIN_SUCCESS = "登录成功！";
     public static final String LOGIN_USER_NOT_EXIST = "用户不存在！";
     public static final String LOGIN_PASSWORD_ERROR = "密码错误！";

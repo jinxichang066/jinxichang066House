@@ -135,9 +135,9 @@
 <!-- Modules -->
 <script src="js/modules.js"></script>
 
-<script src="js/md5.js"></script>
 <script src="url.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/md5.js"></script>
 
 <script>
     var userName;
@@ -161,7 +161,8 @@
                     dataType: "json",
                     success: function (res) {
                         if (res.code === 2000) {
-                            setToken(res.data);
+                            // 存入/更新token
+                            setGasToken(res.data);
                             window.location.href = "index.html";
                         } else {
                             alert(res.message);
