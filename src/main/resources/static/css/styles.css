@@ -816,7 +816,7 @@
   min-height: 100vh;
   padding-top: 3rem;
   padding-bottom: 3rem;
-  background: url(../img/bg1.png) center center/cover no-repeat; }
+  background: url(../img/bg_custom.jpg) center center/cover no-repeat; }
 
 /* Login */
 .auth-box {
