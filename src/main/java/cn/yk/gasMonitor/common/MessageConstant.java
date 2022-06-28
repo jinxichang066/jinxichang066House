@@ -8,16 +8,6 @@ package cn.yk.gasMonitor.common;
  * @date 2022/4/21
  **/
 public class MessageConstant {
-    //---------------------------小区（Community）操作消息提示信息---------------------------------------
-    public static final String COMMUNITY_SEARCH_SUCCESS = "查询小区列表信息成功！";
-    public static final String COMMUNITY_ADD_SUCCESS = "新增小区信息成功！";
-    public static final String COMMUNITY_UPDATE_SUCCESS = "修改小区信息成功！";
-    public static final String COMMUNITY_DELETE_SUCCESS = "删除小区信息成功！";
-    public static final String COMMUNITY_PIC_UPLOAD_SUCCESS = "小区缩略图上传成功！";
-    public static final String COMMUNITY_PIC_DEL_SUCCESS = "小区缩略图删除成功！";
-    public static final String COMMUNITY_FIND_BY_ID_SUCCESS = "根据主键获取小区对象成功！";
-    public static final String COMMUNITY_UPDATE_STATUS_SUCCESS = "小区状态信息更新成功！";
-    //---------------------------楼栋（Community）操作消息提示信息---------------------------------------
     //---------------------------系统提示信息----------------------------------------------------------
     public static final String SYSTEM_BUSY = "系统繁忙，请求稍后重试！";
     //---------------------------文件上传提示信息-------------------------------------------------------
@@ -44,5 +34,18 @@ public class MessageConstant {
 
     //---------------------------气体（GasSpec）操作消息提示信息---------------------------------------
     public static final String GAS_SPEC_NAME_LIST_SUCCESS = "查询气体名称列表信息成功！";
+
+    //---------------------------登录操作消息提示信息---------------------------------------
+    public static final String LOGIN_SUCCESS = "登录成功！";
+    public static final String LOGIN_USER_NOT_EXIST = "用户不存在！";
+    public static final String LOGIN_PASSWORD_ERROR = "密码错误！";
+
+    public static final String MACHINE_FIND_BY_ID_SUCCESS1 = "获取设备信息成功！";
+    public static final String MACHINE_ADD_SUCCESS1 = "新增设备信息成功！";
+    public static final String MACHINE_DUP_MACHINE_ID1 = "已存在相同设备ID，请勿重复添加";
+    public static final String MACHINE_DUP_MACHINE_ID_UPDATE1 = "已存在相同设备ID，请检查后再修改";
+    public static final String MACHINE_UPDATE_SUCCESS1 = "修改设备信息成功！";
+    public static final String MACHINE_DELETE_SUCCESS1 = "删除设备信息成功！";
+    public static final String MACHINE_URL_NOT_MATCH1 = "设备URL必须为IP地址格式！";
 
 }
