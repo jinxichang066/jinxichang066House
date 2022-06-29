@@ -53,4 +53,4 @@ mybatis-plus:
 custom:
   system:
     setting:
-      expireTime: 60
+      expireTime: 3600
