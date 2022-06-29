@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * 实体类和数据库的List与String转换
+ * 实体类字段不仅要声明typeHandler，实体类还要声明autoResultMap = true
  *
  * @author JXC
  */

@@ -13,7 +13,7 @@ import java.util.List;
  * @date 2022/4/20
  **/
 @Data
-@TableName("g_role")
+@TableName(autoResultMap = true, value = "g_role")
 public class Role {
 
     @TableId(value = "id", type = IdType.ASSIGN_UUID)

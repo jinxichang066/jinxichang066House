@@ -78,4 +78,13 @@ public class TokenService {
         tokenMapper.deleteById(token);
     }
 
+    public String getUserId(String token) {
+        Token tokenObj = tokenMapper.selectById(token);
+        if (tokenObj != null) {
+            return tokenObj.getUserId();
+        } else {
+            return "";
+        }
+    }
+
 }

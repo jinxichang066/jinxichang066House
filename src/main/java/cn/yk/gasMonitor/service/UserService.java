@@ -93,4 +93,8 @@ public class UserService {
         return new PageResult(true, StatusCode.OK, MessageConstant.USER_DELETE_SUCCESS);
     }
 
+    public User getUser(String id) {
+        return userMapper.selectById(id);
+    }
+
 }

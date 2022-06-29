@@ -52,4 +52,7 @@ public class MessageConstant {
     public static final String USER_LOSS_USER_NAME = "用户名不能为空！";
     public static final String USER_LOSS_ROLE_KEY = "用户角色不能为空！";
 
+    //---------------------------菜单管理消息提示信息---------------------------------------
+    public static final String MENU_SEARCH_SUCCESS = "查询菜单列表信息成功！";
+
 }
