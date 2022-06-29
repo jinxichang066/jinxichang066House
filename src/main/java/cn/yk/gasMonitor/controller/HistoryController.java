@@ -1,9 +1,8 @@
 package cn.yk.gasMonitor.controller;
 
 import cn.yk.gasMonitor.common.PageResult;
-import cn.yk.gasMonitor.common.Result;
-import cn.yk.gasMonitor.service.GasSpecService;
 import cn.yk.gasMonitor.dto.HistorySearchDTO;
+import cn.yk.gasMonitor.service.GasSpecService;
 import cn.yk.gasMonitor.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,7 @@ public class HistoryController {
     }
 
     @RequestMapping("/getGasNameList")
-    public Result getGasNameList() {
+    public PageResult getGasNameList() {
         return gasSpecService.getGasNameList();
 
     }

@@ -1,7 +1,7 @@
 package cn.yk.gasMonitor.service;
 
 import cn.yk.gasMonitor.common.MessageConstant;
-import cn.yk.gasMonitor.common.Result;
+import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.dao.UserMapper;
 import cn.yk.gasMonitor.domain.Token;
@@ -25,8 +25,8 @@ public class LoginService {
     @Resource
     private TokenService tokenService;
 
-    public Result login(String userName, String password) {
-        Result result = new Result();
+    public PageResult login(String userName, String password) {
+        PageResult result = new PageResult();
         User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, userName.trim()));
 
         // 用户名不存在

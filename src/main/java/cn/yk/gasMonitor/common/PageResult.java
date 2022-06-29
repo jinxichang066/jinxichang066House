@@ -16,20 +16,55 @@ public class PageResult implements Serializable {
     private Integer code;//返回码
     private String message;//返回消息
     private Object data;
-    private Long total;
+    private Long total = 0L;
+
     /**
      * 功能描述: 无参构造
+     *
      * @return :
      */
     public PageResult() {
     }
+
     /**
      * 功能描述:
-     * @param flag  请求是否成功
-     * @param code  状态码
-     * @param message   消息提示
-     * @param data      结果集列表
-     * @param total     总条数
+     *
+     * @param flag    请求是否成功
+     * @param code    状态码
+     * @param message 消息提示
+     * @return :
+     */
+    public PageResult(boolean flag, Integer code, String message) {
+        this.flag = flag;
+        this.code = code;
+        this.message = message;
+        this.data = null;
+    }
+
+    /**
+     * 功能描述:
+     *
+     * @param flag    请求是否成功
+     * @param code    状态码
+     * @param message 消息提示
+     * @param data    结果集列表
+     * @return :
+     */
+    public PageResult(boolean flag, Integer code, String message, Object data) {
+        this.flag = flag;
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
+    /**
+     * 功能描述:
+     *
+     * @param flag    请求是否成功
+     * @param code    状态码
+     * @param message 消息提示
+     * @param data    结果集列表
+     * @param total   总条数
      * @return :
      */
     public PageResult(boolean flag, Integer code, String message, Object data, Long total) {

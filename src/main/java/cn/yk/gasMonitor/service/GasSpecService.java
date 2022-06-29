@@ -1,12 +1,12 @@
 package cn.yk.gasMonitor.service;
 
-import cn.yk.gasMonitor.common.Result;
-import cn.yk.gasMonitor.dao.GasSpecMapper;
 import cn.hutool.core.collection.CollectionUtil;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import cn.yk.gasMonitor.common.MessageConstant;
+import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
+import cn.yk.gasMonitor.dao.GasSpecMapper;
 import cn.yk.gasMonitor.domain.GasSpec;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class GasSpecService {
     @Resource
     private GasSpecMapper gasSpecMapper;
 
-    public Result getGasNameList() {
+    public PageResult getGasNameList() {
         Set<String> gasNameSet = new HashSet<>();
 
         List<GasSpec> gasSpecs = gasSpecMapper.selectList(Wrappers.lambdaQuery(GasSpec.class));
@@ -35,7 +35,7 @@ public class GasSpecService {
             gasNameSet = gasSpecs.stream().map(GasSpec::getGasName).collect(Collectors.toSet());
         }
 
-        return new Result(true, StatusCode.OK, MessageConstant.GAS_SPEC_NAME_LIST_SUCCESS, gasNameSet);
+        return new PageResult(true, StatusCode.OK, MessageConstant.GAS_SPEC_NAME_LIST_SUCCESS, gasNameSet);
     }
 
 }

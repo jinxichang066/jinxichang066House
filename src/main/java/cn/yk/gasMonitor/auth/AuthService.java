@@ -1,7 +1,7 @@
 package cn.yk.gasMonitor.auth;
 
 import cn.yk.gasMonitor.common.MessageConstant;
-import cn.yk.gasMonitor.common.Result;
+import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.service.TokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +36,8 @@ public class AuthService {
      * <h5>功能:前置通知</h5>
      */
     @Around("cut()")
-    public Result around(ProceedingJoinPoint pjp) {
-        Result result = new Result();
+    public PageResult around(ProceedingJoinPoint pjp) {
+        PageResult result = new PageResult();
 
         log.info("[验证token]自定义注解开始执行");
         Object[] args = pjp.getArgs();
@@ -58,7 +58,7 @@ public class AuthService {
             result.setMessage(MessageConstant.LOGIN_EXPIRED);
         } else {
             try {
-                result = (Result) pjp.proceed(pjp.getArgs());
+                result = (PageResult) pjp.proceed(pjp.getArgs());
             } catch (Throwable e) {
                 log.error(e.getMessage(), e);
             }

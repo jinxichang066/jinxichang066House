@@ -1,7 +1,7 @@
 package cn.yk.gasMonitor.exception;
 
 import cn.yk.gasMonitor.common.MessageConstant;
-import cn.yk.gasMonitor.common.Result;
+import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,8 +12,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
-    public Result error(Exception exception) {
+    public PageResult error(Exception exception) {
         exception.printStackTrace();
-        return new Result(false, StatusCode.ERROR, MessageConstant.SYSTEM_BUSY);
+        return new PageResult(false, StatusCode.ERROR, MessageConstant.SYSTEM_BUSY);
     }
 }

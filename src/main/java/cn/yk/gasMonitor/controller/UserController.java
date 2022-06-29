@@ -2,7 +2,6 @@ package cn.yk.gasMonitor.controller;
 
 import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
-import cn.yk.gasMonitor.common.Result;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.domain.User;
 import cn.yk.gasMonitor.dto.UserSearchDTO;
@@ -37,22 +36,22 @@ public class UserController {
     }
 
     @RequestMapping("/findById")
-    public Result findById(String id) {
+    public PageResult findById(String id) {
         return userService.findById(id);
     }
 
     @RequestMapping("/add")
-    public Result add(@RequestBody User user) {
+    public PageResult add(@RequestBody User user) {
         return userService.add(user);
     }
 
     @RequestMapping("/update")
-    public Result update(@RequestBody User user) {
+    public PageResult update(@RequestBody User user) {
         return userService.update(user);
     }
 
     @RequestMapping("/del")
-    public Result del(@RequestBody List<String> ids) {
+    public PageResult del(@RequestBody List<String> ids) {
         return userService.delete(ids);
     }
 

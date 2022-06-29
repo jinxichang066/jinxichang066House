@@ -1,6 +1,6 @@
 package cn.yk.gasMonitor.controller;
 
-import cn.yk.gasMonitor.common.Result;
+import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,7 +24,7 @@ public class LoginController {
     private LoginService loginService;
 
     @RequestMapping("/login")
-    public Result login(@RequestParam String userName, @RequestParam String password) {
+    public PageResult login(@RequestParam String userName, @RequestParam String password) {
         return loginService.login(userName, password);
     }
 

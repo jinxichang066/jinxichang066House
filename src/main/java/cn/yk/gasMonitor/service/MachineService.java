@@ -1,17 +1,17 @@
 package cn.yk.gasMonitor.service;
 
-import cn.yk.gasMonitor.common.Result;
-import cn.yk.gasMonitor.dao.MachineMapper;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.yk.gasMonitor.common.MessageConstant;
+import cn.yk.gasMonitor.common.PageResult;
+import cn.yk.gasMonitor.common.StatusCode;
+import cn.yk.gasMonitor.dao.MachineMapper;
+import cn.yk.gasMonitor.domain.Machine;
+import cn.yk.gasMonitor.dto.MachineSearchDTO;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import cn.yk.gasMonitor.common.MessageConstant;
-import cn.yk.gasMonitor.common.StatusCode;
-import cn.yk.gasMonitor.domain.Machine;
-import cn.yk.gasMonitor.dto.MachineSearchDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -75,44 +75,44 @@ public class MachineService {
         return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).in(Machine::getId, ids).orderByDesc(Machine::getState).orderByAsc(Machine::getCreateTime));
     }
 
-    public Result findById(String id) {
+    public PageResult findById(String id) {
         Machine machine = machineMapper.selectById(id);
-        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_FIND_BY_ID_SUCCESS, machine);
+        return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_FIND_BY_ID_SUCCESS, machine);
 
     }
 
-    public Result add(Machine machine) {
+    public PageResult add(Machine machine) {
         if (!validMachineUrl(machine.getMachineUrl())) {
-            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
         }
 
         LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId());
         if (machineMapper.selectCount(wrapper) > 0) {
-            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID);
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID);
         } else {
             machine.setState(Machine.State.OFFLINE);
             machine.setCreateTime(new Date());
             machine.setMachineUrl(machine.getMachineUrl().trim());
 
             machineMapper.insert(machine);
-            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_ADD_SUCCESS);
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_ADD_SUCCESS);
         }
     }
 
-    public Result update(Machine machine) {
+    public PageResult update(Machine machine) {
         if (!validMachineUrl(machine.getMachineUrl())) {
-            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
         }
 
         LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId()).ne(Machine::getId, machine.getId());
         if (machineMapper.selectCount(wrapper) > 0) {
-            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID_UPDATE);
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_DUP_MACHINE_ID_UPDATE);
         } else {
             machine.setModifyTime(new Date());
             machine.setMachineUrl(machine.getMachineUrl().trim());
 
             machineMapper.updateById(machine);
-            return new Result(true, StatusCode.OK, MessageConstant.MACHINE_UPDATE_SUCCESS);
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_UPDATE_SUCCESS);
         }
     }
 
@@ -123,9 +123,9 @@ public class MachineService {
         return Pattern.matches(regex, url);
     }
 
-    public Result delete(List<String> ids) {
+    public PageResult delete(List<String> ids) {
         machineMapper.deleteBatchIds(ids);
-        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_DELETE_SUCCESS);
+        return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_DELETE_SUCCESS);
     }
 
     public List<Machine> loadAllMachine() {

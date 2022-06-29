@@ -1,7 +1,7 @@
 package cn.yk.gasMonitor.service;
 
 import cn.yk.gasMonitor.common.MessageConstant;
-import cn.yk.gasMonitor.common.Result;
+import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.dao.UserMapper;
 import cn.yk.gasMonitor.domain.User;
@@ -38,59 +38,59 @@ public class UserService {
         return userMapper.selectPage(page, wrapper);
     }
 
-    public Result findById(String id) {
+    public PageResult findById(String id) {
         User user = userMapper.selectById(id);
-        return new Result(true, StatusCode.OK, MessageConstant.USER_FIND_BY_ID_SUCCESS, user);
+        return new PageResult(true, StatusCode.OK, MessageConstant.USER_FIND_BY_ID_SUCCESS, user);
 
     }
 
-    public Result add(User user) {
+    public PageResult add(User user) {
         // todo 如果手机号不为空 校验
         // todo 如果邮箱不为空 校验
         if (user.getUserName().trim().equals("")) {
-            return new Result(true, StatusCode.OK, MessageConstant.USER_LOSS_USER_NAME);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_LOSS_USER_NAME);
         }
         if (user.getRoleKey() == null) {
-            return new Result(true, StatusCode.OK, MessageConstant.USER_LOSS_ROLE_KEY);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_LOSS_ROLE_KEY);
         }
 
         LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery(User.class).eq(User::getUserName, user.getUserName());
         if (userMapper.selectCount(wrapper) > 0) {
-            return new Result(true, StatusCode.OK, MessageConstant.USER_DUP_USER_NAME);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_DUP_USER_NAME);
         } else {
             user.setType(User.Type.CREATE);
             user.setDelFlag(User.DelFlag.NORMAL);
             user.setCreateTime(new Date());
 
             userMapper.insert(user);
-            return new Result(true, StatusCode.OK, MessageConstant.USER_ADD_SUCCESS);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_ADD_SUCCESS);
         }
     }
 
-    public Result update(User user) {
+    public PageResult update(User user) {
         // todo 如果手机号不为空 校验
         // todo 如果邮箱不为空 校验
         if (user.getUserName().trim().equals("")) {
-            return new Result(true, StatusCode.OK, MessageConstant.USER_LOSS_USER_NAME);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_LOSS_USER_NAME);
         }
         if (user.getRoleKey() == null) {
-            return new Result(true, StatusCode.OK, MessageConstant.USER_LOSS_ROLE_KEY);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_LOSS_ROLE_KEY);
         }
 
         LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery(User.class).eq(User::getUserName, user.getUserName()).ne(User::getId, user.getId());
         if (userMapper.selectCount(wrapper) > 0) {
-            return new Result(true, StatusCode.OK, MessageConstant.USER_DUP_USER_NAME_UPDATE);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_DUP_USER_NAME_UPDATE);
         } else {
             user.setModifyTime(new Date());
 
             userMapper.updateById(user);
-            return new Result(true, StatusCode.OK, MessageConstant.USER_UPDATE_SUCCESS);
+            return new PageResult(true, StatusCode.OK, MessageConstant.USER_UPDATE_SUCCESS);
         }
     }
 
-    public Result delete(List<String> ids) {
+    public PageResult delete(List<String> ids) {
         userMapper.deleteBatchIds(ids);
-        return new Result(true, StatusCode.OK, MessageConstant.USER_DELETE_SUCCESS);
+        return new PageResult(true, StatusCode.OK, MessageConstant.USER_DELETE_SUCCESS);
     }
 
 }

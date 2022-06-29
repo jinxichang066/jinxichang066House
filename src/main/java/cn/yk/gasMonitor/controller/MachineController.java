@@ -1,14 +1,14 @@
 package cn.yk.gasMonitor.controller;
 
+import cn.yk.gasMonitor.auth.Auth;
+import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
-import cn.yk.gasMonitor.common.Result;
+import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.domain.Machine;
+import cn.yk.gasMonitor.dto.MachineSearchDTO;
 import cn.yk.gasMonitor.service.MachineService;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import cn.yk.gasMonitor.common.MessageConstant;
-import cn.yk.gasMonitor.common.StatusCode;
-import cn.yk.gasMonitor.dto.MachineSearchDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -51,34 +52,35 @@ public class MachineController {
     }
 
     @RequestMapping("/searchAll")
-    public Result searchAll() {
+
+    public PageResult searchAll(HttpServletRequest request) {
         List<Machine> machineList = machineService.searchAll();
-        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
+        return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
     }
 
     @RequestMapping("/selectByIds")
-    public Result selectByIds(@RequestBody List<String> ids) {
+    public PageResult selectByIds(@RequestBody List<String> ids) {
         List<Machine> machineList = machineService.selectByIds(ids);
-        return new Result(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
+        return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);
     }
 
     @RequestMapping("/findById")
-    public Result findById(String id) {
+    public PageResult findById(String id) {
         return machineService.findById(id);
     }
 
     @RequestMapping("/add")
-    public Result add(@RequestBody Machine machine) {
+    public PageResult add(@RequestBody Machine machine) {
         return machineService.add(machine);
     }
 
     @RequestMapping("/update")
-    public Result update(@RequestBody Machine machine) {
+    public PageResult update(@RequestBody Machine machine) {
         return machineService.update(machine);
     }
 
     @RequestMapping("/del")
-    public Result del(@RequestBody List<String> ids) {
+    public PageResult del(@RequestBody List<String> ids) {
         return machineService.delete(ids);
     }
 
