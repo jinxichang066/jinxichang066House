@@ -44,7 +44,7 @@ public class MessageConstant {
     //---------------------------用户管理消息提示信息---------------------------------------
     public static final String USER_SEARCH_SUCCESS = "查询用户列表信息成功！";
     public static final String USER_FIND_BY_ID_SUCCESS = "获取用户信息成功！";
-    public static final String USER_ADD_SUCCESS = "新增用户信息成功！";
+    public static final String USER_ADD_SUCCESS = "新增用户信息成功！默认密码为123456";
     public static final String USER_DUP_USER_NAME = "已存在相同用户名，请勿重复添加";
     public static final String USER_DUP_USER_NAME_UPDATE = "已存在相同用户名，请检查后再修改";
     public static final String USER_UPDATE_SUCCESS = "修改用户信息成功！";
