@@ -48,6 +48,13 @@
     <link rel="stylesheet" href="plugins/layui/css/layui.css">
     <!-- 查看图片 -->
     <link rel="stylesheet" href="css/imageBox.css">
+
+    <style>
+        /*将不可点击的按钮置灰*/
+        .disabled_btn {
+            opacity: 0.5;
+        }
+    </style>
 </head>
 
 <body class="body" background="img/bg1.png">
@@ -81,7 +88,7 @@
                                 </div>
 
                                 <div class="pl-4 pl-md-7">
-                                    <a href="#" @click="admin_add('添加','useradd.html','800','450')" class="btn btn-primary"><span class="d-block">添加用户</span></a>
+                                    <a href="#" @click="admin_add('添加','useradd.html','800','520')" class="btn btn-primary"><span class="d-block">添加用户</span></a>
                                 </div>
                                 <div class="collapse show" id="collapseRecentOrders">
                                     <div class="panel-body pr-0">
@@ -125,11 +132,16 @@
                                                             </td>
                                                             <td style="padding: 0.8rem">{{community.remarks}}</td>
                                                             <td>
-                                                                <a title="编辑" href="javascript:;" @click="community_edit('编辑','useradd.html',community.id,'800','450')"
-                                                                   class="ml-5" style="text-decoration:none">
+                                                                <!--根据用户的type字段(INIT/CREATE) 判断是否赋予编辑和删除的权限-->
+                                                                <a :title="community.type == 'INIT' ? '管理员数据不可以编辑' : '编辑'" href="javascript:;"
+                                                                   @click="community.type == 'INIT' ? '' : community_edit('编辑','useradd.html',community.id,'800','520')"
+                                                                   :class="community.type == 'INIT' ? 'disabled_btn' : ''"
+                                                                   style="text-decoration:none">
                                                                     <i class="layui-icon">&#xe642;</i>
                                                                 </a>
-                                                                <a title="删除" href="javascript:;" @click="del_one(community.id)"
+                                                                <a :title="community.type == 'INIT' ? '管理员数据不可以删除' : '删除'" href="javascript:;"
+                                                                   @click="community.type == 'INIT' ? '' : del_one(community.id)"
+                                                                   :class="community.type == 'INIT' ? 'disabled_btn' : ''"
                                                                    style="text-decoration:none">
                                                                     <i class="layui-icon">&#xe640;</i>
                                                                 </a>
@@ -237,7 +249,7 @@
                 },
                 //单个删除
                 del_one(id) {
-                    this.$confirm('请问您是否要删除该设备信息?', '提示', {
+                    this.$confirm('请问您是否要删除该用户信息?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'

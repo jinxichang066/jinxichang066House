@@ -49,10 +49,10 @@ public class Role {
     private Date modifyTime;
 
     public enum RoleKey {
-        ADMIN,
-        ROOT,
-        USER,
-        VISITOR
+        系统管理员,
+        厂家管理员,
+        系统用户,
+        游客用户
     }
 
     public enum State {

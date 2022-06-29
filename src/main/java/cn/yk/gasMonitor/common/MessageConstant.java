@@ -49,5 +49,7 @@ public class MessageConstant {
     public static final String USER_DUP_USER_NAME_UPDATE = "已存在相同用户名，请检查后再修改";
     public static final String USER_UPDATE_SUCCESS = "修改用户信息成功！";
     public static final String USER_DELETE_SUCCESS = "删除用户信息成功！";
+    public static final String USER_LOSS_USER_NAME = "用户名不能为空！";
+    public static final String USER_LOSS_ROLE_KEY = "用户角色不能为空！";
 
 }
