@@ -46,6 +46,7 @@ public class TokenService {
      * todo 此处最好用redis验证，为了不给客户引入额外组件，暂时用数据库实现
      */
     public boolean validToken(String gasToken) {
+        log.info("[验证token]:{}", gasToken);
         Token tokenEx = tokenMapper.selectOne(Wrappers.lambdaQuery(Token.class).eq(Token::getId, gasToken));
 
         // 未登录

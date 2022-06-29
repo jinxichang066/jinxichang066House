@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="old/css/font.css">
 </head>
 
-<body>
+<body onload="validToken()">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header header header-demo">
         <div class="layui-main">
@@ -195,6 +195,27 @@
     function one_set(title, url, w, h) {
         x_admin_show(title, url, w, h);
     }
+</script>
+
+<script>
+    function validToken() {
+        let token = getGasToken();
+        $.ajax({
+            type: "post",
+            url: apiPath + "/token/valid",
+            data: {"token": token},
+            dataType: "json",
+            success: function (res) {
+                if (res.code === 2000) {
+
+                } else if (res.code === 401) {
+                    window.location.href = "login.html";
+                }
+            }
+        })
+    }
+
+    setInterval(validToken,20000)
 </script>
 
 </body>
