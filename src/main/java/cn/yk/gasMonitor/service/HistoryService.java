@@ -13,6 +13,7 @@ import cn.yk.gasMonitor.dto.HistorySearchDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
@@ -232,26 +233,40 @@ public class HistoryService {
                     pointInfoList.add(pointInfo);
                 }
                 if (CollectionUtil.isNotEmpty(pointInfoList)) {
-                    // 从众多pointInfo中[随机]取出一条
-                    PointInfo pointInfo = pointInfoList.get(new Random().nextInt(pointInfoList.size()));
-                    // 从这个pointInfo中的众多气体中[随机]选择一个,因为不选择一个的话，多个气体的矩形框会绘制到一起
-                    // todo 这个最终的逻辑需要跟客户确认
-                    List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
-                    String index = indexList.get(new Random().nextInt(indexList.size()));
-                    // 从上边的map中获取颜色
-                    String color = indexColorMap.get(index);
-                    log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
+                    /** 2022-06-28 跟客户确认要一条warningInfo对应的pointInfo中所有记录，并且每条记录的气体都绘制,之前随机的逻辑作废
+
+                     // 从众多pointInfo中[随机]取出一条
+                     PointInfo pointInfo = pointInfoList.get(new Random().nextInt(pointInfoList.size()));
+                     // 从这个pointInfo中的众多气体中[随机]选择一个,因为不选择一个的话，多个气体的矩形框会绘制到一起
+                     List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
+                     String index = indexList.get(new Random().nextInt(indexList.size()));
+                     // 从上边的map中获取颜色
+                     String color = indexColorMap.get(index);
+                     log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
+                     **/
 
                     // 使用Graphics绘制矩形
                     Graphics g = image.getGraphics();
-                    g.setColor(new Color(Integer.parseInt(color)));//画笔颜⾊
-                    if (mode.equals(VI)) {
-                        g.drawRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                        g.fillRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());
-                    } else {
-                        g.drawRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                        g.fillRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());
+
+                    for (PointInfo pointInfo : pointInfoList) {
+                        List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
+                        for (String index : indexList) {
+                            String color = indexColorMap.get(index);
+                            log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
+
+                            if (!StringUtils.isEmpty(color)) {
+                                g.setColor(new Color(Integer.parseInt(color)));//画笔颜⾊
+                                if (mode.equals(VI)) {
+                                    g.drawRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                                    g.fillRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());
+                                } else {
+                                    g.drawRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                                    g.fillRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());
+                                }
+                            }
+                        }
                     }
+
                     g.dispose();
                 }
 
