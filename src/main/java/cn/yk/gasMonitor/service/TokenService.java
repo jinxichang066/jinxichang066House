@@ -74,4 +74,8 @@ public class TokenService {
         }
     }
 
+    public void logout(String token) {
+        tokenMapper.deleteById(token);
+    }
+
 }

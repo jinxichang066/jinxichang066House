@@ -27,12 +27,18 @@ public class TokenController {
 
     @RequestMapping("/valid")
     public PageResult valid(@RequestParam String token) {
-        boolean success = tokenService.validToken(token,false);
+        boolean success = tokenService.validToken(token, false);
         if (success) {
             return new PageResult(true, StatusCode.OK, MessageConstant.LOGIN_SUCCESS);
         } else {
             return new PageResult(true, StatusCode.LOGIN_EXPIRED, MessageConstant.LOGIN_EXPIRED);
         }
+    }
+
+    @RequestMapping("/logout")
+    public PageResult logout(@RequestParam String token) {
+        tokenService.logout(token);
+        return new PageResult(true, StatusCode.OK, "");
     }
 
 

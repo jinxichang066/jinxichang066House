@@ -96,6 +96,29 @@
 <script src="js/auth.js"></script>
 
 <script>
+    // 定时验证token有效性 失效后自动退出登录
+    function validToken() {
+        let token = getGasToken();
+        $.ajax({
+            type: "post",
+            url: apiPath + "/token/valid",
+            data: {"token": token},
+            dataType: "json",
+            success: function (res) {
+                if (res.code === 2000) {
+
+                } else if (res.code === 401) {
+                    window.location.href = "login.html";
+                }
+            }
+        })
+    }
+
+    // 单位：毫秒
+    setInterval(validToken, 300000)
+</script>
+
+<script>
     function getMachineState(machineState) {
         if (machineState === "ONLINE") {
             return "在线";
@@ -165,25 +188,16 @@
      */
     function logout() {
 
-        // $.ajax({
-        //     type: "post",
-        //     url: "xxxxx",
-        //     data: {e: 1},
-        //     dataType: "json",
-        //     success: function (data) {
-        //         if (data.status == 1) {
-        //             layer.msg(data.info, {icon: 1, time: 1000});
-        //             setTimeout("window.location.href='xxxx'", 2000);
-        //             return false;
-        //             return false;
-        //         } else {
-        //             layer.msg(data.info, {icon: 5, time: 2000});
-        //             return false;
-        //         }
-        //     }
-        //
-        // })
-        // return false;
+        let token = getGasToken();
+        $.ajax({
+            type: "post",
+            url: apiPath + "/token/logout",
+            data: {"token": token},
+            dataType: "json",
+            success: function (res) {
+
+            }
+        })
 
         location.href = "login.html";
 
@@ -192,29 +206,6 @@
     function one_set(title, url, w, h) {
         x_admin_show(title, url, w, h);
     }
-</script>
-
-<script>
-    // 定时验证token有效性 失效后自动退出登录
-    function validToken() {
-        let token = getGasToken();
-        $.ajax({
-            type: "post",
-            url: apiPath + "/token/valid",
-            data: {"token": token},
-            dataType: "json",
-            success: function (res) {
-                if (res.code === 2000) {
-
-                } else if (res.code === 401) {
-                    window.location.href = "login.html";
-                }
-            }
-        })
-    }
-
-    // 单位：毫秒
-    setInterval(validToken, 300000)
 </script>
 
 </body>
