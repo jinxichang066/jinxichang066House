@@ -113,7 +113,7 @@
         type: "post",
         url: apiPath + "/machine/searchAll",
         beforeSend: function (xhr) {
-            xhr.setRequestHeader('gasToken', getGasToken());
+            xhr.setRequestHeader(tokenKey, getGasToken());
         },
         data: {},
         dataType: "json",
