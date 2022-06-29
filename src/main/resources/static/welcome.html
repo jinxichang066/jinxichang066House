@@ -42,6 +42,8 @@
     <script src="js/time.js"></script>
     <script src="js/welcome.js"></script>
     <script src="url.js"></script>
+    <script src="js/auth.js"></script>
+
     <!-- import element-ui CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- import layui CSS -->
@@ -163,7 +165,6 @@
 
         let path = "";
         let jsonObject = {};
-        let requestHeader = {};
 
         if (id === "") {
             path = apiPath + "/machine/search";
@@ -178,7 +179,7 @@
             };
         }
 
-        axios.post(path, jsonObject, requestHeader).then((res) => {
+        axios.post(path, jsonObject, {headers: {"gasToken": getGasToken()}}).then((res) => {
             console.log("获取监测设备list:");
             console.log(res.data.data);
             let machineList = res.data.data;

@@ -42,6 +42,8 @@
     <script src="js/time.js"></script>
     <script src="js/welcome.js"></script>
     <script src="url.js"></script>
+    <script src="js/auth.js"></script>
+
     <!-- import element-ui CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- import layui CSS -->
@@ -50,7 +52,7 @@
     <link rel="stylesheet" href="css/imageBox.css">
 </head>
 
-<body class="body" background= "img/bg1.png">
+<body class="body" background="img/bg1.png">
 <div id="app">
 
     <!-- main content -->
@@ -293,9 +295,9 @@
             }
         },
         methods: {
-            //分页条件查询小区列表
+            //分页条件查询设备列表
             search() {
-                axios.post(apiPath + "/machine/searchCondition", this.searchMap).then((res) => {
+                axios.post(apiPath + "/machine/searchCondition", this.searchMap,{headers: {"gasToken": getGasToken()}}).then((res) => {
                     app.communityList = res.data.data;
                     app.total = res.data.total;
                 });

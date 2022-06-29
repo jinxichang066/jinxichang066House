@@ -1,5 +1,6 @@
 package cn.yk.gasMonitor.controller;
 
+import cn.yk.gasMonitor.auth.Auth;
 import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -30,7 +32,8 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("/searchCondition")
-    public PageResult searchCondition(@RequestBody UserSearchDTO userSearchDTO) {
+    @Auth
+    public PageResult searchCondition(HttpServletRequest request, @RequestBody UserSearchDTO userSearchDTO) {
         IPage<User> page = userService.searchCondition(userSearchDTO);
         return new PageResult(true, StatusCode.OK, MessageConstant.USER_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }

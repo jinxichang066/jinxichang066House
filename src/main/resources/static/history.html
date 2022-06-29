@@ -42,6 +42,8 @@
     <script src="js/time.js"></script>
     <script src="js/welcome.js"></script>
     <script src="url.js"></script>
+    <script src="js/auth.js"></script>
+
     <!-- import element-ui CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- import layui CSS -->
@@ -336,7 +338,7 @@
                 let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
                 correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
-                axios.post(apiPath + "/history/search", correctSearchMap, {}).then((res) => {
+                axios.post(apiPath + "/history/search", correctSearchMap, {headers: {"gasToken": getGasToken()}}).then((res) => {
                     app.communityList = res.data.data;
                     if (app.communityList != null && app.communityList.length !== 0) {
                         for (let i = 0; i < app.communityList.length; i++) {
@@ -476,7 +478,7 @@
         },
         created: function () {//Vue生命周期方法，加载页面时会执行该方法
             //加载气体名称搜索框数据源
-            axios.post(apiPath + "/history/getGasNameList", {}, {}).then((res) => {
+            axios.post(apiPath + "/history/getGasNameList", {}, {headers: {"gasToken": getGasToken()}}).then((res) => {
                 let gasNameList = res.data.data;
                 if (gasNameList != null && gasNameList.length !== 0) {
                     for (let i = 0; i < gasNameList.length; i++) {
@@ -490,7 +492,7 @@
 
             //<el-select>控件加载数据源，即设备列表和监测模式
             this.searchMap.scanMode = this.scanModeOptions[0].value;
-            axios.post(apiPath + "/machine/searchAll", {}, {}).then((res) => {
+            axios.post(apiPath + "/machine/searchAll", {}, {headers: {"gasToken": getGasToken()}}).then((res) => {
                 let machineList = res.data.data;
                 if (machineList != null && machineList.length !== 0) {
                     for (let i = 0; i < machineList.length; i++) {

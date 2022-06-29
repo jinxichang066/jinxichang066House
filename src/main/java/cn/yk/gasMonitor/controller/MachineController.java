@@ -33,26 +33,28 @@ public class MachineController {
     private MachineService machineService;
 
     @RequestMapping("/search")
-    public PageResult search(@RequestBody JSONObject jsonObject) {
+    @Auth
+    public PageResult search(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         IPage<Machine> page = machineService.search(jsonObject);
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }
 
-
     @RequestMapping("/searchOneList")
-    public PageResult searchOneList(@RequestBody JSONObject jsonObject) {
+    @Auth
+    public PageResult searchOneList(HttpServletRequest request, @RequestBody JSONObject jsonObject) {
         IPage<Machine> page = machineService.searchOneList(jsonObject);
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }
 
     @RequestMapping("/searchCondition")
-    public PageResult searchCondition(@RequestBody MachineSearchDTO machineSearchDTO) {
+    @Auth
+    public PageResult searchCondition(HttpServletRequest request, @RequestBody MachineSearchDTO machineSearchDTO) {
         IPage<Machine> page = machineService.searchCondition(machineSearchDTO);
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, page.getRecords(), page.getTotal());
     }
 
     @RequestMapping("/searchAll")
-
+    @Auth
     public PageResult searchAll(HttpServletRequest request) {
         List<Machine> machineList = machineService.searchAll();
         return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_SEARCH_SUCCESS, machineList);

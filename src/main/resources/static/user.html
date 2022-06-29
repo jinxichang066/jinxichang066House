@@ -42,6 +42,8 @@
     <script src="js/time.js"></script>
     <script src="js/welcome.js"></script>
     <script src="url.js"></script>
+    <script src="js/auth.js"></script>
+
     <!-- import element-ui CSS -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- import layui CSS -->
@@ -242,7 +244,7 @@
             methods: {
                 //分页条件查询用户列表
                 search() {
-                    axios.post(apiPath + "/user/searchCondition", this.searchMap).then((res) => {
+                    axios.post(apiPath + "/user/searchCondition", this.searchMap, {headers: {"gasToken": getGasToken()}}).then((res) => {
                         app.communityList = res.data.data;
                         app.total = res.data.total;
                     });

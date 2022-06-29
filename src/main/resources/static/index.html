@@ -195,6 +195,7 @@
 </script>
 
 <script>
+    // 定时验证token有效性 失效后自动退出登录
     function validToken() {
         let token = getGasToken();
         $.ajax({
@@ -212,7 +213,7 @@
         })
     }
 
-    setInterval(validToken,20000)
+    setInterval(validToken, 300000)
 </script>
 
 </body>

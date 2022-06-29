@@ -1,5 +1,6 @@
 package cn.yk.gasMonitor.controller;
 
+import cn.yk.gasMonitor.auth.Auth;
 import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.dto.HistorySearchDTO;
 import cn.yk.gasMonitor.service.GasSpecService;
@@ -7,6 +8,7 @@ import cn.yk.gasMonitor.service.HistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -23,7 +25,8 @@ public class HistoryController {
     private final GasSpecService gasSpecService;
 
     @RequestMapping("/search")
-    public PageResult search(@RequestBody HistorySearchDTO historySearchDTO) {
+    @Auth
+    public PageResult search(HttpServletRequest request, @RequestBody HistorySearchDTO historySearchDTO) {
         return historyService.search(historySearchDTO);
 
     }
@@ -35,7 +38,8 @@ public class HistoryController {
     }
 
     @RequestMapping("/getGasNameList")
-    public PageResult getGasNameList() {
+    @Auth
+    public PageResult getGasNameList(HttpServletRequest request) {
         return gasSpecService.getGasNameList();
 
     }
