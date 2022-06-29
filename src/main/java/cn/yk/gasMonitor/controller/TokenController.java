@@ -27,7 +27,7 @@ public class TokenController {
 
     @RequestMapping("/valid")
     public PageResult valid(@RequestParam String token) {
-        boolean success = tokenService.validToken(token);
+        boolean success = tokenService.validToken(token,false);
         if (success) {
             return new PageResult(true, StatusCode.OK, MessageConstant.LOGIN_SUCCESS);
         } else {

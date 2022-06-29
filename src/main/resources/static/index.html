@@ -118,9 +118,6 @@
         data: {},
         dataType: "json",
         success: function (res) {
-            // 验证登录状态
-            doAuth(res);
-
             let machineList = res.data;
             if (machineList.length !== 0) {
                 //菜单

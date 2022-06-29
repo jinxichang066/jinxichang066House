@@ -45,7 +45,7 @@ public class TokenService {
      * token验证
      * todo 此处最好用redis验证，为了不给客户引入额外组件，暂时用数据库实现
      */
-    public boolean validToken(String gasToken) {
+    public boolean validToken(String gasToken, boolean updateFlag) {
         log.info("[验证token]:{}", gasToken);
         Token tokenEx = tokenMapper.selectOne(Wrappers.lambdaQuery(Token.class).eq(Token::getId, gasToken));
 
@@ -66,8 +66,10 @@ public class TokenService {
             return false;
         } else { // 未过期
             log.info("[验证token]验证成功");
-            tokenEx.setOperateTime(now);
-            tokenMapper.updateById(tokenEx);
+            if (updateFlag) {
+                tokenEx.setOperateTime(now);
+                tokenMapper.updateById(tokenEx);
+            }
             return true;
         }
     }
