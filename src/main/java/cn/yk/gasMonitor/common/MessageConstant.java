@@ -41,12 +41,13 @@ public class MessageConstant {
     public static final String LOGIN_USER_NOT_EXIST = "用户不存在！";
     public static final String LOGIN_PASSWORD_ERROR = "密码错误！";
 
-    public static final String MACHINE_FIND_BY_ID_SUCCESS1 = "获取设备信息成功！";
-    public static final String MACHINE_ADD_SUCCESS1 = "新增设备信息成功！";
-    public static final String MACHINE_DUP_MACHINE_ID1 = "已存在相同设备ID，请勿重复添加";
-    public static final String MACHINE_DUP_MACHINE_ID_UPDATE1 = "已存在相同设备ID，请检查后再修改";
-    public static final String MACHINE_UPDATE_SUCCESS1 = "修改设备信息成功！";
-    public static final String MACHINE_DELETE_SUCCESS1 = "删除设备信息成功！";
-    public static final String MACHINE_URL_NOT_MATCH1 = "设备URL必须为IP地址格式！";
+    //---------------------------用户管理消息提示信息---------------------------------------
+    public static final String USER_SEARCH_SUCCESS = "查询用户列表信息成功！";
+    public static final String USER_FIND_BY_ID_SUCCESS = "获取用户信息成功！";
+    public static final String USER_ADD_SUCCESS = "新增用户信息成功！";
+    public static final String USER_DUP_USER_NAME = "已存在相同用户名，请勿重复添加";
+    public static final String USER_DUP_USER_NAME_UPDATE = "已存在相同用户名，请检查后再修改";
+    public static final String USER_UPDATE_SUCCESS = "修改用户信息成功！";
+    public static final String USER_DELETE_SUCCESS = "删除用户信息成功！";
 
 }

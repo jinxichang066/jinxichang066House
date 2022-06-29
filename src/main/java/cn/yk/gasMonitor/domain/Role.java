@@ -1,42 +1,38 @@
 package cn.yk.gasMonitor.domain;
 
+import cn.yk.gasMonitor.handler.JsonStringArrayTypeHandler;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Jin Xichang
  * @date 2022/4/20
  **/
 @Data
-@TableName("g_user")
-public class User {
+@TableName("g_role")
+public class Role {
 
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
-    private String userName;
+    private String roleName;
 
-    private String password;
+    private RoleKey roleKey;
 
-    private String realName;
+    private State state;
 
-    private String phone;
-
-    private String email;
-
-    private Type type;
-
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date lastLoginTime;
+    private int sortNum;
 
     private DelFlag delFlag;
 
     private String remarks;
 
-    private Role.RoleKey roleKey;
+    @TableField(typeHandler = JsonStringArrayTypeHandler.class)
+    private List<String> menuIdList;
 
     @TableField(value = "createBy", fill = FieldFill.INSERT)
     private String createBy;
@@ -52,16 +48,16 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date modifyTime;
 
-    public enum Type {
-        /**
-         * 初始化的
-         */
-        INIT,
+    public enum RoleKey {
+        ADMIN,
+        ROOT,
+        USER,
+        VISITOR
+    }
 
-        /**
-         * 后创建的
-         */
-        CREATE
+    public enum State {
+        NORMAL,
+        ABNORMAL
     }
 
     public enum DelFlag {

@@ -11,32 +11,33 @@ import java.util.Date;
  * @date 2022/4/20
  **/
 @Data
-@TableName("g_user")
-public class User {
+@TableName("g_menu")
+public class Menu {
 
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
-    private String userName;
+    private String menuName;
 
-    private String password;
+    private MenuType menuType;
 
-    private String realName;
+    private String menuParentId;
 
-    private String phone;
+    private int sortNum;
 
-    private String email;
+    private String path;
 
-    private Type type;
+    private String icon;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date lastLoginTime;
+    private String component;
+
+    private State state;
 
     private DelFlag delFlag;
 
     private String remarks;
 
-    private Role.RoleKey roleKey;
+    private int level;
 
     @TableField(value = "createBy", fill = FieldFill.INSERT)
     private String createBy;
@@ -52,16 +53,14 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date modifyTime;
 
-    public enum Type {
-        /**
-         * 初始化的
-         */
-        INIT,
+    public enum MenuType{
+        DIR,
+        MENU
+    }
 
-        /**
-         * 后创建的
-         */
-        CREATE
+    public enum State {
+        NORMAL,
+        ABNORMAL
     }
 
     public enum DelFlag {
