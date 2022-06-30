@@ -43,7 +43,7 @@ public class LoginService {
         }
 
         // 生成token
-        Token token = tokenService.createToken(user.getId());
+        Token token = tokenService.createToken(user);
 
         result.setCode(StatusCode.OK);
         result.setMessage(MessageConstant.LOGIN_SUCCESS);

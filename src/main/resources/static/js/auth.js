@@ -30,3 +30,15 @@ function getGasToken() {
     }
     return token;
 }
+
+// 获取ls中的userName
+function getUserName() {
+    let userName = '';
+    let tokenJson = JSON.parse(localStorage.getItem(tokenKey));
+    if (tokenJson != null) {
+        let user = JSON.parse(tokenJson.user);
+        userName = user.userName;
+    }
+    console.log("获取用户名：" + userName);
+    return userName;
+}

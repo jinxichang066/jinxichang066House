@@ -4,6 +4,8 @@ import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.yk.gasMonitor.dao.TokenMapper;
 import cn.yk.gasMonitor.domain.Token;
+import cn.yk.gasMonitor.domain.User;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,14 +29,15 @@ public class TokenService {
     @Value("${custom.system.setting.expireTime}")
     private Long expiredTime;
 
-    public Token createToken(String userId) {
+    public Token createToken(User user) {
         Date loginTime = new Date();
         Token token = new Token();
         token.setLoginTime(loginTime);
         token.setOperateTime(loginTime);
         token.setMenuIdList(new ArrayList<>());
         token.setRoleIdList(new ArrayList<>());
-        token.setUserId(userId);
+        token.setUserId(user.getId());
+        token.setUser(JSONObject.toJSONString(user));
 
         tokenMapper.insert(token);
 

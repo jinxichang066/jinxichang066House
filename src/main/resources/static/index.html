@@ -29,9 +29,8 @@
                 <li class="layui-nav-item" id="time" style="margin-right: 50px;font-weight: 300;font-size: 16px;color: #fff;position: absolute;left: -250px;top: 0"></li>
                 <li class="layui-nav-item"><img src="img/avatar/user_head.jpg" class="layui-circle" width="35px" height="35px" alt=""></li>
 
-                <li class="layui-nav-item"><a href="javascript:;">admin</a>
+                <li class="layui-nav-item"><a id="userName-a" href="javascript:;"></a>
                     <dl class="layui-nav-child">
-                        <!-- 二级菜单 -->
                         <dd><a href="javascript:;" onclick="one_set('个人信息','one_set.html','1000','600')">个人信息</a>
                         </dd>
                         <dd><a href="javascript:;" onclick="logout()">退出</a></dd>
@@ -277,6 +276,11 @@
     function one_set(title, url, w, h) {
         x_admin_show(title, url, w, h);
     }
+</script>
+
+<script>
+    let userName = document.getElementById("userName-a");
+    userName.innerText = getUserName();
 </script>
 
 </body>
