@@ -5,6 +5,7 @@ import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.dao.UserMapper;
 import cn.yk.gasMonitor.domain.User;
+import cn.yk.gasMonitor.dto.UserDTO;
 import cn.yk.gasMonitor.dto.UserSearchDTO;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -28,6 +29,8 @@ public class UserService {
 
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private TokenService tokenService;
 
     public IPage<User> searchCondition(UserSearchDTO userSearchDTO) {
         Page<User> page = new Page<>(userSearchDTO.getPageNum(), userSearchDTO.getPageSize());
@@ -86,6 +89,30 @@ public class UserService {
             userMapper.updateById(user);
             return new PageResult(true, StatusCode.OK, MessageConstant.USER_UPDATE_SUCCESS);
         }
+    }
+
+    public PageResult setSelf(UserDTO userDTO) {
+        String newPassword = userDTO.getNewPassword().trim();
+
+        User userEx = userMapper.selectById(userDTO.getId());
+        if (userEx != null) {
+            if (!userEx.getPassword().equals(userDTO.getPassword())) {
+                return new PageResult(true, StatusCode.OK, "用户密码错误!");
+            } else {
+                userEx.setRealName(userDTO.getRealName());
+                userEx.setPhone(userDTO.getPhone());
+                userEx.setEmail(userDTO.getEmail());
+                // 如果输入了新密码 就修改并清除token
+                if (org.apache.commons.lang3.StringUtils.isNotBlank(newPassword)) {
+                    userEx.setPassword(newPassword);
+                    tokenService.deleteTokenByUserId(userEx.getId());
+                }
+
+                userEx.setModifyTime(new Date());
+                userMapper.updateById(userEx);
+            }
+        }
+        return new PageResult(true, StatusCode.OK, org.apache.commons.lang3.StringUtils.isNotBlank(newPassword) ? "密码修改成功，请退出系统重新登录" : "修改成功");
     }
 
     public PageResult delete(List<String> ids) {

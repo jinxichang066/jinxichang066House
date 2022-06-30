@@ -5,6 +5,7 @@ import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.domain.User;
+import cn.yk.gasMonitor.dto.UserDTO;
 import cn.yk.gasMonitor.dto.UserSearchDTO;
 import cn.yk.gasMonitor.service.UserService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -57,5 +58,11 @@ public class UserController {
     public PageResult del(@RequestBody List<String> ids) {
         return userService.delete(ids);
     }
+
+    @RequestMapping("/setSelf")
+    public PageResult setSelf(@RequestBody UserDTO userDTO) {
+        return userService.setSelf(userDTO);
+    }
+
 
 }

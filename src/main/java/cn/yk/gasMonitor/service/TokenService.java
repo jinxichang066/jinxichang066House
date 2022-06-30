@@ -90,4 +90,8 @@ public class TokenService {
         }
     }
 
+    public void deleteTokenByUserId(String userId) {
+        tokenMapper.delete(Wrappers.lambdaQuery(Token.class).eq(Token::getUserId, userId));
+    }
+
 }
