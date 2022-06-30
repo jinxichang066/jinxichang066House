@@ -352,12 +352,17 @@
                     app.total = res.data.total;
                 });
             },
+
             exportWord() {
                 // 因为option控件的value属性不能重复的问题，在之前加载machineUrl的时候拼接了"^+index"
                 // 使用前要剔除
                 let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
                 correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
+                if(this.searchMap.startTime === ''|| this.searchMap.endTime===''){
+                    alert("请选择导出报表的时间范围")
+                    return false;
+                }
                 axios.post(apiPath + "/history/assembleWord",
                     correctSearchMap,
                     {headers: {"gasToken": getGasToken()}, responseType: 'blob'}).then((res) => {
