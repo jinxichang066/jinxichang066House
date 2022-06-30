@@ -15,10 +15,7 @@ import com.deepoove.poi.util.TableTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -32,8 +29,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.Date;
 import java.util.List;
 import java.util.*;
+
+import static cn.hutool.core.date.DatePattern.NORM_DATETIME_MINUTE_PATTERN;
 
 /**
  * @author Jin Xichang
@@ -185,14 +185,14 @@ public class HistoryService {
     }
 
     public void getImage(String machineUrl, String warningInfoId, String mode, HttpServletResponse response) {
-        InputStream imageInputStream = getImageInputStream(machineUrl, warningInfoId, mode);
+        InputStream imageInputStream = getImageInputStream(machineUrl, warningInfoId, mode, new String[]{""});
         // 写回response
         if (imageInputStream != null) {
             ServletUtil.write(response, imageInputStream);
         }
     }
 
-    private InputStream getImageInputStream(String machineUrl, String warningInfoId, String mode) {
+    private InputStream getImageInputStream(String machineUrl, String warningInfoId, String mode, String[] cons) {
         ByteArrayInputStream byteArrayInputStream = null;
 
         Connection conn = null;
@@ -232,7 +232,7 @@ public class HistoryService {
                 // 使用ImageIO处理图像
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
 
-                String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames from pointinfor where waringid = " + warningInfoId;
+                String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames, cons from pointinfor where waringid = " + warningInfoId;
                 ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
                 List<PointInfo> pointInfoList = new ArrayList<>();
                 while (pointInfoRs.next()) {
@@ -249,6 +249,8 @@ public class HistoryService {
                     pointInfo.setFovy_1(pointInfoRs.getInt("fovy_1"));
                     pointInfo.setGasindexs(pointInfoRs.getString("gasindexs"));
                     pointInfo.setGasnames(pointInfoRs.getString("gasnames"));
+
+                    cons[0] = pointInfoRs.getString("cons");
 
                     pointInfoList.add(pointInfo);
                 }
@@ -394,13 +396,50 @@ public class HistoryService {
     public void assembleWord(HttpServletResponse response, HistorySearchDTO historySearchDTO) throws IOException, InvalidFormatException {
         List<History> historyList = getHistoryList(historySearchDTO);
 
-        // 表头
         XWPFDocument doc = new XWPFDocument();
+
+        // 标题
+        XWPFParagraph paragraph11 = doc.createParagraph();
+        // 对齐方式
+        paragraph11.setAlignment(ParagraphAlignment.CENTER);
+        // 段落末尾创建XWPFRun
+        XWPFRun run11 = paragraph11.createRun();
+        run11.setText("危化气体监测记录");
+        run11.setFontSize(24);
+        run11.setBold(true);
+
+        XWPFParagraph paragraphNull = doc.createParagraph();
+        // 对齐方式
+        paragraphNull.setAlignment(ParagraphAlignment.LEFT);
+        // 段落末尾创建XWPFRun
+        XWPFRun runNull = paragraphNull.createRun();
+        runNull.setText("");
+
+        XWPFParagraph paragraph22 = doc.createParagraph();
+        // 对齐方式
+        paragraph22.setAlignment(ParagraphAlignment.LEFT);
+        // 段落末尾创建XWPFRun
+        XWPFRun run22 = paragraph22.createRun();
+        run22.setText(DateUtil.format(historySearchDTO.getStartTime(), NORM_DATETIME_MINUTE_PATTERN) + " - " + DateUtil.format(historySearchDTO.getEndTime(), NORM_DATETIME_MINUTE_PATTERN) + " " +
+                "监测结果");
+        run22.setFontSize(12);
+        run22.setBold(true);
+
+        XWPFParagraph paragraphNull1 = doc.createParagraph();
+        // 对齐方式
+        paragraphNull1.setAlignment(ParagraphAlignment.LEFT);
+        // 段落末尾创建XWPFRun
+        XWPFRun runNull1 = paragraphNull1.createRun();
+        runNull1.setText("");
+
+        // 表头
         XWPFTable table = doc.createTable(4, 6);
         table.getRow(0).getCell(0).setText("设备地点");
         table.getRow(0).getCell(4).setText("设备编号");
+        //table.getRow(0).getCell(5).setText("设备编号");
         table.getRow(1).getCell(0).setText("监测人员");
         table.getRow(2).getCell(0).setText("汇总日期");
+        table.getRow(2).getCell(1).setText(DateUtil.format(new Date(), NORM_DATETIME_MINUTE_PATTERN));
         table.getRow(3).getCell(0).setText("序号");
         table.getRow(3).getCell(1).setText("监测时间");
         table.getRow(3).getCell(2).setText("气体名称");
@@ -416,14 +455,16 @@ public class HistoryService {
                 table.getRow(4 + i).getCell(0).setText(String.valueOf(history.getId()));
                 table.getRow(4 + i).getCell(1).setText(String.valueOf(history.getDTime()));
                 table.getRow(4 + i).getCell(2).setText(history.getGasNames());
-                table.getRow(4 + i).getCell(3).setText("99.03");
                 table.getRow(4 + i).getCell(4).setText(getScanMode(history.getScanMode()));
                 XWPFParagraph p1 = table.getRow(4 + i).getCell(5).addParagraph();
                 XWPFRun run = p1.createRun();
-                InputStream inputStream = getImageInputStream(historySearchDTO.getMachineUrl(), String.valueOf(history.getId()), VI);
+
+                String[] cons = {""}; // 采用引用传递修改cons浓度值
+                InputStream inputStream = getImageInputStream(historySearchDTO.getMachineUrl(), String.valueOf(history.getId()), VI, cons);
                 if (inputStream != null) {
                     run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, "Generated", Units.toEMU(64), Units.toEMU(34));
                 }
+                table.getRow(4 + i).getCell(3).setText(cons[0]);
             }
         }
 
