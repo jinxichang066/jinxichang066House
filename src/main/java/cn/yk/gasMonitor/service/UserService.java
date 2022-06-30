@@ -7,6 +7,7 @@ import cn.yk.gasMonitor.dao.UserMapper;
 import cn.yk.gasMonitor.domain.User;
 import cn.yk.gasMonitor.dto.UserDTO;
 import cn.yk.gasMonitor.dto.UserSearchDTO;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -118,6 +119,20 @@ public class UserService {
     public PageResult delete(List<String> ids) {
         userMapper.deleteBatchIds(ids);
         return new PageResult(true, StatusCode.OK, MessageConstant.USER_DELETE_SUCCESS);
+    }
+
+    public PageResult revertPassword(JSONObject jsonObject) {
+        String id = jsonObject.getString("id");
+        User user = userMapper.selectById(id);
+        if (user != null) {
+            user.setPassword("e10adc3949ba59abbe56e057f20f883e");
+            user.setModifyTime(new Date());
+
+            userMapper.updateById(user);
+
+            tokenService.deleteTokenByUserId(id);
+        }
+        return new PageResult(true, StatusCode.OK, "");
     }
 
     public User getUser(String id) {

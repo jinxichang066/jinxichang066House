@@ -8,6 +8,7 @@ import cn.yk.gasMonitor.domain.User;
 import cn.yk.gasMonitor.dto.UserDTO;
 import cn.yk.gasMonitor.dto.UserSearchDTO;
 import cn.yk.gasMonitor.service.UserService;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -64,5 +65,9 @@ public class UserController {
         return userService.setSelf(userDTO);
     }
 
+    @RequestMapping("/revertPassword")
+    public PageResult revertPassword(@RequestBody JSONObject jsonObject) {
+        return userService.revertPassword(jsonObject);
+    }
 
 }

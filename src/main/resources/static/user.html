@@ -147,6 +147,13 @@
                                                                    style="text-decoration:none">
                                                                     <i class="layui-icon">&#xe640;</i>
                                                                 </a>
+                                                                <a :title="community.type == 'INIT' ? '管理员密码不可重置' : '重置密码'" href="javascript:;"
+                                                                   @click="community.type == 'INIT' ? '' : revertPassword(community.id)"
+                                                                   :class="community.type == 'INIT' ? 'disabled_btn' : ''"
+                                                                   style="text-decoration:none">
+                                                                    <i class="layui-icon">&#xe631;</i>
+                                                                </a>
+
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -277,6 +284,31 @@
                         this.$message({
                             type: 'info',
                             message: '已取消删除'
+                        });
+                    });
+                },
+                revertPassword(id) {
+                    this.$confirm('请问您是否要重置该用户的密码?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        axios.post(apiPath + "/user/revertPassword", {"id": id}).then((res) => {
+                            if (res.data.flag) {
+                                this.$message({
+                                    type: 'success',
+                                    message: '重置成功!'
+                                });
+                            }
+                            //把页面置为1，重新获取列表数据
+                            this.searchMap.pageNum = 1;
+                            this.search();
+                        });
+
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消重置'
                         });
                     });
                 },
