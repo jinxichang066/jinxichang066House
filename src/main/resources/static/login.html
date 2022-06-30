@@ -88,7 +88,7 @@
                                                 </div>
                                                 <div class="form-group d-flex mb-0 mt-6">
                                                     <!--                                <button class="btn btn-warning" type="submit">Login</button>-->
-                                                    <a class="btn btn-outline-primary" onclick="login()" style="font-size: 0.9rem;width: 100%;">
+                                                    <a id="loginBtn" class="btn btn-outline-primary" onclick="login()" style="font-size: 0.9rem;width: 100%;">
                                                         <i class="fas fa-chevron-circle-right mr-2"></i>登录
                                                     </a>
                                                 </div>
@@ -192,6 +192,14 @@
         let div = document.getElementById(`longbow`)
         div.style.display = "block";
     }
+</script>
+
+<script>
+    //回车绑定
+    $(".input-light").keydown(function(event) {
+        if (event.which == "13")
+            login();
+    });
 </script>
 </body>
 </html>
