@@ -43,27 +43,26 @@
     </div>
 
     <!--左侧导航区域-->
+    <!--动态加载-->
     <div class="layui-side layui-bg-black x-side show_list" style="left:0px;" id="table1">
         <div class="layui-side-scroll">
-            <ul class="layui-nav layui-nav-tree site-demo-nav" lay-filter="side">
-                <li class="layui-nav-item layui-nav-itemed"><a class="javascript:;" href="javascript:;"> <i class="fa fa-camera"></i><cite>实时监控</cite> </a>
-                    <dl id="dlMachineList" class="layui-nav-child">
-                        <!--                        <dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=516b98016fb0faf142e890e6b63db900"> <cite>1号设备</cite> </a></dd>-->
-                        <!--                        <dd class=""><a href="javascript:;" _href="welcome.html?id=e6f277f22f5bb863213ffe756e3818d9"> <cite>2号设备</cite> </a></dd>-->
-                    </dl>
-                </li>
-                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;" _href="history.html"> <i class="fa fa-history"></i><cite>历史记录</cite>
-                </a>
-                </li>
-                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="fa fa-cogs"></i><cite>系统设置</cite> </a>
-                    <dl class="layui-nav-child">
-                        <dd class=""><a href="javascript:;" _href="machine.html"> <cite>设备管理</cite> </a></dd>
-                        <dd class=""><a href="javascript:;" _href="system.html"> <cite>出厂配置</cite> </a></dd>
-                        <dd class=""><a href="javascript:;" _href="user.html"> <cite>用户管理</cite> </a></dd>
-                        <dd class=""><a href="javascript:;" _href="one_set.html"> <cite>个人设置</cite> </a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item" style="height: 30px; text-align: center"></li>
+            <ul id="menuListUl" class="layui-nav layui-nav-tree site-demo-nav" lay-filter="side">
+                <!--                <li class="layui-nav-item layui-nav-itemed"><a class="javascript:;" href="javascript:;"> <i class="fa fa-camera"></i><cite>实时监控</cite> </a>-->
+                <!--                    <dl id="dlMachineList" class="layui-nav-child">-->
+                <!--                        <dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=516b98016fb0faf142e890e6b63db900"> <cite>1号设备</cite> </a></dd>-->
+                <!--                        <dd class=""><a href="javascript:;" _href="welcome.html?id=e6f277f22f5bb863213ffe756e3818d9"> <cite>2号设备</cite> </a></dd>-->
+                <!--                    </dl>-->
+                <!--                </li>-->
+                <!--                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;" _href="history.html"> <i class="fa fa-history"></i><cite>历史记录</cite></a>-->
+                <!--                </li>-->
+                <!--                <li class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="fa fa-cogs"></i><cite>系统设置</cite> </a>-->
+                <!--                    <dl class="layui-nav-child">-->
+                <!--                        <dd class=""><a href="javascript:;" _href="machine.html"> <cite>设备管理</cite> </a></dd>-->
+                <!--                        <dd class=""><a href="javascript:;" _href="system.html"> <cite>出厂配置</cite> </a></dd>-->
+                <!--                        <dd class=""><a href="javascript:;" _href="user.html"> <cite>用户管理</cite> </a></dd>-->
+                <!--                        <dd class=""><a href="javascript:;" _href="one_set.html"> <cite>个人设置</cite> </a></dd>-->
+                <!--                    </dl>-->
+                <!--                </li>-->
             </ul>
         </div>
     </div>
@@ -128,43 +127,116 @@
 </script>
 
 <script>
-    // 初始化菜单中的设备列表，用同步的方式，防止设备列表未加载完毕，layui组件就生效了导致后续菜单切换不可用
+    // 初始化菜单，用同步的方式，防止未加载完毕，layui组件就生效了导致后续菜单切换不可用
     $.ajaxSettings.async = false;
 
     $.ajax({
         type: "post",
-        url: apiPath + "/machine/searchAll",
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader(tokenKey, getGasToken());
-        },
-        data: {},
+        url: apiPath + "/menu/getMenuList",
+        data: {"token": getGasToken()},
         dataType: "json",
         success: function (res) {
-            let machineList = res.data;
-            if (machineList.length !== 0) {
-                //菜单
-                let dlMachineList = document.getElementById("dlMachineList");
-                let dd = '';
-                for (let i = 0; i < machineList.length; i++) {
-                    let machine = machineList[i];
-                    if (i === 0) {
-                        dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
-                            '</cite> </a></dd>';
-                    } else {
-                        dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
-                            ' </cite> </a></dd>';
+            let menuList = res.data;
+            if (menuList.length !== 0) {
+                let menuListUl = document.getElementById("menuListUl");
+                let li = "";
+                // 一级菜单
+                let level1List = [];
+                for (let i = 0; i < menuList.length; i++) {
+                    let menu = menuList[i];
+                    if (menu.level === 1) {
+                        level1List.push(menu);
+
+                        if (menu.menuName === "实时监控") {
+                            li += '<li id="' + menu.id + '" class="layui-nav-item layui-nav-itemed"><a class="javascript:;" href="javascript:;"> <i class="' + menu.icon + '"></i><cite>' +
+                                menu.menuName
+                                + '</cite></a></li>';
+                        } else if (menu.menuName === "历史记录") {
+                            li += '<li id="' + menu.id + '" class="layui-nav-item"><a class="javascript:;" href="javascript:;" _href="' + menu.path + '"> <i class="' + menu.icon + '"></i><cite>' +
+                                menu.menuName + '</cite></a></li>';
+                        } else {
+                            li += '<li id="' + menu.id + '" class="layui-nav-item"><a class="javascript:;" href="javascript:;"> <i class="' + menu.icon + '"></i><cite>' + menu.menuName + '</cite></a></li>';
+                        }
                     }
                 }
-                dlMachineList.innerHTML = dd;
+                menuListUl.innerHTML = li;
 
-                //tabContent
-                let tabContent = document.getElementById("tabContent");
-                let firstMachine = machineList[0];
-                tabContent.innerHTML = '<div class="layui-tab-item layui-show"><iframe frameborder="0" src="welcome.html?id=' + firstMachine.id + '" class="x-iframe"></iframe></div>';
+                // 一级菜单下的二级菜单
+                for (let k = 0; k < level1List.length; k++) {
+                    let level1Menu = level1List[k];
+                    if (level1Menu.menuName === "实时监控") {
+                        // 请求设备列表
+                        $.ajax({
+                            type: "post",
+                            url: apiPath + "/machine/searchAll",
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader(tokenKey, getGasToken());
+                            },
+                            data: {},
+                            dataType: "json",
+                            success: function (res) {
+                                let machineList = res.data;
+                                if (machineList.length !== 0) {
+                                    let dl = '<dl id="" class="layui-nav-child">';
+                                    for (let i = 0; i < machineList.length; i++) {
+                                        let machine = machineList[i];
+                                        if (i === 0) {
+                                            dl += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>'
+                                        } else {
+                                            dl += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>'
+                                        }
+                                    }
+                                    dl += '</dl>';
+                                    let li = document.getElementById(level1Menu.id);
+                                    li.innerHTML = li.innerHTML + dl;
+
+                                    // tabContent主窗体部分
+                                    let tabContent = document.getElementById("tabContent");
+                                    let firstMachine = machineList[0];
+                                    tabContent.innerHTML = '<div class="layui-tab-item layui-show"><iframe frameborder="0" src="welcome.html?id=' + firstMachine.id + '" class="x-iframe"></iframe></div>';
+                                }
+                            }
+                        })
+                    } else if (level1Menu.menuName === "系统设置") {
+                        let dl = '<dl class="layui-nav-child">';
+                        for (let i = 0; i < menuList.length; i++) {
+                            let menu = menuList[i];
+                            if (menu.level === 2 && menu.menuParentId === level1Menu.id) {
+                                dl += '<dd class=""><a href="javascript:;" _href="' + menu.path + '"> <cite>' + menu.menuName + '</cite> </a></dd>';
+                            }
+                        }
+                        dl += '</dl>';
+                        let li = document.getElementById(level1Menu.id);
+                        li.innerHTML = li.innerHTML + dl;
+                    }
+                }
             }
+
+
+            // let machineList = res.data;
+            // if (machineList.length !== 0) {
+            //     //菜单
+            //     let dlMachineList = document.getElementById("dlMachineList");
+            //     let dd = '';
+            //     for (let i = 0; i < machineList.length; i++) {
+            //         let machine = machineList[i];
+            //         if (i === 0) {
+            //             dd += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
+            //                 '</cite> </a></dd>';
+            //         } else {
+            //             dd += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
+            //                 ' </cite> </a></dd>';
+            //         }
+            //     }
+            //     dlMachineList.innerHTML = dd;
+            //
+            //     //tabContent
+            //     let tabContent = document.getElementById("tabContent");
+            //     let firstMachine = machineList[0];
+            //     tabContent.innerHTML = '<div class="layui-tab-item layui-show"><iframe frameborder="0" src="welcome.html?id=' + firstMachine.id + '" class="x-iframe"></iframe></div>';
+            // }
         }
     })
-
 </script>
 
 
