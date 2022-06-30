@@ -132,6 +132,9 @@
                                     <button class="btn btn-outline-primary" @click="searchMap.pageNum=1;search();" style="font-size: 0.8rem">
                                         <i class="fas fa-search mr-1"></i>搜索
                                     </button>
+                                    <button id="exportBtn" class="btn btn-outline-theme" @click="exportWord();" style="font-size: 0.8rem">
+                                        <i class="fas fa-search mr-1"></i>导出
+                                    </button>
 
 
                                 </div>
@@ -349,6 +352,33 @@
                     app.total = res.data.total;
                 });
             },
+            exportWord() {
+                // 因为option控件的value属性不能重复的问题，在之前加载machineUrl的时候拼接了"^+index"
+                // 使用前要剔除
+                let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
+                correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
+
+                axios.post(apiPath + "/history/assembleWord",
+                    correctSearchMap,
+                    {headers: {"gasToken": getGasToken()}, responseType: 'blob'}).then((res) => {
+                    const blob = new Blob([res.data]);
+                    const url = window.URL.createObjectURL(blob);
+                    if (window.navigator.msSaveBlob) {
+                        try {
+                            window.navigator.msSaveBlob(blob, 'test.doc');
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    } else {
+                        let link = document.createElement('a');
+                        link.style.display = 'none';
+                        link.href = url;
+                        link.setAttribute('download', 'test.doc');
+                        document.body.appendChild(link);
+                        link.click();
+                    }
+                });
+            },
             getScanMode(scanMode) {
                 for (let i = 0; i < app.scanModeOptions.length; i++) {
                     if (app.scanModeOptions[i].value === scanMode) {
@@ -489,6 +519,13 @@
                     }
                 }
             });
+
+            //是否显示导出按钮
+            let roleKey = getRoleKey();
+            let btn = document.getElementById("exportBtn");
+            if (roleKey === "游客用户") {
+                btn.style.display = 'none';
+            }
 
             //<el-select>控件加载数据源，即设备列表和监测模式
             this.searchMap.scanMode = this.scanModeOptions[0].value;

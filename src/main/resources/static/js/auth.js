@@ -42,3 +42,15 @@ function getUserName() {
     console.log("获取用户名：" + userName);
     return userName;
 }
+
+// 获取ls中的roleKey
+function getRoleKey() {
+    let roleKey = '';
+    let tokenJson = JSON.parse(localStorage.getItem(tokenKey));
+    if (tokenJson != null) {
+        let user = JSON.parse(tokenJson.user);
+        roleKey = user.roleKey;
+    }
+    console.log("获取roleKey：" + roleKey);
+    return roleKey;
+}
