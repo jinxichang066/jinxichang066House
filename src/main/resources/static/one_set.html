@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Beid - Responsive HTML5 Template</title>
+
+    <!-- CSS -->
+    <link href="css/fonts/fontawesome/all.min.css" rel="stylesheet">
+    <link href="css/fonts/beid.css" rel="stylesheet">
+
+    <link href="css/main.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+    <!-- JQVMAP -->
+    <link href="plugins/jqvmap/jqvmap.min.css" rel="stylesheet">
+
+    <!-- dateRangePicker -->
+    <link href="plugins/daterangepicker/daterangepicker.css" rel="stylesheet">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+    <link rel="icon" href="img/favicon.png">
+
+    <!-- Fonts -->
+    <link href="fonts/inter/inter.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="css/pagination.css">
+
+    <!--[if lt IE 9]>
+    <script src="http://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script crossorigin="anonymous" src="https://cdn.bootcdn.net/ajax/libs/axios/0.19.2/axios.js"></script>
+
+    <script src="js/logout.js"></script>
+    <script src="js/welcome.js"></script>
+    <script src="url.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/userManagement.js"></script>
+    <script src="js/md5.js"></script>
+    <!-- import element-ui CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import layui CSS -->
+    <link rel="stylesheet" href="plugins/layui/css/layui.css">
+    <!-- 查看图片 -->
+    <link rel="stylesheet" href="css/imageBox.css">
+</head>
+<body>
+<div id="app">
+    <!--    <div class="x-nav">-->
+    <!--            <span class="layui-breadcrumb">-->
+    <!--              <a><cite>首页</cite></a>-->
+    <!--              <a><cite>系统设置</cite></a>-->
+    <!--              <a><cite>{{title}}</cite></a>-->
+    <!--            </span>-->
+    <!--        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新"><i class="layui-icon"-->
+    <!--                                                                                                                                                                   style="line-height:30px">ဂ</i></a>-->
+    <!--    </div>-->
+    <div class="x-body">
+        <blockquote class="layui-elem-quote">
+            <input type="hidden" name="id" value="8">
+            <div>
+                <img src="img/avatar/user_head.jpg" class="layui-circle svgIcon" style="width:50px;height:50px;float:left" id="pimages" name="pimages" alt="个人头像">
+                <dl style="margin-left:55px; color:#019688">
+                    <dt><span id="spanUserName">ADMIN</span> <span></span></dt>
+                    <dd id="ddRoleKey" style="margin-left:0">系统管理员</dd>
+                </dl>
+            </div>
+        </blockquote>
+        <el-form :model="community" :rules="rules" ref="communityFormRef" label-width="120px" class="demo-ruleForm">
+            <el-form-item label="真实姓名" prop="realName">
+                <el-input v-model="community.realName" placeholder="请输入真实姓名"></el-input>
+            </el-form-item>
+            <el-form-item label="手机号码" prop="phone">
+                <el-input v-model="community.phone" placeholder="请输入手机号码"></el-input>
+            </el-form-item>
+            <el-form-item label="电子邮箱" prop="email">
+                <el-input v-model="community.email" placeholder="请输入电子邮箱"></el-input>
+            </el-form-item>
+            <el-form-item label="当前密码" prop="password">
+                <el-input v-model="community.password" placeholder="请输入当前密码"></el-input>
+            </el-form-item>
+            <el-form-item label="新密码" prop="remarks">
+                <el-input v-model="community.newPassword" placeholder="请输入新的密码"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="save()" style="text-align: center">保存</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</div>
+
+<!-- import Vue before element-ui -->
+<script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+<!-- import element-ui -->
+<script src="https://unpkg.com/element-ui@2.15.8/lib/index.js"></script>
+<!-- import layui -->
+<script src="plugins/layui/layui.js"></script>
+<!-- jQuery -->
+<script src="js/jquery.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
+
+<!-- Chart.js -->
+<script src="plugins/chart/Chart.min.js" id="_chartJS_min"></script>
+<script src="plugins/chart/Chart.bundle.min.js"></script>
+<script src="plugins/chart/chartjs-plugin-annotation.js"></script>
+<script src="plugins/chart/chartjs-plugin-labels.js"></script>
+
+<!-- apexcharts -->
+<script src="plugins/apexcharts/apexcharts.min.js"></script>
+<!-- Moment -->
+<script src="plugins/lib/moment/moment.min.js"></script>
+<!-- User JS -->
+<script src="js/scripts.js"></script>
+<!-- Main JS -->
+<script src="js/main.js" id="_mainJS" data-plugins="load"></script>
+<!-- Modules -->
+<script src="js/modules.js"></script>
+<script type="text/javascript">
+    var app = new Vue({
+        el: "#app",
+        data: {
+            title: "添加设备",
+            community: {id: ""},
+            roleOptions: roleKeyOptions,
+            rules: {
+                phone: [
+                    {required: true, message: '请输入手机号码', trigger: 'blur'},
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
+                ],
+                realName: [
+                    {required: true, message: '请输入真实姓名', trigger: 'blur'},
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
+                ]
+            }
+        },
+        methods: {
+            //表达重置
+            clearAll() {
+                this.$refs.communityFormRef.resetFields();
+                if (this.fileList.length > 0) {
+                    this.handleRemove();
+                }
+            },
+            isNullOrEmpty(str) {
+                // undefined
+                if (str === undefined) {
+                    return true;
+                }
+                // null
+                if (str === null) {
+                    return true;
+                }
+                // 空字符串
+                if (str === "") {
+                    return true;
+                }
+                // 判断是否全为空格
+                let regex = "^[ ]+$";
+                let re = new RegExp(regex);
+                return re.test(str);
+            },
+            save() {
+                if (this.isNullOrEmpty(this.community.realName)) {
+                    this.$message({
+                        message: "真实姓名不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.password)) {
+                    this.$message({
+                        message: "当前密码不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                this.community.password = hex_md5(this.community.password);
+
+                if (!this.isNullOrEmpty(this.community.newPassword)) {
+                    this.community.newPassword = hex_md5(this.community.newPassword);
+                }
+
+                axios.post(apiPath + "/user/setSelf", this.community).then((res) => {
+                    if (res.data.flag) {
+                        this.$message({
+                            message: res.data.message,
+                            type: 'success'
+                        });
+                    }
+                    this.community.password = '';
+                    this.community.newPassword = '';
+                });
+            }
+        },
+        created: function () {
+            layui.use(['element', 'layer', 'form'], function () {
+                $ = layui.jquery;//jquery
+                lement = layui.element();//面包导航
+                layer = layui.layer;//弹出层
+                form = layui.form();
+            });
+            this.community = getUser();
+        }
+    });
+</script>
+</body>
+</html>
