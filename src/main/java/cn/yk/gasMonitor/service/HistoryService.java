@@ -10,7 +10,15 @@ import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.domain.History;
 import cn.yk.gasMonitor.domain.PointInfo;
 import cn.yk.gasMonitor.dto.HistorySearchDTO;
+import com.deepoove.poi.data.MiniTableRenderData;
+import com.deepoove.poi.util.TableTools;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,6 +29,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.List;
 import java.util.*;
@@ -175,6 +185,16 @@ public class HistoryService {
     }
 
     public void getImage(String machineUrl, String warningInfoId, String mode, HttpServletResponse response) {
+        InputStream imageInputStream = getImageInputStream(machineUrl, warningInfoId, mode);
+        // 写回response
+        if (imageInputStream != null) {
+            ServletUtil.write(response, imageInputStream);
+        }
+    }
+
+    private InputStream getImageInputStream(String machineUrl, String warningInfoId, String mode) {
+        ByteArrayInputStream byteArrayInputStream = null;
+
         Connection conn = null;
         Statement stmt = null;
         try {
@@ -274,8 +294,7 @@ public class HistoryService {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();//
                 ImageIO.write(image, "jpeg", out);
 
-                // 写回response
-                ServletUtil.write(response, new ByteArrayInputStream(out.toByteArray()));
+                byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
 
                 // 关闭pointInfo的查询
                 pointInfoRs.close();
@@ -285,6 +304,7 @@ public class HistoryService {
             rs.close();
             stmt.close();
             conn.close();
+
         } catch (SQLException se) {
             // 处理 JDBC 错误
             log.error(se.getMessage(), se);
@@ -309,6 +329,127 @@ public class HistoryService {
         }
         log.info("[{}]查询结束", mode);
 
+        return byteArrayInputStream;
+    }
+
+    private List<History> getHistoryList(HistorySearchDTO historySearchDTO) {
+        log.info("导出开始，查询历史信息");
+        List<History> historyList = new ArrayList<>();
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            // 获取数据库连接
+            conn = getConnection(historySearchDTO.getMachineUrl());
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT id, scanmode, dtime, gasnames, firstdtime, lastdtime FROM warninginfor where 1=1 ");
+            assembleCondition(historySearchDTO, sql);
+            //排序
+            sql.append("order by dtime desc ");
+
+            // 执行查询
+            log.info("实例化Statement对象...");
+            stmt = conn.createStatement();
+            log.info("执行sql: {}", sql.toString());
+            ResultSet rs = stmt.executeQuery(sql.toString());
+            while (rs.next()) {
+                History history = new History();
+                // 通过字段检索
+                history.setId(rs.getInt("id"));
+                history.setScanMode(rs.getInt("scanmode"));
+                history.setDTime(rs.getTimestamp("dtime"));
+                history.setGasNames(rs.getString("gasnames"));
+                history.setFirstDTime(rs.getTimestamp("firstdtime"));
+                history.setLastDTime(rs.getTimestamp("lastdtime"));
+
+                historyList.add(history);
+            }
+
+            // 完成后关闭
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException se) {
+            // 处理 JDBC 错误
+            log.error(se.getMessage(), se);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        log.info("查询结束");
+
+        return historyList;
+    }
+
+    public void assembleWord(HttpServletResponse response, HistorySearchDTO historySearchDTO) throws IOException, InvalidFormatException {
+        List<History> historyList = getHistoryList(historySearchDTO);
+
+        // 表头
+        XWPFDocument doc = new XWPFDocument();
+        XWPFTable table = doc.createTable(4, 6);
+        table.getRow(0).getCell(0).setText("设备地点");
+        table.getRow(0).getCell(4).setText("设备编号");
+        table.getRow(1).getCell(0).setText("监测人员");
+        table.getRow(2).getCell(0).setText("汇总日期");
+        table.getRow(3).getCell(0).setText("序号");
+        table.getRow(3).getCell(1).setText("监测时间");
+        table.getRow(3).getCell(2).setText("气体名称");
+        table.getRow(3).getCell(3).setText("浓度程长积（ppm.m）");
+        table.getRow(3).getCell(4).setText("监测模式");
+        table.getRow(3).getCell(5).setText("监测图片");
+
+        if (CollectionUtil.isNotEmpty(historyList)) {
+            for (int i = 0; i < historyList.size(); i++) {
+                History history = historyList.get(i);
+
+                table.createRow();
+                table.getRow(4 + i).getCell(0).setText(String.valueOf(history.getId()));
+                table.getRow(4 + i).getCell(1).setText(String.valueOf(history.getDTime()));
+                table.getRow(4 + i).getCell(2).setText(history.getGasNames());
+                table.getRow(4 + i).getCell(3).setText("99.03");
+                table.getRow(4 + i).getCell(4).setText(getScanMode(history.getScanMode()));
+                XWPFParagraph p1 = table.getRow(4 + i).getCell(5).addParagraph();
+                XWPFRun run = p1.createRun();
+                InputStream inputStream = getImageInputStream(historySearchDTO.getMachineUrl(), String.valueOf(history.getId()), VI);
+                if (inputStream != null) {
+                    run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, "Generated", Units.toEMU(64), Units.toEMU(34));
+                }
+            }
+        }
+
+        // 单元格格式
+        TableTools.widthTable(table, MiniTableRenderData.WIDTH_A4_FULL, 10);
+        // 表头合并
+        TableTools.mergeCellsHorizonal(table, 0, 1, 3);
+        TableTools.mergeCellsHorizonal(table, 1, 1, 5);
+        TableTools.mergeCellsHorizonal(table, 2, 1, 5);
+
+        response.setContentType("application/msword");
+        doc.write(response.getOutputStream());
+    }
+
+    private String getScanMode(int mode) {
+        String modeName = "";
+        if (mode == 2) {
+            modeName = "定点模式";
+        }
+        if (mode == 3) {
+            modeName = "扇扫模式";
+        }
+        if (mode == 4) {
+            modeName = "警戒模式";
+        }
+        return modeName;
     }
 
 }
