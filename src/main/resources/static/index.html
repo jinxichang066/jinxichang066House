@@ -180,9 +180,11 @@
                                     for (let i = 0; i < machineList.length; i++) {
                                         let machine = machineList[i];
                                         if (i === 0) {
-                                            dl += '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>'
+                                            dl +=
+                                                '<dd class="layui-this"><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' +
+                                                '</cite> </a></dd>'
                                         } else {
-                                            dl += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + '</cite> </a></dd>'
+                                            dl += '<dd class=""><a href="javascript:;" _href="welcome.html?id=' + machine.id + '"> <cite>' + machine.machineName + ' [' + getMachineState(machine.state) + ']' + '</cite> </a></dd>'
                                         }
                                     }
                                     dl += '</dl>';
