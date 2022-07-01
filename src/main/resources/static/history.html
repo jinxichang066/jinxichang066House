@@ -360,9 +360,18 @@
                 correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
                 if (this.searchMap.startTime === '' || this.searchMap.endTime === '') {
-                    alert("请选择导出报表的时间范围")
+                    this.$message({
+                        message: "请选择导出报表的时间范围",
+                        type: "error"
+                    });
                     return false;
                 }
+
+                this.$message({
+                    message: "正在为您生成报表，请勿重复点击",
+                    type: "success"
+                });
+
                 axios.post(apiPath + "/history/assembleWord",
                     correctSearchMap,
                     {headers: {"gasToken": getGasToken()}, responseType: 'blob'}).then((res) => {
