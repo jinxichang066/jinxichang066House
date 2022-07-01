@@ -69,11 +69,11 @@
                     </div>
                     <div class="layui-form-item imgs" id="imgshow">
                         <label class="system-label ">LOGO展示 </label>
-                        <img src="old/images/logo.svg" id="pimages" name="pimages" style="margin-left: 20px"/>
+                        <img src="" id="pimages" name="pimages" style="margin-left: 20px"/>
                         <input id="avatar" name="images" required="" type="hidden" value="./images/tx.svg"/>
                     </div>
                     <div class="layui-form-item ">
-                        <label class="system-label">版权信息  </label>
+                        <label class="system-label">版权信息 </label>
                         <div class="layui-input-block system-input-content">
                             <input type="text" name="copyright" autocomplete="off" placeholder="&copy; 2016 main" class="layui-input system-input" value=""/>
                         </div>
@@ -95,7 +95,11 @@
 </div>
 <script src="old/lib/layui/layui.js" charset="utf-8"></script>
 <script src="old/js/x-layui.js" charset="utf-8"></script>
+<script src="url.js"></script>
 <script>
+    let pimagesImg = document.getElementById("pimages");
+    pimagesImg.src = apiPath + '/system/getImage';
+
     layui.use(['element', 'layer', 'form'], function () {
         $ = layui.jquery;//jquery
         lement = layui.element();//面包导航

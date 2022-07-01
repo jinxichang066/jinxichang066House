@@ -22,7 +22,7 @@
                 <div class="larry-side-menu">
                     <img src="old/images/ss.png" width="44px" height="44px" alt="">
                 </div>
-                <img src="old/images/logo.svg" class="logo" width="183px" alt="">
+                <img id="imgLogo" src="" class="logo" width="180px" alt="">
             </div>
 
             <ul class="layui-nav" lay-filter="">
@@ -126,6 +126,10 @@
 </script>
 
 <script>
+    // 加载logo图片
+    let imgLogo = document.getElementById("imgLogo")
+    imgLogo.src = apiPath + '/system/getImage';
+
     // 初始化菜单，用同步的方式，防止未加载完毕，layui组件就生效了导致后续菜单切换不可用
     $.ajaxSettings.async = false;
 
