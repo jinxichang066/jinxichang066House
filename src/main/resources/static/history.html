@@ -132,7 +132,7 @@
                                     <button class="btn btn-outline-primary" @click="searchMap.pageNum=1;search();" style="font-size: 0.8rem">
                                         <i class="fas fa-search mr-1"></i>搜索
                                     </button>
-                                    <button id="exportBtn" class="btn btn-outline-theme" @click="exportWord();" style="font-size: 0.8rem">
+                                    <button id="exportBtn" class="btn btn-outline-theme" @click="exportWord();" style="margin-left:0.2rem;font-size: 0.8rem">
                                         <i class="fas fa-arrow-circle-down mr-1"></i>导出
                                     </button>
 
@@ -359,7 +359,7 @@
                 let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
                 correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
 
-                if(this.searchMap.startTime === ''|| this.searchMap.endTime===''){
+                if (this.searchMap.startTime === '' || this.searchMap.endTime === '') {
                     alert("请选择导出报表的时间范围")
                     return false;
                 }
