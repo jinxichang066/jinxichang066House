@@ -56,6 +56,11 @@
         .disabled_btn {
             opacity: 0.5;
         }
+
+        /*状态btn定制宽度*/
+        .btn-width {
+            width: 8rem;
+        }
     </style>
 </head>
 
@@ -130,7 +135,7 @@
                                                             <td style="padding: 0.8rem">{{community.phone}}</td>
                                                             <td style="padding: 0.8rem">{{community.email}}</td>
                                                             <td style="padding: 0.8rem">
-                                                                <a href="#" class="btn btn-sm btn-outline-warning btn-round px-4">{{community.roleKey}}</a>
+                                                                <a href="#" :class="getRoleKeyStyle(community.roleKey)">{{community.roleKey}}</a>
                                                             </td>
                                                             <td style="padding: 0.8rem">{{community.remarks}}</td>
                                                             <td>
@@ -230,6 +235,7 @@
 <!-- Modules -->
 <script src="js/modules.js"></script>
 <script src="js/footer.js"></script>
+<script src="js/userManagement.js"></script>
 
 <script>
     var app = new Vue({
@@ -305,6 +311,10 @@
                             message: '已取消重置'
                         });
                     });
+                },
+                getRoleKeyStyle(roleKey) {
+                    return roleKeyStyleMap.get(roleKey);
+                    // btn btn-sm btn-outline-primary btn-round px-4
                 },
                 //handleSizeChange每页数量发生变化后触发的方法
                 handleSizeChange(pageSize) {
