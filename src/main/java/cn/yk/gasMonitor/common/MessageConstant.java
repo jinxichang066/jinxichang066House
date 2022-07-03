@@ -55,4 +55,8 @@ public class MessageConstant {
     //---------------------------菜单管理消息提示信息---------------------------------------
     public static final String MENU_SEARCH_SUCCESS = "查询菜单列表信息成功！";
 
+    //---------------------------系统设置消息提示信息---------------------------------------
+    public static final String SYSTEM_LOGO_UPLOAD_SUCCESS = "上传成功！";
+    public static final String SYSTEM_LOGO_UPLOAD_FAILED = "上传失败！";
+
 }

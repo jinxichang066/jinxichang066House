@@ -1,6 +1,7 @@
 package cn.yk.gasMonitor.service;
 
 import cn.hutool.extra.servlet.ServletUtil;
+import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.dao.SystemMapper;
@@ -32,7 +33,7 @@ public class SystemService {
         system.setLogo(file.getBytes());
 
         systemMapper.updateById(system);
-        return new PageResult(true, StatusCode.OK, "");
+        return new PageResult(true, StatusCode.OK, MessageConstant.SYSTEM_LOGO_UPLOAD_SUCCESS);
     }
 
     public void getImage(HttpServletResponse response) {
