@@ -26,6 +26,8 @@ public class SystemService {
 
     @Resource
     private SystemMapper systemMapper;
+    @Resource
+    private TokenService tokenService;
 
     public PageResult uploadImage(MultipartFile file) throws IOException {
         // todo 校验图片格式是否为svg 或者是交给前端校验
@@ -60,8 +62,10 @@ public class SystemService {
         system.setName(systemDTO.getName());
         system.setCopyright(systemDTO.getCopyright());
         system.setExpire(systemDTO.getExpire());
-
         systemMapper.updateById(system);
+
+        // 更新系统超时时间
+        tokenService.updateExpireMap(system.getExpire());
 
         return new PageResult(true, StatusCode.OK, MessageConstant.SYSTEM_INFO_SAVE_SUCCESS);
     }

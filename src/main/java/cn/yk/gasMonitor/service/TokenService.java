@@ -2,18 +2,21 @@ package cn.yk.gasMonitor.service;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import cn.yk.gasMonitor.dao.SystemMapper;
 import cn.yk.gasMonitor.dao.TokenMapper;
+import cn.yk.gasMonitor.domain.System;
 import cn.yk.gasMonitor.domain.Token;
 import cn.yk.gasMonitor.domain.User;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @author Jin Xichang
@@ -25,9 +28,15 @@ public class TokenService {
 
     @Resource
     private TokenMapper tokenMapper;
+    @Resource
+    private SystemMapper systemMapper;
 
-    @Value("${custom.system.setting.expireTime}")
-    private Long expiredTime;
+    // key
+    private final static String EXPIRE_KEY = "expire";
+    // 默认登录过期时间 单位：分钟
+    private final static Long DEFAULT_EXPIRE_TIME = 60L;
+
+    private HashMap<String, Long> expireMap = new HashMap<>();
 
     public Token createToken(User user) {
         Date loginTime = new Date();
@@ -60,7 +69,20 @@ public class TokenService {
 
         Date operateTime = tokenEx.getOperateTime();
         Date now = new Date();
-        long between = DateUtil.between(operateTime, now, DateUnit.SECOND);
+        long between = DateUtil.between(operateTime, now, DateUnit.MINUTE);
+
+        Long expiredTime = expireMap.get(EXPIRE_KEY);
+
+        if (expiredTime == null) {
+            System system = systemMapper.selectOne(new QueryWrapper<>());
+            if (system == null || system.getExpire() == null) {
+                expiredTime = DEFAULT_EXPIRE_TIME;
+            } else {
+                expiredTime = Long.valueOf(system.getExpire());
+            }
+
+            expireMap.put(EXPIRE_KEY, expiredTime);
+        }
 
         // 登录已过期
         if (between > expiredTime) {
@@ -75,6 +97,10 @@ public class TokenService {
             }
             return true;
         }
+    }
+
+    public void updateExpireMap(Integer expire) {
+        expireMap.put(EXPIRE_KEY, Long.valueOf(expire));
     }
 
     public void logout(String token) {
