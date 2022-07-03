@@ -58,5 +58,7 @@ public class MessageConstant {
     //---------------------------系统设置消息提示信息---------------------------------------
     public static final String SYSTEM_LOGO_UPLOAD_SUCCESS = "上传成功！";
     public static final String SYSTEM_LOGO_UPLOAD_FAILED = "上传失败！";
+    public static final String SYSTEM_INFO_LOAD_SUCCESS = "配置加载成功！";
+    public static final String SYSTEM_INFO_SAVE_SUCCESS = "配置保存成功！";
 
 }

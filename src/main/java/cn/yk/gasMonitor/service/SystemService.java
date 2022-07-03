@@ -48,6 +48,24 @@ public class SystemService {
         }
     }
 
+    public PageResult load() {
+        System system = getSystem();
+        system.setLogo(null);
+
+        return new PageResult(true, StatusCode.OK, MessageConstant.SYSTEM_INFO_LOAD_SUCCESS, system);
+    }
+
+    public PageResult save(System systemDTO) {
+        System system = getSystem();
+        system.setName(systemDTO.getName());
+        system.setCopyright(systemDTO.getCopyright());
+        system.setExpire(systemDTO.getExpire());
+
+        systemMapper.updateById(system);
+
+        return new PageResult(true, StatusCode.OK, MessageConstant.SYSTEM_INFO_SAVE_SUCCESS);
+    }
+
     private System getSystem() {
         System system = systemMapper.selectOne(new QueryWrapper<>());
         return system;

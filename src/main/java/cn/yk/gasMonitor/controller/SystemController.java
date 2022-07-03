@@ -1,12 +1,10 @@
 package cn.yk.gasMonitor.controller;
 
 import cn.yk.gasMonitor.common.PageResult;
+import cn.yk.gasMonitor.domain.System;
 import cn.yk.gasMonitor.service.SystemService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -32,8 +30,17 @@ public class SystemController {
     }
 
     @RequestMapping("/uploadImage")
-    private PageResult uploadImage(@RequestParam MultipartFile file) throws IOException {
+    public PageResult uploadImage(@RequestParam MultipartFile file) throws IOException {
         return systemService.uploadImage(file);
     }
 
+    @RequestMapping("/load")
+    public PageResult load() {
+        return systemService.load();
+    }
+
+    @RequestMapping("/save")
+    public PageResult save(@RequestBody System system) {
+        return systemService.save(system);
+    }
 }

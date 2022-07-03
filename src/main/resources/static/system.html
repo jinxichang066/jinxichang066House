@@ -41,11 +41,11 @@
         }
     </style>
 </head>
-<body background="img/bg1.png">
+<body background="img/bg1.png" onload="init()">
 <div class="x-nav">
 </div>
 <div class="x-body">
-    <form class="layui-form layui-form-pane" action="">
+    <div class="layui-form layui-form-pane" action="">
         <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
             <div class="layui-tab-content" style="margin-left: 8%;margin-top: 3%">
                 <div class="layui-tab-item layui-show">
@@ -53,7 +53,7 @@
                     <div class="layui-form-item">
                         <label class="system-label"> <span class="x-red">*</span>网站名称 </label>
                         <div class="layui-input-block system-input-content">
-                            <input type="text" name="name" autocomplete="off" placeholder="控制在25个字、50个字节以内" class="layui-input system-input" value=""/>
+                            <input type="text" id="name" autocomplete="off" placeholder="控制在25个字、50个字节以内" class="layui-input system-input" value=""/>
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -75,23 +75,23 @@
                     <div class="layui-form-item ">
                         <label class="system-label">版权信息 </label>
                         <div class="layui-input-block system-input-content">
-                            <input type="text" name="copyright" autocomplete="off" placeholder="&copy; 2016 main" class="layui-input system-input" value=""/>
+                            <input type="text" id="copyright" autocomplete="off" placeholder="请输入底部版权信息栏" class="layui-input system-input" value=""/>
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <label class="system-label"> <span class="x-red">*</span>超时设定 </label>
+                        <label class="system-label"> <span class="x-red">*</span>登录超时 </label>
                         <div class="layui-input-block system-input-content">
-                            <input type="text" name="desc" autocomplete="off" placeholder="用户登录超时设定，单位：分钟" class="layui-input system-input" value=""/>
+                            <input type="text" id="expire" autocomplete="off" placeholder="用户登录超时设定，单位：分钟" class="layui-input system-input" value=""/>
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <button class="layui-btn" lay-submit="" lay-filter="*"> 保存</button>
+                        <button class="layui-btn"  onclick="save()"> 保存</button>
                     </div>
                     <div style="height:100px;"></div>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 <script src="old/lib/layui/layui.js" charset="utf-8"></script>
 <script src="old/js/x-layui.js" charset="utf-8"></script>
@@ -109,13 +109,65 @@
     })
 </script>
 <script>
+    function init() {
+        $.ajax({
+            type: "post",
+            processData: false,
+            contentType: false,
+            url: apiPath + '/system/load',
+            data: {},
+            success: function (data) {
+                if (data.code === 2000) {
+                    let system = data.data;
+
+                    document.getElementById("name").value = system.name;
+                    document.getElementById("copyright").value = system.copyright;
+                    document.getElementById("expire").value = system.expire;
+                } else {
+                    layer.msg(data.message, {icon: 2});
+                }
+            }
+        });
+    }
+
+    function save() {
+        let name = document.getElementById("name").value;
+        let copyright = document.getElementById("copyright").value;
+        let expire = document.getElementById("expire").value;
+
+        if (name === '') {
+            layer.msg("网站名称不能为空", {icon: 2});
+            return false;
+        }
+        if (expire === '') {
+            layer.msg("登录超时设置时间不能为空", {icon: 2});
+            return false;
+        }
+
+        let param = {"name":name,"copyright":copyright,"expire":expire};
+        $.ajax({
+            type: "post",
+            url: apiPath + '/system/save',
+            data: JSON.stringify(param),
+            dataType: "json",
+            contentType: "application/json",
+            success: function (data) {
+                if (data.code === 2000) {
+                    layer.msg(data.message, {icon: 1});
+                } else {
+                    layer.msg(data.message, {icon: 2});
+                }
+            }
+        });
+    }
+
     //LOGO上传
     function upload() {
         let file = $('#previewImg')[0].files[0];
         let fileName = file.name
-        let fileType = fileName.substring(fileName.lastIndexOf(".")+1, fileName.length);
+        let fileType = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length);
         if (fileType !== 'svg' && fileType !== 'SVG') {
-            layer.msg('请上传svg格式的网站图标', {icon: 5});
+            layer.msg('请上传svg格式的网站图标', {icon: 2});
             return false;
         }
 
@@ -131,13 +183,13 @@
             success: function (data) {
                 if (data.code === 2000) {
                     layer.closeAll('loading');
-                    layer.msg(data.message, {icon: 6});
+                    layer.msg(data.message, {icon: 1});
 
                     let pimagesImg = document.getElementById("pimages");
                     // 防止浏览器直接读图片缓存，在url后拼接一个随机数，这样每次都从src中重新请求
                     pimagesImg.src = apiPath + '/system/getImage?t=' + Math.random();
                 } else {
-                    layer.msg(data.message, {icon: 5});
+                    layer.msg(data.message, {icon: 2});
                 }
             }
         });
