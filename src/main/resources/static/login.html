@@ -31,6 +31,8 @@
     <link href="css/longbow.css" rel="stylesheet">
     <link href="css/imageBox.css" rel="stylesheet">
 
+    <link rel="stylesheet" href="old/lib/layui/css/layui.css">
+
     <!--[if lt IE 9]>
     <script src="http://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="http://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -135,11 +137,22 @@
 <!-- Modules -->
 <script src="js/modules.js"></script>
 
+<script src="old/lib/layui/layui.js" charset="utf-8"></script>
+<script src="old/js/x-layui.js" charset="utf-8"></script>
+
 <script src="url.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/md5.js"></script>
 
 <script>
+    layui.use(['element', 'layer', 'form'], function () {
+        $ = layui.jquery;//jquery
+        lement = layui.element();//面包导航
+        layer = layui.layer;//弹出层
+        form = layui.form();
+
+    })
+
     var userName;
     var password;
 
@@ -165,8 +178,11 @@
                             setGasToken(res.data);
                             window.location.href = "index.html";
                         } else {
-                            alert(res.message);
-                            window.location.href = "login.html";
+                            layer.msg(res.message, {icon: 2});
+                            setTimeout(function () {
+                                window.location.href = "login.html";
+                            }, 2000);
+
                         }
                     }
                 })
@@ -180,11 +196,11 @@
         password = pass.replace(/(^\s*)|(\s*$)/g, "");
 
         if (userName === null || userName === "") {
-            alert("用户名不能为空")
+            layer.msg("用户名不能为空", {icon: 2});
             return false;
         }
         if (password === null || password === "") {
-            alert("密码不能为空")
+            layer.msg("密码不能为空", {icon: 2});
             return false;
         }
 
