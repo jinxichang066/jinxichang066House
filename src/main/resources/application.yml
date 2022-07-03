@@ -48,9 +48,3 @@ mybatis-plus:
     #打开sql打印 默认是关闭的
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: cn.yk.**.domain
-
-#登录过期时间 单位：秒
-custom:
-  system:
-    setting:
-      expireTime: 3600
