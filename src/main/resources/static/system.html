@@ -62,7 +62,7 @@
                             <div class="site-demo-upbar">
                                 <div class=" layui-upload-button" style="border:#FFFFFF ;">
                                     <button type="button" class="layui-btn" id="test1"><i class="layui-icon"></i>上传图片</button>
-                                    <input class="layui-upload" type="file" accept="undefined" id="previewImg" name="img" onchange="upload(this,1)"/>
+                                    <input class="layui-upload" type="file" accept="undefined" id="previewImg" name="img" onchange="upload(this)"/>
                                 </div>
                             </div>
                         </div>
@@ -135,28 +135,23 @@
 </script>
 <script>
     //LOGO上传
-    function upload(obj, id) {
+    function upload() {
         var formData = new FormData();
-        formData.append('img', $('#previewImg')[0].files[0]);
-        formData.append('id', id);//将id追加再id中
+        formData.append('file', $('#previewImg')[0].files[0]);
         layer.msg('图片上传中', {icon: 16});
         $.ajax({
             type: "post",
             processData: false,
             contentType: false,
-            url: "xxx",
+            url: apiPath + '/system/uploadImage',
             data: formData,
             success: function (data) {
-                if (data.status == 1) {
-                    //console.log(data.image_name);
+                if (data.code === 2000) {
                     layer.closeAll('loading');
-                    //layer.msg(data.info,{icon:1,time:1000});
-                    $("#pimages").attr('src', data.image_name);
-                    $("#avatar").val(data.image_name);
-                    $(".imgs").show();
-                    return false;
+                    layer.msg(data.message, {icon: 6});
+
                 } else {
-                    layer.msg(data.info, {icon: 2, time: 1000});
+                    layer.msg(data.message, {icon: 5});
                 }
             }
         });
