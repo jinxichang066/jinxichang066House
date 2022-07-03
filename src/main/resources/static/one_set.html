@@ -186,6 +186,13 @@
                 this.community.password = hex_md5(this.community.password);
 
                 if (!this.isNullOrEmpty(this.community.newPassword)) {
+                    if (!(/^[a-zA-Z]\w{5,17}$/.test(this.community.newPassword))) {
+                        this.community.password = '';
+                        this.community.newPassword = '';
+                        layer.msg('新密码须以字母开头，长度在6~18之间，只能包含字母、数字和下划线', {icon: 2});
+
+                        return false;
+                    }
                     this.community.newPassword = hex_md5(this.community.newPassword);
                 }
 
