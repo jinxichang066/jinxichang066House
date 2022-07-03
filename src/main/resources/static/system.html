@@ -85,7 +85,7 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
-                        <button class="layui-btn"  onclick="save()"> 保存</button>
+                        <button class="layui-btn" onclick="save()"> 保存</button>
                     </div>
                     <div style="height:100px;"></div>
                 </div>
@@ -143,8 +143,12 @@
             layer.msg("登录超时设置时间不能为空", {icon: 2});
             return false;
         }
+        if (!(/(^[1-9]\d*$)/.test(expire))) {
+            layer.msg('登录超时时间设置格式不正确', {icon: 2});
+            return false;
+        }
 
-        let param = {"name":name,"copyright":copyright,"expire":expire};
+        let param = {"name": name, "copyright": copyright, "expire": expire};
         $.ajax({
             type: "post",
             url: apiPath + '/system/save',
