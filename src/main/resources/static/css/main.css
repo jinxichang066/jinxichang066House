@@ -20575,7 +20575,7 @@ button.close:focus {
 }
 
 .footer {
-    padding: 1.65rem 0;
+    /*padding: 1.65rem 0;*/
     border-top: 1px solid rgba(42, 242, 112, 0.2);
 }
 
