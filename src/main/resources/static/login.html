@@ -61,7 +61,7 @@
                                         <div class="text-center">
                                             <h4 class="text-uppercase">欢迎使用</h4>
                                             <h4 class="text-uppercase"></h4>
-                                            <h3 class="text-uppercase display-3">气体遥测监测预警平台</h3>
+                                            <h3 id="systemName" class="text-uppercase display-3"></h3>
                                         </div>
                                     </div>
                                 </div>
@@ -153,6 +153,20 @@
 
     })
 
+    $.ajax({
+        type: "post",
+        processData: false,
+        contentType: false,
+        url: apiPath + '/system/load',
+        data: {},
+        success: function (data) {
+            if (data.code === 2000) {
+                let systemName = data.data.name;
+                document.getElementById("systemName").innerText = systemName;
+            }
+        }
+    });
+
     var userName;
     var password;
 
@@ -212,7 +226,7 @@
 
 <script>
     //回车绑定
-    $(".input-light").keydown(function(event) {
+    $(".input-light").keydown(function (event) {
         if (event.which == "13")
             login();
     });
