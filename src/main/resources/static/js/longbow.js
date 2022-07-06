@@ -4,7 +4,7 @@
     var SliderCaptcha = function (element, options) {
         this.$element = $(element);
         this.options = $.extend({}, SliderCaptcha.DEFAULTS, options);
-        this.$element.css({ 'position': 'relative', 'width': this.options.width + 'px', 'margin': '0 auto' });
+        this.$element.css({'position': 'relative', 'width': this.options.width + 'px', 'margin': '0 auto'});
         this.init();
     };
 
@@ -166,7 +166,11 @@
             loadCount = 0;
             that.text.removeClass('text-danger');
             if ($.isFunction(that.options.setSrc)) src = that.options.setSrc();
-            if (!src || src === '') src = 'https://picsum.photos/' + that.options.width + '/' + that.options.height + '/?image=' + Math.round(Math.random() * 20);
+            if (!src || src === '') {
+                // src = 'https://picsum.photos/' + that.options.width + '/' + that.options.height + '/?image=' + Math.round(Math.random() * 20);
+                src = 'img/longbow/' + Math.round(Math.random() * 10) + '.jpg'
+            }
+
             if (isIE) { // IE浏览器无法通过img.crossOrigin跨域，使用ajax获取图片blob然后转为dataURL显示
                 var xhr = new XMLHttpRequest()
                 xhr.onloadend = function (e) {
@@ -262,16 +266,26 @@
         document.addEventListener('mouseup', handleDragEnd);
         document.addEventListener('touchend', handleDragEnd);
 
-        document.addEventListener('mousedown', function () { return false; });
-        document.addEventListener('touchstart', function () { return false; });
+        document.addEventListener('mousedown', function () {
+            return false;
+        });
+        document.addEventListener('touchstart', function () {
+            return false;
+        });
     };
 
     _proto.verify = function () {
-        var sum = function (x, y) { return x + y; };
-        var square = function (x) { return x * x; };
+        var sum = function (x, y) {
+            return x + y;
+        };
+        var square = function (x) {
+            return x * x;
+        };
         var arr = this.trail // 拖动时y轴的移动距离
         var average = arr.reduce(sum) / arr.length;
-        var deviations = arr.map(function (x) { return x - average; });
+        var deviations = arr.map(function (x) {
+            return x - average;
+        });
         var stddev = Math.sqrt(deviations.map(square).reduce(sum) / arr.length);
         var left = parseInt(this.block.style.left);
         return {
