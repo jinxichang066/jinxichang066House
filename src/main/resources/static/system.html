@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="css/main.css" media="all"/>
     <link rel="stylesheet" href="old/lib/layui/css/layui.css">
 
+    <!-- jQuery -->
+    <script src="js/jquery.min.js"></script>
+
     <style>
         .system-input {
             background: rgba(0, 0, 0, 0.2);
@@ -41,7 +44,7 @@
         }
     </style>
 </head>
-<body background="img/bg1.png" onload="init()">
+<body background="img/bg1.png">
 <div class="x-nav">
 </div>
 <div class="x-body">
@@ -107,28 +110,27 @@
         form = layui.form();
 
     })
+
+    $.ajax({
+        type: "post",
+        processData: false,
+        contentType: false,
+        url: apiPath + '/system/load',
+        data: {},
+        success: function (data) {
+            if (data.code === 2000) {
+                let system = data.data;
+
+                document.getElementById("name").value = system.name;
+                document.getElementById("copyright").value = system.copyright;
+                document.getElementById("expire").value = system.expire;
+            } else {
+                layer.msg(data.message, {icon: 2});
+            }
+        }
+    });
 </script>
 <script>
-    function init() {
-        $.ajax({
-            type: "post",
-            processData: false,
-            contentType: false,
-            url: apiPath + '/system/load',
-            data: {},
-            success: function (data) {
-                if (data.code === 2000) {
-                    let system = data.data;
-
-                    document.getElementById("name").value = system.name;
-                    document.getElementById("copyright").value = system.copyright;
-                    document.getElementById("expire").value = system.expire;
-                } else {
-                    layer.msg(data.message, {icon: 2});
-                }
-            }
-        });
-    }
 
     function save() {
         let name = document.getElementById("name").value;
