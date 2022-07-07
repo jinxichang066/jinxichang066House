@@ -176,7 +176,8 @@
                                                     @size-change="handleSizeChange"
                                                     @current-change="handleCurrentChange"
                                                     :page-size="searchMap.pageSize"
-                                                    layout="prev, pager, next,sizes"
+                                                    :current-page="searchMap.pageNum"
+                                                    layout="prev, pager, next, sizes, total"
                                                     :page-sizes="[4,8]"
                                                     style="text-align: right;"
                                                     :total="total">
@@ -445,8 +446,13 @@
                     shade: 0.4,
                     title: title,
                     content: url,
-                    cancel: function (index, layero) {
-                        //使用右上角x关闭弹窗层，回调方法，重新加载页面数据，让修改或者新增的数据立马显示在页面上
+                    // cancel: function (index, layero) {
+                    //     //使用右上角x关闭弹窗层，回调方法，重新加载页面数据，让修改或者新增的数据立马显示在页面上
+                    //     app.search();
+                    // },
+                    end: function () {
+                        // layer.open页面关闭后的回调方法，重新加载当前页面数据，让修改或者新增的数据立马显示在页面上、
+                        // 不同于上边的cancel属性，只作用于右上角×的关闭。end属性作用于所有的关闭方式
                         app.search();
                     }
                 });

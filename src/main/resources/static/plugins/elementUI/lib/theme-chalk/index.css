@@ -1324,7 +1324,7 @@
 .el-pagination__total {
     margin-right: 10px;
     font-weight: 400;
-    color: #606266
+    color: white;
 }
 
 .el-pagination__jump {
