@@ -11,7 +11,7 @@
     <link href="css/fonts/beid.css" rel="stylesheet">
 
     <link href="css/main.css" rel="stylesheet">
-<!--    <link href="assets/css/styles.css" rel="stylesheet">-->
+    <!--    <link href="assets/css/styles.css" rel="stylesheet">-->
 
     <!-- JQVMAP -->
     <link href="plugins/jqvmap/jqvmap.min.css" rel="stylesheet">
@@ -41,9 +41,15 @@
     <link rel="stylesheet" href="plugins/layui/css/layui.css">
     <!-- 查看图片 -->
     <link rel="stylesheet" href="css/imageBox.css">
+
+    <style>
+        .canvas {
+            width: 100%;
+        }
+    </style>
 </head>
 
-<body class="body" background= "img/bg1.png">
+<body class="body" background="img/bg1.png">
 
 <div class="main-container" style="">
     <div class="overflow-hidden" style="">
@@ -218,6 +224,7 @@
                 // canvas播放器
                 let player = new Player();
                 let canvas = player.canvas;
+                canvas.className = "canvas"
                 if (videoType === "VI") {
                     canvas.width = 1280;
                     canvas.height = 720;
