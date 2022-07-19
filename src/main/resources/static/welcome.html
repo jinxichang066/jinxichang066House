@@ -317,7 +317,7 @@
                 parent.appendChild(div);
 
                 // 手动mock报警气体信息
-                assembleGasTable();
+                // assembleGasTable();
             }
 
             for (let key in playerMap) {
@@ -348,12 +348,56 @@
                             bytes_1[i] = decode.charCodeAt(i);
                         }
                         canvasPlayer.decode(bytes_1);
+                    }
+
+                    if (tag_msg.length === 4 && tag_msg[1] === "WarningMsg") {
+                        let tag_1 = jQuery.parseJSON(tag_msg[3]);
+                        let array = tag_1['Msg']['WarningGas'];
+                        let tbody = document.getElementById("gas-table-tbody");
+                        tbody.innerHTML = "";
+                        if (array.length !== 0) {
+                            for (let i = 0; i < array.length; i++) {
+                                let gas = array[i];
+                                let tr = document.createElement("tr");
+
+                                let td1 = document.createElement("td");
+                                td1.style.cursor = "pointer";
+                                let span = document.createElement("span");
+                                span.className = "badnge px-2 ml-1";
+                                span.style.backgroundColor = "#" + gas.GasColor;
+                                td1.appendChild(span);
+
+                                let td2 = document.createElement("td");
+                                td2.style.cursor = "pointer";
+                                td2.style.width = "80%";
+                                td2.title = gas.GasName;
+                                td2.innerText = gas.GasName;
+
+                                let td3 = document.createElement("td");
+                                td3.style.cursor = "pointer";
+                                td3.title = gas.GasCon;
+                                td3.innerText = gas.GasCon;
+
+                                tr.appendChild(td1);
+                                tr.appendChild(td2);
+                                tr.appendChild(td3);
+
+                                tbody.appendChild(tr);
+                            }
+                        }
                     } else {
-                        if (b == "you are connected!") {
+                        if (b === "you are connected!") {
                             console.log(b);
-                            var scrible_msg =
+                            let scrible_msg =
                                 'create_subscriber$WVideoX264' + videoType + '$G2021001${"Msg":{"TopicName":"WVideoX264' + videoType + '","TopicDomain":"1001","TopicSource":"G2021001"},"TimeStamp":"20210220214742"}';
                             client.send(scrible_msg);
+
+                            // 如果是单个视频画面 则订阅报警气体信息
+                            if (machineList.length === 1) {
+                                let scrible_warning =
+                                    'create_subscriber$WarningMsg$G2021001${"Msg":{"TopicName":"WarningMsg","TopicDomain":"1001","TopicSource":"G2021001"},"TimeStamp":"20210220214742"}';
+                                client.send(scrible_warning);
+                            }
                         }
                     }
                 };
@@ -365,6 +409,8 @@
 
     function assembleGasTable() {
         let tbody = document.getElementById("gas-table-tbody");
+        tbody.innerHTML = "";
+
         for (let h = 0; h < 3; h++) {
             let tr = document.createElement("tr");
 
