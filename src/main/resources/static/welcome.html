@@ -11,7 +11,7 @@
     <link href="css/fonts/beid.css" rel="stylesheet">
 
     <link href="css/main.css" rel="stylesheet">
-    <!--    <link href="assets/css/styles.css" rel="stylesheet">-->
+    <link href="css/styles.css" rel="stylesheet">
 
     <!-- JQVMAP -->
     <link href="plugins/jqvmap/jqvmap.min.css" rel="stylesheet">
@@ -46,6 +46,26 @@
         .canvas {
             width: 100%;
         }
+
+        .table {
+            text-align: left;
+            border-bottom: 0px solid rgba(255, 255, 255, 0.15);
+            color: white;
+
+            table-layout: fixed;
+        }
+
+        .table td {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .table thead th {
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
     </style>
 </head>
 
@@ -288,8 +308,82 @@
                     }
                 };
             }
+
+            // 如果单个视频画面 则展示报警气体信息
+            if (machineList.length === 1) {
+                let div = document.createElement("div");
+                div.id = "divWarningGas";
+                div.className = "panel-table-gas col-md-2";
+                div.scrollbar = "scroll";
+                div.style.cssText = "overflow: auto; outline: none; height: 300px";
+
+                let table = document.createElement("table");
+                table.className = "table table-borderless mb-0";
+                let thead = document.createElement("thead");
+                let colgroup = document.createElement("colgroup");
+                let col1 = document.createElement("col");
+                col1.style.width = "13%";
+                let col2 = document.createElement("col");
+                col2.style.width = "60%";
+                let col3 = document.createElement("col");
+                col3.style.width = "27%";
+                colgroup.appendChild(col1);
+                colgroup.appendChild(col2);
+                colgroup.appendChild(col3);
+                // thead.appendChild(colgroup);
+                let tbody_1 = document.createElement("tbody");
+                let tr = document.createElement("tr");
+                let th = document.createElement("th");
+                th.scope = "col";
+                th.colSpan = 3;
+                th.className = "";
+                th.innerText = "报警信息";
+                tr.appendChild(th);
+                tbody_1.appendChild(tr)
+                // thead.appendChild(tr);
+                table.appendChild(thead);
+                table.appendChild(colgroup);
+                table.appendChild(tbody_1);
+                let tbody = document.createElement("tbody");
+                tbody.id = "gas-table-tbody";
+                table.appendChild(tbody);
+                div.appendChild(table);
+
+                parent.appendChild(div);
+
+                assembleGasTable();
+
+
+            }
+
         });
 
+    }
+
+    function assembleGasTable() {
+        let tbody = document.getElementById("gas-table-tbody");
+        for (let h = 0; h < 3; h++) {
+            let tr = document.createElement("tr");
+
+            let td1 = document.createElement("td");
+            let span = document.createElement("span");
+            span.className = "badnge px-2 ml-1";
+            span.style.backgroundColor = "#" + "16711680";
+            td1.appendChild(span);
+
+            let td2 = document.createElement("td");
+            td2.style.width = "80%";
+            td2.innerText = "气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称";
+
+            let td3 = document.createElement("td");
+            td3.innerText = h + 0.00001;
+
+            tr.appendChild(td1);
+            tr.appendChild(td2);
+            tr.appendChild(td3);
+
+            tbody.appendChild(tr);
+        }
     }
 </script>
 
