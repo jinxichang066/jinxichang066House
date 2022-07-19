@@ -34,8 +34,8 @@ public class HistoryController {
     }
 
     @RequestMapping("/getImage")
-    public void getImage(@RequestParam String machineUrl, @RequestParam String warningInfoId, @RequestParam String mode, HttpServletResponse response) {
-        historyService.getImage(machineUrl, warningInfoId, mode, response);
+    public void getImage(@RequestParam String id, @RequestParam String warningInfoId, @RequestParam String mode, HttpServletResponse response) {
+        historyService.getImage(id, warningInfoId, mode, response);
 
     }
 

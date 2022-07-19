@@ -7,7 +7,9 @@ import cn.hutool.extra.servlet.ServletUtil;
 import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
+import cn.yk.gasMonitor.dao.MachineMapper;
 import cn.yk.gasMonitor.domain.History;
+import cn.yk.gasMonitor.domain.Machine;
 import cn.yk.gasMonitor.domain.PointInfo;
 import cn.yk.gasMonitor.dto.HistorySearchDTO;
 import com.deepoove.poi.data.MiniTableRenderData;
@@ -20,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
@@ -47,16 +50,13 @@ public class HistoryService {
     private static final String IR = "IR";
 
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://machineUrl:port/schema?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false";
+    private static final String DB_URL = "jdbc:mysql://databaseIp:port/schema?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false";
 
-    @Value("${jdbc.connection.user}")
-    private String user;
-    @Value("${jdbc.connection.password}")
-    private String password;
     @Value("${jdbc.connection.port}")
     private String port;
-    @Value("${jdbc.connection.schema}")
-    private String schema;
+
+    @Resource
+    private MachineMapper machineMapper;
 
     public PageResult search(HistorySearchDTO historySearchDTO) {
         log.info("查询开始，查询历史信息");
@@ -67,7 +67,7 @@ public class HistoryService {
         Statement stmt = null;
         try {
             // 获取数据库连接
-            conn = getConnection(historySearchDTO.getMachineUrl());
+            conn = getConnection(historySearchDTO.getId());
 
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT count(1) as count from warninginfor where 1=1 ");
@@ -153,17 +153,19 @@ public class HistoryService {
         return pageResult;
     }
 
-    private Connection getConnection(String machineUrl) throws ClassNotFoundException, SQLException {
+    private Connection getConnection(String id) throws ClassNotFoundException, SQLException {
+        Machine machine = machineMapper.selectById(id);
+
         // 注册 JDBC 驱动
         Class.forName(JDBC_DRIVER);
 
-        String url = DB_URL.replace("machineUrl", machineUrl)
+        String url = DB_URL.replace("databaseIp", machine.getDatabaseIp())
                 .replace("port", port)
-                .replace("schema", schema);
+                .replace("schema", machine.getDatabaseName());
 
         // 打开链接
         log.info("连接数据库：{}", url);
-        Connection conn = DriverManager.getConnection(url, user, password);
+        Connection conn = DriverManager.getConnection(url, machine.getDatabaseUser(), machine.getDatabasePassword());
 
         return conn;
     }
@@ -184,22 +186,22 @@ public class HistoryService {
         }
     }
 
-    public void getImage(String machineUrl, String warningInfoId, String mode, HttpServletResponse response) {
-        InputStream imageInputStream = getImageInputStream(machineUrl, warningInfoId, mode, new String[]{""});
+    public void getImage(String id, String warningInfoId, String mode, HttpServletResponse response) {
+        InputStream imageInputStream = getImageInputStream(id, warningInfoId, mode, new String[]{""});
         // 写回response
         if (imageInputStream != null) {
             ServletUtil.write(response, imageInputStream);
         }
     }
 
-    private InputStream getImageInputStream(String machineUrl, String warningInfoId, String mode, String[] cons) {
+    private InputStream getImageInputStream(String id, String warningInfoId, String mode, String[] cons) {
         ByteArrayInputStream byteArrayInputStream = null;
 
         Connection conn = null;
         Statement stmt = null;
         try {
             // 获取数据库连接
-            conn = getConnection(machineUrl);
+            conn = getConnection(id);
 
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT imagevi, imageir, gasnum, gasindexs, gascolors from warninginfor where id=").append(warningInfoId);
@@ -342,7 +344,7 @@ public class HistoryService {
         Statement stmt = null;
         try {
             // 获取数据库连接
-            conn = getConnection(historySearchDTO.getMachineUrl());
+            conn = getConnection(historySearchDTO.getId());
 
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT id, scanmode, dtime, gasnames, firstdtime, lastdtime FROM warninginfor where 1=1 ");
@@ -460,7 +462,7 @@ public class HistoryService {
                 XWPFRun run = p1.createRun();
 
                 String[] cons = {""}; // 采用引用传递修改cons浓度值
-                InputStream inputStream = getImageInputStream(historySearchDTO.getMachineUrl(), String.valueOf(history.getId()), VI, cons);
+                InputStream inputStream = getImageInputStream(historySearchDTO.getId(), String.valueOf(history.getId()), VI, cons);
                 if (inputStream != null) {
                     run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, "Generated", Units.toEMU(64), Units.toEMU(34));
                 }

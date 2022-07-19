@@ -28,9 +28,6 @@ spring:
 jdbc:
   connection:
     port: 3306
-    schema: girdsdata
-    user: root
-    password: girds2019
 
 
 logging:

@@ -76,7 +76,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">设备</span>
                                         </div>
-                                        <el-select v-model="searchMap.machineUrl" placeholder="请选择" style="">
+                                        <el-select v-model="searchMap.id" placeholder="请选择" style="">
                                             <el-option v-for="item in machineOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
                                         </el-select>
                                     </div>
@@ -240,7 +240,7 @@
             checkedIDs: [],
             communityList: [],
             total: 10,
-            searchMap: {"startTime": "", "endTime": "", "scanMode": "", "machineUrl": "", "gasnames": "", "pageNum": 1, "pageSize": 15},
+            searchMap: {"startTime": "", "endTime": "", "scanMode": "", "id": "", "gasnames": "", "pageNum": 1, "pageSize": 15},
             selectDate: ['', ''],
             pickerOptions: {
                 shortcuts: [{
@@ -293,9 +293,6 @@
         },
         methods: {
             getImage(warningInfoId, viWidth, viHeight, irWidth, irHeight) {
-                // 获取修正后的设备url
-                let correctMachineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
-
                 // 获取图片弹窗
                 let modal = document.getElementById('imageDiv');
 
@@ -305,8 +302,8 @@
                 modal.style.display = "block";
                 modalImg01.style.display = "block";
                 modalIma02.style.display = "block";
-                modalImg01.src = apiPath + "/history/getImage?machineUrl=" + correctMachineUrl + "&warningInfoId=" + warningInfoId + "&mode=" + "VI";
-                modalIma02.src = apiPath + "/history/getImage?machineUrl=" + correctMachineUrl + "&warningInfoId=" + warningInfoId + "&mode=" + "IR";
+                modalImg01.src = apiPath + "/history/getImage?id=" + this.searchMap.id + "&warningInfoId=" + warningInfoId + "&mode=" + "VI";
+                modalIma02.src = apiPath + "/history/getImage?id=" + this.searchMap.id + "&warningInfoId=" + warningInfoId + "&mode=" + "IR";
 
                 // 获取 <span> 元素，设置关闭按钮
                 let span = document.getElementById("closeBtn");
@@ -321,12 +318,7 @@
 
             //分页条件查询小区列表
             search() {
-                // 因为option控件的value属性不能重复的问题，在之前加载machineUrl的时候拼接了"^+index"
-                // 使用前要剔除
-                let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
-                correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
-
-                axios.post(apiPath + "/history/search", correctSearchMap, {headers: {"gasToken": getGasToken()}}).then((res) => {
+                axios.post(apiPath + "/history/search", this.searchMap, {headers: {"gasToken": getGasToken()}}).then((res) => {
                     app.communityList = res.data.data;
                     if (app.communityList != null && app.communityList.length !== 0) {
                         for (let i = 0; i < app.communityList.length; i++) {
@@ -339,11 +331,6 @@
             },
 
             exportWord() {
-                // 因为option控件的value属性不能重复的问题，在之前加载machineUrl的时候拼接了"^+index"
-                // 使用前要剔除
-                let correctSearchMap = JSON.parse(JSON.stringify(this.searchMap));
-                correctSearchMap.machineUrl = this.searchMap.machineUrl.substring(0, this.searchMap.machineUrl.indexOf("^"));
-
                 if (this.searchMap.startTime === '' || this.searchMap.endTime === '') {
                     this.$message({
                         message: "请选择导出报表的时间范围",
@@ -358,7 +345,7 @@
                 });
 
                 axios.post(apiPath + "/history/assembleWord",
-                    correctSearchMap,
+                    this.searchMap,
                     {headers: {"gasToken": getGasToken()}, responseType: 'blob'}).then((res) => {
                     const blob = new Blob([res.data]);
                     const url = window.URL.createObjectURL(blob);
@@ -533,17 +520,14 @@
                 if (machineList != null && machineList.length !== 0) {
                     for (let i = 0; i < machineList.length; i++) {
                         let option = {};
-                        // machineUrl需要作为<el-option>控件的value属性，也就是option代表的值(label是显示的值)，value属性不允许重复。
-                        // 但是因为不同设备可能会存在machineUrl一样的情况，只能出此下策，拼接一个"^+index"作为唯一标志
-                        // 后续在使用option控件绑定的searchMap.machineUrl时将唯一标志再剔除
-                        option.value = machineList[i].machineUrl + "^" + i;
+                        option.value = machineList[i].id;
                         option.label = machineList[i].machineName;
 
                         this.machineOptions.push(option);
                     }
 
                     console.log("默认：" + machineList[0].machineName)
-                    this.searchMap.machineUrl = machineList[0].machineUrl + "^" + 0;
+                    this.searchMap.id = machineList[0].id;
                 }
 
                 //初始页面获取历史信息

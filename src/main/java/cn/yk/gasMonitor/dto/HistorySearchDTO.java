@@ -20,7 +20,7 @@ public class HistorySearchDTO {
 
     private int scanMode;
 
-    private String machineUrl;
+    private String id;
 
     private String gasnames;
 
