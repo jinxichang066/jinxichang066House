@@ -369,16 +369,21 @@
             let tr = document.createElement("tr");
 
             let td1 = document.createElement("td");
+            td1.style.cursor = "pointer";
             let span = document.createElement("span");
             span.className = "badnge px-2 ml-1";
             span.style.backgroundColor = "#" + "16711680";
             td1.appendChild(span);
 
             let td2 = document.createElement("td");
+            td2.style.cursor = "pointer";
             td2.style.width = "80%";
+            td2.title = "气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称";
             td2.innerText = "气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称";
 
             let td3 = document.createElement("td");
+            td3.style.cursor = "pointer";
+            td3.title = h + 0.00001;
             td3.innerText = h + 0.00001;
 
             tr.appendChild(td1);
