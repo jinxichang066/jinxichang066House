@@ -40,6 +40,18 @@
     <link rel="stylesheet" href="plugins/layui/css/layui.css">
     <!-- 查看图片 -->
     <link rel="stylesheet" href="css/imageBox.css">
+
+    <style>
+        .table {
+            table-layout: fixed;
+        }
+
+        .table td {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 
 <body class="body" background="img/bg1.png">
@@ -136,11 +148,11 @@
                                                     <table class="table table-borderless mb-0">
                                                         <thead>
                                                         <tr>
-                                                            <th scope="col" class="pt-0">监测模式</th>
-                                                            <th scope="col" class="pt-0">记录时间</th>
-                                                            <th scope="col" class="pt-0">报警气体</th>
-                                                            <th scope="col" class="pt-0">报警时间</th>
-                                                            <th scope="col" class="pt-0">图像</th>
+                                                            <th scope="col" class="pt-0" style="width:10%">监测模式</th>
+                                                            <th scope="col" class="pt-0" style="width:18%">记录时间</th>
+                                                            <th scope="col" class="pt-0" style="width:40%">报警气体</th>
+                                                            <th scope="col" class="pt-0" style="width:27%">报警时间</th>
+                                                            <th scope="col" class="pt-0" style="width:5%">图像</th>
                                                         </tr>
                                                         </thead>
                                                         <tbody>
@@ -533,6 +545,20 @@
                 //初始页面获取历史信息
                 this.search();
             });
+        },
+
+        // 页面数据渲染完成之后调用方法,结合watch和this.$nextTick()来实现
+        // 利用title属性实现:鼠标悬浮展示单元格全部内容
+        watch: {
+            // communityList：你需要监听的数据
+            communityList: function () {
+                this.$nextTick(function () {
+                    $('.table tr td').each(function () {
+                        $(this).attr("title", $(this).text());
+                        $(this).css("cursor", 'pointer');
+                    });
+                });
+            }
         }
     });
 </script>
