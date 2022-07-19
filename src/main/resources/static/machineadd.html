@@ -68,6 +68,18 @@
             <el-form-item label="启用日期" prop="machineStartTime">
                 <el-date-picker v-model="community.startTime" type="date" placeholder="请选择日期" value-format="yyyy-MM-dd"></el-date-picker>
             </el-form-item>
+            <el-form-item label="数据库IP" prop="databaseIp">
+                <el-input v-model="community.databaseIp" placeholder="请输入数据库IP"></el-input>
+            </el-form-item>
+            <el-form-item label="数据库名称" prop="databaseName">
+                <el-input v-model="community.databaseName" placeholder="请输入数据库名称"></el-input>
+            </el-form-item>
+            <el-form-item label="数据库用户名" prop="databaseUser">
+                <el-input v-model="community.databaseUser" placeholder="请输入数据库用户名"></el-input>
+            </el-form-item>
+            <el-form-item label="数据库密码" prop="databasePassword">
+                <el-input v-model="community.databasePassword" placeholder="请输入数据库密码"></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="save()" style="text-align: center">保存</el-button>
                 <el-button @click="clearAll()" style="text-align: center">重置</el-button>
@@ -122,11 +134,27 @@
                 ],
                 machineUrl: [
                     {required: true, message: '请输入设备URL', trigger: 'blur'},
-                    {max: 100, message: '长度小于100个字符', trigger: 'blur'}
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
                 ],
                 machineDesc: [
                     {required: true, message: '请输入设备备注', trigger: 'blur'},
                     {max: 100, message: '长度小于100个字符', trigger: 'blur'}
+                ],
+                databaseIp: [
+                    {required: true, message: '请输入数据库IP', trigger: 'blur'},
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
+                ],
+                databaseName: [
+                    {required: true, message: '请输入数据库名称', trigger: 'blur'},
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
+                ],
+                databaseUser: [
+                    {required: true, message: '请输入数据库用户名', trigger: 'blur'},
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
+                ],
+                databasePassword: [
+                    {required: true, message: '请输入数据库密码', trigger: 'blur'},
+                    {max: 50, message: '长度小于50个字符', trigger: 'blur'}
                 ]
             }
         },
@@ -197,6 +225,34 @@
                 if (this.isNullOrEmpty(this.community.machineDesc)) {
                     this.$message({
                         message: "设备备注不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.databaseIp)) {
+                    this.$message({
+                        message: "数据库IP不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.databaseName)) {
+                    this.$message({
+                        message: "数据库名称不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.databaseUser)) {
+                    this.$message({
+                        message: "数据库用户名不能为空",
+                        type: "error"
+                    });
+                    return false;
+                }
+                if (this.isNullOrEmpty(this.community.databasePassword)) {
+                    this.$message({
+                        message: "数据库密码不能为空",
                         type: "error"
                     });
                     return false;

@@ -82,8 +82,13 @@ public class MachineService {
     }
 
     public PageResult add(Machine machine) {
+        deleteWhiteSpace(machine);
+
         if (!validMachineUrl(machine.getMachineUrl())) {
             return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
+        }
+        if (!validMachineUrl(machine.getDatabaseIp())) {
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_DATABASE_IP_NOT_MATCH);
         }
 
         LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId());
@@ -100,8 +105,13 @@ public class MachineService {
     }
 
     public PageResult update(Machine machine) {
+        deleteWhiteSpace(machine);
+
         if (!validMachineUrl(machine.getMachineUrl())) {
             return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_URL_NOT_MATCH);
+        }
+        if (!validMachineUrl(machine.getDatabaseIp())) {
+            return new PageResult(true, StatusCode.OK, MessageConstant.MACHINE_DATABASE_IP_NOT_MATCH);
         }
 
         LambdaQueryWrapper<Machine> wrapper = Wrappers.lambdaQuery(Machine.class).eq(Machine::getMachineId, machine.getMachineId()).ne(Machine::getId, machine.getId());
@@ -116,7 +126,16 @@ public class MachineService {
         }
     }
 
-    // 设备url判断是否ip地址格式
+    private void deleteWhiteSpace(Machine machine) {
+        machine.setMachineId(machine.getMachineId().trim());
+        machine.setMachineUrl(machine.getMachineUrl().trim());
+        machine.setDatabaseIp(machine.getDatabaseIp().trim());
+        machine.setDatabaseName(machine.getDatabaseName().trim());
+        machine.setDatabaseUser(machine.getDatabaseUser().trim());
+        machine.setDatabasePassword(machine.getDatabasePassword().trim());
+    }
+
+    // 判断是否ip地址格式
     private boolean validMachineUrl(String url) {
         String regex = "^((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})(\\.((2(5[0-5]|[0-4]\\d))|[0-1]?\\d{1,2})){3}$";
 

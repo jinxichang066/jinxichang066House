@@ -23,6 +23,14 @@ public class Machine {
 
     private String machineUrl;
 
+    private String databaseIp;
+
+    private String databaseName;
+
+    private String databaseUser;
+
+    private String databasePassword;
+
     private State state;
 
     private String machineDesc;

@@ -127,6 +127,18 @@
                                                                 启用时间
                                                             </th>
                                                             <th scope="col" class="pt-0">
+                                                                数据库IP
+                                                            </th>
+                                                            <th scope="col" class="pt-0">
+                                                                数据库名称
+                                                            </th>
+                                                            <th scope="col" class="pt-0">
+                                                                数据库用户名
+                                                            </th>
+                                                            <th scope="col" class="pt-0">
+                                                                数据库密码
+                                                            </th>
+                                                            <th scope="col" class="pt-0">
                                                                 操作
                                                             </th>
                                                         </tr>
@@ -151,6 +163,10 @@
                                                             </td>
                                                             <td style="padding: 0.8rem">{{community.machineDesc}}</td>
                                                             <td style="padding: 0.8rem">{{community.startTime}}</td>
+                                                            <td style="padding: 0.8rem">{{community.databaseIp}}</td>
+                                                            <td style="padding: 0.8rem">{{community.databaseName}}</td>
+                                                            <td style="padding: 0.8rem">{{community.databaseUser}}</td>
+                                                            <td style="padding: 0.8rem">{{community.databasePassword}}</td>
                                                             <td style="padding: 0.8rem">
                                                                 <a style="text-decoration:none" @click="community.status == 0?admin_stop(community.id):admin_start(community.id)"
                                                                    href="javascript:;" :title="community.status == 0?'停用':'启用'">

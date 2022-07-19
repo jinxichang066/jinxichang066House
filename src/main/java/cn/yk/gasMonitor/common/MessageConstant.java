@@ -26,6 +26,7 @@ public class MessageConstant {
     public static final String MACHINE_UPDATE_SUCCESS = "修改设备信息成功！";
     public static final String MACHINE_DELETE_SUCCESS = "删除设备信息成功！";
     public static final String MACHINE_URL_NOT_MATCH = "设备URL必须为IP地址格式！";
+    public static final String MACHINE_DATABASE_IP_NOT_MATCH = "数据库IP必须为IP地址格式！";
 
     //---------------------------历史记录（History）操作消息提示信息---------------------------------------
     public static final String HISTORY_SEARCH_SUCCESS = "查询历史记录信息成功！";
