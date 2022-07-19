@@ -52,6 +52,17 @@
         .btn-width {
             width: 8rem;
         }
+
+        .table {
+            table-layout: fixed;
+        }
+
+        .table td {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
     </style>
 </head>
 
@@ -407,6 +418,20 @@
                 });
                 //初始页面获取用户列表信息
                 this.search();
+            },
+
+            // 页面数据渲染完成之后调用方法,结合watch和this.$nextTick()来实现
+            // 利用title属性实现:鼠标悬浮展示单元格全部内容
+            watch: {
+                // communityList：你需要监听的数据
+                communityList: function () {
+                    this.$nextTick(function () {
+                        $('.table tr td').each(function () {
+                            $(this).attr("title", $(this).text());
+                            $(this).css("cursor", 'pointer');
+                        });
+                    });
+                }
             }
         })
     ;
