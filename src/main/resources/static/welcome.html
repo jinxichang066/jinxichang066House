@@ -77,20 +77,20 @@
             <div class="row flex-wrap align-items-center px-6 py-5" style="border-bottom: 0 solid rgba(42, 242, 112, 0.2);">
                 <div class="col">
                     <div class="d-flex align-items-center">
-<!--                        隐藏视频模式切换按钮，同时将外层的容器格式由-->
-<!--                        border-bottom: 1px solid rgba(42, 242, 112, 0.2);-->
-<!--                        改为-->
-<!--                        border-bottom: 0 solid rgba(42, 242, 112, 0.2);-->
-<!--                        <div class="mr-2">-->
-<!--                            <label class="mb-0">可见光</label>-->
-<!--                        </div>-->
-<!--                        <div class="custom-switch custom-switch-outline">-->
-<!--                            <input type="checkbox" class="custom-switch-input" id="switchOutline-fie" onclick="changeVideoType()">-->
-<!--                            <label class="custom-switch-label" for="switchOutline-fie"></label>-->
-<!--                        </div>-->
-<!--                        <div class="ml-2">-->
-<!--                            <label class="mb-0">红外</label>-->
-<!--                        </div>-->
+                        <!--                        隐藏视频模式切换按钮，同时将外层的容器格式由-->
+                        <!--                        border-bottom: 1px solid rgba(42, 242, 112, 0.2);-->
+                        <!--                        改为-->
+                        <!--                        border-bottom: 0 solid rgba(42, 242, 112, 0.2);-->
+                        <!--                        <div class="mr-2">-->
+                        <!--                            <label class="mb-0">可见光</label>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="custom-switch custom-switch-outline">-->
+                        <!--                            <input type="checkbox" class="custom-switch-input" id="switchOutline-fie" onclick="changeVideoType()">-->
+                        <!--                            <label class="custom-switch-label" for="switchOutline-fie"></label>-->
+                        <!--                        </div>-->
+                        <!--                        <div class="ml-2">-->
+                        <!--                            <label class="mb-0">红外</label>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
 
@@ -375,8 +375,10 @@
 
                                 let td3 = document.createElement("td");
                                 td3.style.cursor = "pointer";
-                                td3.title = gas.GasCon;
-                                td3.innerText = gas.GasCon;
+                                let gasCon = gas.GasCon;
+                                gasCon = gasCon.toFixed(2);
+                                td3.title = gasCon;
+                                td3.innerText = gasCon;
 
                                 tr.appendChild(td1);
                                 tr.appendChild(td2);
@@ -429,8 +431,10 @@
 
             let td3 = document.createElement("td");
             td3.style.cursor = "pointer";
-            td3.title = h + 0.00001;
-            td3.innerText = h + 0.00001;
+            let gasCon = h + 0.23001;
+            gasCon = gasCon.toFixed(2);
+            td3.title = gasCon;
+            td3.innerText = gasCon;
 
             tr.appendChild(td1);
             tr.appendChild(td2);
