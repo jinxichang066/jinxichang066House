@@ -288,5 +288,44 @@
     userName.innerText = getUserName();
 </script>
 
+<script>
+    let websocketUrl = apiPath.replace("http", "ws") + "/gasWebSocket" + "/" + getUserName();
+    let client = new WebSocket(websocketUrl);
+
+    client.binaryType = 'arraybuffer';
+
+    client.onopen = function (evt) {
+        onOpen(evt);
+    };
+    client.onclose = function (evt) {
+        onClose(evt)
+    };
+    client.onmessage = function (evt) {
+        onMessage(evt);
+    };
+    client.onerror = function (evt) {
+        onError(evt)
+    };
+
+    function onOpen(evt) {
+        // alert("open");
+    }
+
+    function onClose(evt) {
+        // alert("close");
+    }
+
+    function onMessage(evt) {
+        let message = evt.data;
+        if (message !== "ping") {
+            alert(message);
+        }
+    }
+
+    function onError(evt) {
+        // alert("error");
+    }
+</script>
+
 </body>
 </html>

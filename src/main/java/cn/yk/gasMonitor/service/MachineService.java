@@ -7,6 +7,7 @@ import cn.yk.gasMonitor.common.StatusCode;
 import cn.yk.gasMonitor.dao.MachineMapper;
 import cn.yk.gasMonitor.domain.Machine;
 import cn.yk.gasMonitor.dto.MachineSearchDTO;
+import cn.yk.gasMonitor.websocket.WebSocketHandler;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -31,6 +32,8 @@ public class MachineService {
 
     @Resource
     private MachineMapper machineMapper;
+    @Resource
+    private WebSocketHandler webSocketHandler;
 
     public IPage<Machine> search(JSONObject jsonObject) {
         int pageNum = (int) jsonObject.get("pageNum");
@@ -151,23 +154,35 @@ public class MachineService {
         return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).orderByAsc(Machine::getCreateTime));
     }
 
-    @Scheduled(cron = "0 0/3 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void checkMachineState() {
         log.info("更新设备状态定时任务开始");
         List<Machine> machineList = loadAllMachine();
         if (CollectionUtil.isNotEmpty(machineList)) {
+            String messageHead = "监测到设备状态变更:\n";
+            String messageTail = "请刷新页面获取最新设备状态!";
+            String message = "";
             for (Machine machine : machineList) {
                 // 上线
                 boolean open = MyWebSocketClient.valid(machine.getMachineUrl());
                 if (open && machine.getState().equals(Machine.State.OFFLINE)) {
                     machine.setState(Machine.State.ONLINE);
                     machineMapper.updateById(machine);
+                    message += machine.getMachineName() + ":" + "离线->" + "在线" + "\n";
                 } else if (!open && machine.getState().equals(Machine.State.ONLINE)) { // 下线
                     machine.setState(Machine.State.OFFLINE);
                     machineMapper.updateById(machine);
+                    message += machine.getMachineName() + ":" + "在线->" + "离线" + "\n";
                 }
             }
+            if (!StringUtils.isEmpty(message)) {
+                log.info("有设备状态变更消息");
+                webSocketHandler.sendToAll(messageHead + message + messageTail);
+            } else {
+                log.info("没有设备状态变更消息");
+            }
         }
+
         log.info("更新设备状态定时任务结束");
     }
 
