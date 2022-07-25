@@ -449,15 +449,27 @@ public class HistoryService {
         table.getRow(3).getCell(4).setText("监测模式");
         table.getRow(3).getCell(5).setText("监测图片");
 
+        Machine machine = machineMapper.selectById(historySearchDTO.getId());
+        if (machine != null) {
+            table.getRow(0).getCell(5).setText(machine.getMachineId());
+        }
+
         if (CollectionUtil.isNotEmpty(historyList)) {
             for (int i = 0; i < historyList.size(); i++) {
                 History history = historyList.get(i);
 
                 table.createRow();
                 table.getRow(4 + i).getCell(0).setText(String.valueOf(history.getId()));
-                table.getRow(4 + i).getCell(1).setText(String.valueOf(history.getDTime()));
+                int scanMode = history.getScanMode();
+                String time;
+                if (scanMode == 3) {
+                    time = DateUtil.format(history.getFirstDTime(), "yyyy-MM-dd HH:mm:ss") + "--" + DateUtil.format(history.getLastDTime(), "yyyy-MM-dd HH:mm:ss");
+                } else {
+                    time = DateUtil.format(history.getFirstDTime(), "yyyy-MM-dd HH:mm:ss");
+                }
+                table.getRow(4 + i).getCell(1).setText(time);
                 table.getRow(4 + i).getCell(2).setText(history.getGasNames());
-                table.getRow(4 + i).getCell(4).setText(getScanMode(history.getScanMode()));
+                table.getRow(4 + i).getCell(4).setText(getScanMode(scanMode));
                 XWPFParagraph p1 = table.getRow(4 + i).getCell(5).addParagraph();
                 XWPFRun run = p1.createRun();
 
