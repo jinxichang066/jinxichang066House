@@ -154,7 +154,8 @@ public class MachineService {
         return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).orderByAsc(Machine::getCreateTime));
     }
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    // 30秒check一次
+    @Scheduled(cron = "0/30 0/1 * * * ? ")
     public void checkMachineState() {
         log.info("更新设备状态定时任务开始");
         List<Machine> machineList = loadAllMachine();

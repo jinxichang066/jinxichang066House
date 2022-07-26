@@ -289,6 +289,7 @@
 </script>
 
 <script>
+    // 与后台建立websocket连接，接收设备状态变更的弹窗
     let websocketUrl = apiPath.replace("http", "ws") + "/gasWebSocket" + "/" + getUserName();
     let client = new WebSocket(websocketUrl);
 
@@ -318,7 +319,7 @@
     function onMessage(evt) {
         let message = evt.data;
         if (message !== "ping") {
-            alert(message);
+            layer.alert(message.replace(/\n/g, '<br/>'));
         }
     }
 
