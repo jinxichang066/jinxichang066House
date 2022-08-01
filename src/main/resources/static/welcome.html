@@ -338,7 +338,7 @@
                 client.onmessage = function (evt) {
                     var b = evt.data;
                     var tag_msg = b.split('$');
-                    if (tag_msg.length == 4 && tag_msg[1] == "WVideoX264VI") {
+                    if (tag_msg.length == 4 && tag_msg[1] == "wvideox264vi") {
                         var tag_1 = jQuery.parseJSON(tag_msg[3]);
                         //var tag_2 = ;
                         let decode = window.atob(tag_1['Msg']['VideoData']);
@@ -350,7 +350,7 @@
                         canvasPlayer.decode(bytes_1);
                     }
 
-                    if (tag_msg.length === 4 && tag_msg[1] === "WarningMsg") {
+                    if (tag_msg.length === 4 && tag_msg[1] === "warningmsg") {
                         let tag_1 = jQuery.parseJSON(tag_msg[3]);
                         let array = tag_1['Msg']['WarningGas'];
                         let tbody = document.getElementById("gas-table-tbody");
