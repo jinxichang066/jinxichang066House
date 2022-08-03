@@ -159,6 +159,8 @@
 <script src="js/YUVCanvas.js"></script>
 <script src="js/Player.js"></script>
 <script src="js/footer.js"></script>
+<script src="js/base64.js"></script>
+<script src="js/colorConvert.js"></script>
 
 <script>
     // 设备id 判断是从首页加载，还是点击设备列表
@@ -364,14 +366,14 @@
                                 td1.style.cursor = "pointer";
                                 let span = document.createElement("span");
                                 span.className = "badnge px-2 ml-1";
-                                span.style.backgroundColor = "#" + gas.GasColor;
+                                span.style.backgroundColor = toRGB(gas.GasColor);
                                 td1.appendChild(span);
 
                                 let td2 = document.createElement("td");
                                 td2.style.cursor = "pointer";
                                 td2.style.width = "80%";
-                                td2.title = gas.GasName;
-                                td2.innerText = gas.GasName;
+                                td2.title = decode64(gas.GasName);
+                                td2.innerText = decode64(gas.GasName);
 
                                 let td3 = document.createElement("td");
                                 td3.style.cursor = "pointer";
@@ -420,14 +422,14 @@
             td1.style.cursor = "pointer";
             let span = document.createElement("span");
             span.className = "badnge px-2 ml-1";
-            span.style.backgroundColor = "#" + "16711680";
+            span.style.backgroundColor = toRGB(16711680);
             td1.appendChild(span);
 
             let td2 = document.createElement("td");
             td2.style.cursor = "pointer";
             td2.style.width = "80%";
-            td2.title = "气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称";
-            td2.innerText = "气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称气体名称";
+            td2.title = decode64("MSwxLDEsMi3LxLf60tLN6Q==");
+            td2.innerText = decode64("MSwxLDEsMi3LxLf60tLN6Q==");
 
             let td3 = document.createElement("td");
             td3.style.cursor = "pointer";
