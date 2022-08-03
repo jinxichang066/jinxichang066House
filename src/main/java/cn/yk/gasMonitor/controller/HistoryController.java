@@ -39,6 +39,12 @@ public class HistoryController {
 
     }
 
+    @RequestMapping("/getGasInfoTable")
+    public PageResult getGasInfoTable(@RequestParam String id, @RequestParam String warningInfoId) {
+        return historyService.getGasInfoTable(id, warningInfoId);
+
+    }
+
     @RequestMapping("/getGasNameList")
     @Auth
     public PageResult getGasNameList(HttpServletRequest request) {

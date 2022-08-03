@@ -12,6 +12,7 @@ import cn.yk.gasMonitor.domain.History;
 import cn.yk.gasMonitor.domain.Machine;
 import cn.yk.gasMonitor.domain.PointInfo;
 import cn.yk.gasMonitor.dto.HistorySearchDTO;
+import com.alibaba.fastjson.JSONObject;
 import com.deepoove.poi.data.MiniTableRenderData;
 import com.deepoove.poi.util.TableTools;
 import lombok.extern.slf4j.Slf4j;
@@ -193,6 +194,73 @@ public class HistoryService {
         if (imageInputStream != null) {
             ServletUtil.write(response, imageInputStream);
         }
+    }
+
+    public PageResult getGasInfoTable(String id, String warningInfoId) {
+        Connection conn = null;
+        Statement stmt = null;
+
+        List<JSONObject> list = new ArrayList<>();
+        try {
+            // 获取数据库连接
+            conn = getConnection(id);
+
+            StringBuilder sql = new StringBuilder();
+            sql.append("SELECT gasnames, gascolors from warninginfor where id=").append(warningInfoId);
+
+            // 执行查询
+            log.info("实例化Statement对象...");
+            stmt = conn.createStatement();
+            log.info("执行sql: {}", sql.toString());
+            ResultSet rs = stmt.executeQuery(sql.toString());
+            if (rs.next()) {
+                //从warningInfo中得到气体与对应的颜色map
+                String pointInfoGasIndex = rs.getString("gasnames");
+                String pointInfoGasColors = rs.getString("gascolors");
+                List<String> pointInfoGasIndexList = Arrays.asList(pointInfoGasIndex.split("\\|"));
+                List<String> pointInfoGasColorsList = Arrays.asList(pointInfoGasColors.split("\\|"));
+                for (int i = 0; i < pointInfoGasIndexList.size(); i++) {
+                    JSONObject jsonObject = new JSONObject().fluentPut("gasName", pointInfoGasIndexList.get(i)).fluentPut("gasColor", pointInfoGasColorsList.get(i));
+                    list.add(jsonObject);
+                }
+            }
+            // 完成后关闭
+            // 关闭warningInfo的查询
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException se) {
+            // 处理 JDBC 错误
+            log.error(se.getMessage(), se);
+            //pageResult.setFlag(true);
+            //pageResult.setCode(StatusCode.ERROR);
+            //pageResult.setMessage(MessageConstant.HISTORY_SEARCH_FAIL_DB_CONNECT_FAIL);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            //pageResult.setFlag(true);
+            //pageResult.setCode(StatusCode.ERROR);
+            //pageResult.setMessage(MessageConstant.HISTORY_SEARCH_FAIL_ERROR);
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        log.info("查询结束");
+
+        PageResult pageResult = new PageResult();
+        pageResult.setFlag(true);
+        pageResult.setCode(StatusCode.OK);
+        pageResult.setMessage(MessageConstant.HISTORY_SEARCH_SUCCESS);
+        pageResult.setData(list);
+        pageResult.setTotal((long) list.size());
+
+        return pageResult;
     }
 
     private InputStream getImageInputStream(String id, String warningInfoId, String mode) {

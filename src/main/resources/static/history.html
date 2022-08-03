@@ -178,7 +178,8 @@
                                                             <td style="">{{community.firstDTime}}-{{community.lastDTime}}</td>
                                                             <td style="">
                                                                 <!--                                                                    <el-button @click="getImage(community.id,'1280','720','640','512')" size="mini" type="primary" icon="el-icon-search"></el-button>-->
-                                                                <a style="cursor: pointer" class="fas fa-image" @click="getImage(community.id,'1280','720','640','512');assembleGasTable()"></a>
+                                                                <a style="cursor: pointer" class="fas fa-image"
+                                                                   @click="getImage(community.id,'1280','720','640','512');assembleGasTable(community.id)"></a>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -358,31 +359,40 @@
                 });
             },
 
-            assembleGasTable() {
+            assembleGasTable(warningInfoId) {
                 let tbody = document.getElementById("gas-table-tbody");
                 tbody.innerHTML = "";
 
-                for (let h = 0; h < 3; h++) {
-                    let tr = document.createElement("tr");
+                axios.get(apiPath + "/history/getGasInfoTable?id=" + this.searchMap.id + "&warningInfoId=" + warningInfoId).then((res) => {
+                    let list = res.data.data;
 
-                    let td1 = document.createElement("td");
-                    td1.style.cursor = "pointer";
-                    let span = document.createElement("span");
-                    span.className = "badnge px-2 ml-1";
-                    span.style.backgroundColor = toRGB(16711680);
-                    td1.appendChild(span);
+                    if (list != null && list.length !== 0) {
+                        for (let i = 0; i < list.length; i++) {
+                            let gasName = list[i].gasName;
+                            let gasColor = list[i].gasColor;
 
-                    let td2 = document.createElement("td");
-                    td2.style.cursor = "pointer";
-                    td2.style.width = "80%";
-                    td2.title = "MSwxLDEsMi3LxLf60tLN6Q==";
-                    td2.innerText = "MSwxLDEsMi3LxLf60tLN6Q==";
+                            let tr = document.createElement("tr");
 
-                    tr.appendChild(td1);
-                    tr.appendChild(td2);
+                            let td1 = document.createElement("td");
+                            td1.style.cursor = "pointer";
+                            let span = document.createElement("span");
+                            span.className = "badnge px-2 ml-1";
+                            span.style.backgroundColor = toRGB(gasColor);
+                            td1.appendChild(span);
 
-                    tbody.appendChild(tr);
-                }
+                            let td2 = document.createElement("td");
+                            td2.style.cursor = "pointer";
+                            td2.style.width = "80%";
+                            td2.title = gasName;
+                            td2.innerText = gasName;
+
+                            tr.appendChild(td1);
+                            tr.appendChild(td2);
+
+                            tbody.appendChild(tr);
+                        }
+                    }
+                });
             },
 
             exportWord() {
