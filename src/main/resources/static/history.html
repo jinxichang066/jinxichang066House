@@ -74,8 +74,23 @@
                             <!-- imageBox -->
                             <div id="imageDiv" class="modal">
                                 <!-- 关闭按钮 -->
-                                <span id="closeBtn" class="close" onclick="document.getElementById('imageDiv').style.display='none'">&times;</span>
-                                <!-- 弹窗内容 -->
+                                <span id="closeBtn" class="close" onclick="document.getElementById('imageDiv').style.display='none'" style="top: 0px">&times;</span>
+                                <!-- 图例 -->
+                                <div id="divWarningGas" class="panel-history-table-gas">
+                                    <table class="table table-borderless mb-0" style="border-bottom: 0px">
+                                        <thead></thead>
+                                        <colgroup>
+                                            <col style="width: 13%;">
+                                            <col style="width: 87%;">
+                                        </colgroup>
+                                        <tbody>
+                                        <tr>
+                                            <th scope="col" colspan="2" class="" style="border-bottom: 1px solid rgba(255, 255, 255, 0.15);">气体信息</th>
+                                        </tr>
+                                        </tbody>
+                                        <tbody id="gas-table-tbody"></tbody>
+                                    </table>
+                                </div>
                                 <img class="modal-content" style="max-width: 960px" id="img01" onerror="document.getElementById('img01').style.display='none'">
                                 <img class="modal-content" style="max-width: 640px" id="img02" onerror="document.getElementById('img02').style.display='none'">
                             </div>
@@ -163,7 +178,7 @@
                                                             <td style="">{{community.firstDTime}}-{{community.lastDTime}}</td>
                                                             <td style="">
                                                                 <!--                                                                    <el-button @click="getImage(community.id,'1280','720','640','512')" size="mini" type="primary" icon="el-icon-search"></el-button>-->
-                                                                <a style="cursor: pointer" class="fas fa-image" @click="getImage(community.id,'1280','720','640','512')"></a>
+                                                                <a style="cursor: pointer" class="fas fa-image" @click="getImage(community.id,'1280','720','640','512');assembleGasTable()"></a>
                                                             </td>
                                                         </tr>
                                                         </tbody>
@@ -241,6 +256,7 @@
 <!-- Modules -->
 <script src="js/modules.js"></script>
 <script src="js/footer.js"></script>
+<script src="js/colorConvert.js"></script>
 
 <script>
     var app = new Vue({
@@ -340,6 +356,33 @@
                     }
                     app.total = res.data.total;
                 });
+            },
+
+            assembleGasTable() {
+                let tbody = document.getElementById("gas-table-tbody");
+                tbody.innerHTML = "";
+
+                for (let h = 0; h < 3; h++) {
+                    let tr = document.createElement("tr");
+
+                    let td1 = document.createElement("td");
+                    td1.style.cursor = "pointer";
+                    let span = document.createElement("span");
+                    span.className = "badnge px-2 ml-1";
+                    span.style.backgroundColor = toRGB(16711680);
+                    td1.appendChild(span);
+
+                    let td2 = document.createElement("td");
+                    td2.style.cursor = "pointer";
+                    td2.style.width = "80%";
+                    td2.title = "MSwxLDEsMi3LxLf60tLN6Q==";
+                    td2.innerText = "MSwxLDEsMi3LxLf60tLN6Q==";
+
+                    tr.appendChild(td1);
+                    tr.appendChild(td2);
+
+                    tbody.appendChild(tr);
+                }
             },
 
             exportWord() {

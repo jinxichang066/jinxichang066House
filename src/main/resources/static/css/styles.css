@@ -1367,6 +1367,17 @@
     height: 300px;
 }
 
+.panel-history-table-gas {
+    border: 2px solid rgba(42, 242, 112, 0.2);
+    flex: 0 0 20%;
+    max-width: 16%;
+    overflow: auto;
+    outline: none;
+    height: 300px;
+    margin-right: 2rem;
+    float: right;
+}
+
 /* [ User CSS ] */
 
 /*# sourceMappingURL=styles.css.map */
