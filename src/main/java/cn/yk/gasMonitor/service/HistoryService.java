@@ -15,6 +15,7 @@ import cn.yk.gasMonitor.dto.HistorySearchDTO;
 import com.deepoove.poi.data.MiniTableRenderData;
 import com.deepoove.poi.util.TableTools;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
@@ -356,7 +357,8 @@ public class HistoryService {
         return byteArrayInputStream;
     }
 
-    private InputStream getImageInputStreamForWord(String id, String warningInfoId, String mode, String[] cons) {
+    // 绘制扇扫模式的图片
+    private InputStream getImageInputStreamForMode3(History history, String id, String warningInfoId, String mode, String gasIndex, Map<String, String> indexColorMap, List<String> consList) {
         ByteArrayInputStream byteArrayInputStream = null;
 
         Connection conn = null;
@@ -365,111 +367,234 @@ public class HistoryService {
             // 获取数据库连接
             conn = getConnection(id);
 
-            StringBuilder sql = new StringBuilder();
-            sql.append("SELECT imagevi, imageir, gasnum, gasindexs, gascolors from warninginfor where id=").append(warningInfoId);
-
-            // 执行查询
             log.info("[{}]实例化Statement对象...", mode);
             stmt = conn.createStatement();
-            log.info("[{}]执行sql: {}", mode, sql.toString());
-            ResultSet rs = stmt.executeQuery(sql.toString());
-            if (rs.next()) {
-                //从warningInfo中得到气体与对应的颜色map
-                Map<String, String> indexColorMap = new HashMap<>();
-                String pointInfoGasIndex = rs.getString("gasindexs");
-                String pointInfoGasColors = rs.getString("gascolors");
-                List<String> pointInfoGasIndexList = Arrays.asList(pointInfoGasIndex.split("\\|"));
-                List<String> pointInfoGasColorsList = Arrays.asList(pointInfoGasColors.split("\\|"));
-                for (int i = 0; i < pointInfoGasIndexList.size(); i++) {
-                    indexColorMap.put(pointInfoGasIndexList.get(i), pointInfoGasColorsList.get(i));
-                }
 
-                // 获取图片的字节数组
-                Blob blob;
-                if (mode.equals(IR)) {
-                    blob = rs.getBlob("imageir");
+            // 获取图片的字节数组
+            Blob blob;
+            if (mode.equals(IR)) {
+                blob = history.getImageIR();
+            } else {
+                blob = history.getImageVI();
+            }
+            byte[] array = blob.getBytes(1, (int) blob.length());
+
+            // 使用ImageIO处理图像
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
+
+            // 扇扫模式下，绘制扫描区域
+            String scanInfoSql = "select * from scaninfor where id = " + history.getScanId();
+            ResultSet scanInfoRs = stmt.executeQuery(scanInfoSql);
+            if (scanInfoRs.next()) {
+                int originvix = scanInfoRs.getInt("originvix");
+                int originviy = scanInfoRs.getInt("originviy");
+                int endvix = scanInfoRs.getInt("endvix");
+                int endviy = scanInfoRs.getInt("endviy");
+                int originirx = scanInfoRs.getInt("originirx");
+                int originiry = scanInfoRs.getInt("originiry");
+                int endirx = scanInfoRs.getInt("endirx");
+                int endiry = scanInfoRs.getInt("endiry");
+
+                // 使用Graphics绘制矩形
+                Graphics g = image.getGraphics();
+                g.setColor(Color.RED);//画笔颜⾊
+                if (mode.equals(VI)) {
+                    g.drawRect(originvix, originviy, endvix - originvix, endviy - originviy);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
                 } else {
-                    blob = rs.getBlob("imagevi");
+                    g.drawRect(originirx, originiry, endirx - originirx, endiry - originiry);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
                 }
-                byte[] array = blob.getBytes(1, (int) blob.length());
 
-                // 使用ImageIO处理图像
-                BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
+                g.dispose();
+            }
 
-                String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames, cons from pointinfor where waringid = " + warningInfoId;
-                ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
-                List<PointInfo> pointInfoList = new ArrayList<>();
-                while (pointInfoRs.next()) {
-                    PointInfo pointInfo = new PointInfo();
-                    pointInfo.setId(pointInfoRs.getInt("id"));
-                    pointInfo.setWarningId(pointInfoRs.getInt("waringid"));
-                    pointInfo.setPointx_0(pointInfoRs.getInt("pointx_0"));
-                    pointInfo.setPointy_0(pointInfoRs.getInt("pointy_0"));
-                    pointInfo.setFovx_0(pointInfoRs.getInt("fovx_0"));
-                    pointInfo.setFovy_0(pointInfoRs.getInt("fovy_0"));
-                    pointInfo.setPointx_1(pointInfoRs.getInt("pointx_1"));
-                    pointInfo.setPointy_1(pointInfoRs.getInt("pointy_1"));
-                    pointInfo.setFovx_1(pointInfoRs.getInt("fovx_1"));
-                    pointInfo.setFovy_1(pointInfoRs.getInt("fovy_1"));
-                    pointInfo.setGasindexs(pointInfoRs.getString("gasindexs"));
-                    pointInfo.setGasnames(pointInfoRs.getString("gasnames"));
+            String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames, cons from pointinfor where waringid = " + warningInfoId;
+            ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
+            List<PointInfo> pointInfoList = new ArrayList<>();
+            while (pointInfoRs.next()) {
+                PointInfo pointInfo = new PointInfo();
+                pointInfo.setId(pointInfoRs.getInt("id"));
+                pointInfo.setWarningId(pointInfoRs.getInt("waringid"));
+                pointInfo.setPointx_0(pointInfoRs.getInt("pointx_0"));
+                pointInfo.setPointy_0(pointInfoRs.getInt("pointy_0"));
+                pointInfo.setFovx_0(pointInfoRs.getInt("fovx_0"));
+                pointInfo.setFovy_0(pointInfoRs.getInt("fovy_0"));
+                pointInfo.setPointx_1(pointInfoRs.getInt("pointx_1"));
+                pointInfo.setPointy_1(pointInfoRs.getInt("pointy_1"));
+                pointInfo.setFovx_1(pointInfoRs.getInt("fovx_1"));
+                pointInfo.setFovy_1(pointInfoRs.getInt("fovy_1"));
+                pointInfo.setGasindexs(pointInfoRs.getString("gasindexs"));
+                pointInfo.setGasnames(pointInfoRs.getString("gasnames"));
+                pointInfo.setCons(pointInfoRs.getString("cons"));
 
-                    cons[0] = pointInfoRs.getString("cons");
+                pointInfoList.add(pointInfo);
+            }
+            if (CollectionUtil.isNotEmpty(pointInfoList)) {
+                // 使用Graphics绘制矩形
+                Graphics g = image.getGraphics();
 
-                    pointInfoList.add(pointInfo);
-                }
-                if (CollectionUtil.isNotEmpty(pointInfoList)) {
-                    /** 2022-06-28 跟客户确认要一条warningInfo对应的pointInfo中所有记录，并且每条记录的气体都绘制,之前随机的逻辑作废
+                for (PointInfo pointInfo : pointInfoList) {
+                    List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
+                    List<String> gasConsList = Arrays.asList(pointInfo.getCons().split(","));
+                    for (int k = 0; k < indexList.size(); k++) {
+                        String index = indexList.get(k);
+                        // 只绘制单一气体点位
+                        if (index.equals(gasIndex)) {
+                            String cons = gasConsList.get(k);
+                            consList.add(cons);
 
-                     // 从众多pointInfo中[随机]取出一条
-                     PointInfo pointInfo = pointInfoList.get(new Random().nextInt(pointInfoList.size()));
-                     // 从这个pointInfo中的众多气体中[随机]选择一个,因为不选择一个的话，多个气体的矩形框会绘制到一起
-                     List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
-                     String index = indexList.get(new Random().nextInt(indexList.size()));
-                     // 从上边的map中获取颜色
-                     String color = indexColorMap.get(index);
-                     log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
-                     **/
+                            String color = indexColorMap.get(index);
+                            log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
 
-                    // 使用Graphics绘制矩形
-                    Graphics g = image.getGraphics();
-
-                    for (PointInfo pointInfo : pointInfoList) {
-                        List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
-                        for (String index : indexList) {
-                            if (indexColorMap.containsKey(index)) {
-                                String color = indexColorMap.get(index);
-                                log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
-
-                                if (!StringUtils.isEmpty(color)) {
-                                    g.setColor(new Color(Integer.parseInt(color)));//画笔颜⾊
-                                    if (mode.equals(VI)) {
-                                        g.drawRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                                        g.fillRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());
-                                    } else {
-                                        g.drawRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                                        g.fillRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());
-                                    }
+                            if (!StringUtils.isEmpty(color)) {
+                                g.setColor(new Color(Integer.parseInt(color)));//画笔颜⾊
+                                if (mode.equals(VI)) {
+                                    g.drawRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                                    g.fillRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());
+                                } else {
+                                    g.drawRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                                    g.fillRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());
                                 }
                             }
                         }
                     }
-
-                    g.dispose();
                 }
 
-                // 写到输出流
-                ByteArrayOutputStream out = new ByteArrayOutputStream();//
-                ImageIO.write(image, "jpeg", out);
-
-                byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
-
-                // 关闭pointInfo的查询
-                pointInfoRs.close();
+                g.dispose();
             }
+
+            // 写到输出流
+            ByteArrayOutputStream out = new ByteArrayOutputStream();//
+            ImageIO.write(image, "jpeg", out);
+
+            byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
+
+
             // 完成后关闭
             // 关闭warningInfo的查询
-            rs.close();
+            pointInfoRs.close();
+            stmt.close();
+            conn.close();
+
+        } catch (SQLException se) {
+            // 处理 JDBC 错误
+            log.error(se.getMessage(), se);
+            //pageResult.setFlag(true);
+            //pageResult.setCode(StatusCode.ERROR);
+            //pageResult.setMessage(MessageConstant.HISTORY_SEARCH_FAIL_DB_CONNECT_FAIL);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            //pageResult.setFlag(true);
+            //pageResult.setCode(StatusCode.ERROR);
+            //pageResult.setMessage(MessageConstant.HISTORY_SEARCH_FAIL_ERROR);
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (SQLException se2) {
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+        }
+        log.info("[{}]查询结束", mode);
+
+        return byteArrayInputStream;
+    }
+
+    private InputStream getImageInputStreamForModeOther(History history, String id, String warningInfoId, String mode, List<String> gasIndexList, Map<String, String> indexColorMap, Map<String, List<String>> consMap) {
+        ByteArrayInputStream byteArrayInputStream = null;
+
+        Connection conn = null;
+        Statement stmt = null;
+        try {
+            // 获取数据库连接
+            conn = getConnection(id);
+
+            log.info("[{}]实例化Statement对象...", mode);
+            stmt = conn.createStatement();
+
+            // 获取图片的字节数组
+            Blob blob;
+            if (mode.equals(IR)) {
+                blob = history.getImageIR();
+            } else {
+                blob = history.getImageVI();
+            }
+            byte[] array = blob.getBytes(1, (int) blob.length());
+
+            // 使用ImageIO处理图像
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
+
+            String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames, cons from pointinfor where waringid = " + warningInfoId;
+            ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
+            List<PointInfo> pointInfoList = new ArrayList<>();
+            while (pointInfoRs.next()) {
+                PointInfo pointInfo = new PointInfo();
+                pointInfo.setId(pointInfoRs.getInt("id"));
+                pointInfo.setWarningId(pointInfoRs.getInt("waringid"));
+                pointInfo.setPointx_0(pointInfoRs.getInt("pointx_0"));
+                pointInfo.setPointy_0(pointInfoRs.getInt("pointy_0"));
+                pointInfo.setFovx_0(pointInfoRs.getInt("fovx_0"));
+                pointInfo.setFovy_0(pointInfoRs.getInt("fovy_0"));
+                pointInfo.setPointx_1(pointInfoRs.getInt("pointx_1"));
+                pointInfo.setPointy_1(pointInfoRs.getInt("pointy_1"));
+                pointInfo.setFovx_1(pointInfoRs.getInt("fovx_1"));
+                pointInfo.setFovy_1(pointInfoRs.getInt("fovy_1"));
+                pointInfo.setGasindexs(pointInfoRs.getString("gasindexs"));
+                pointInfo.setGasnames(pointInfoRs.getString("gasnames"));
+                pointInfo.setCons(pointInfoRs.getString("cons"));
+
+                pointInfoList.add(pointInfo);
+            }
+            if (CollectionUtil.isNotEmpty(pointInfoList)) {
+                // 使用Graphics绘制矩形
+                Graphics g = image.getGraphics();
+
+                for (PointInfo pointInfo : pointInfoList) {
+                    List<String> indexList = Arrays.asList(pointInfo.getGasindexs().split("\\|"));
+                    List<String> gasConsList = Arrays.asList(pointInfo.getCons().split(","));
+                    for (int k = 0; k < indexList.size(); k++) {
+                        String index = indexList.get(k);
+                        // 绘制全部气体点位
+                        if (gasIndexList.contains(index)) {
+                            List<String> list = consMap.get(index);
+                            if (list != null) {
+                                list.add(gasConsList.get(k));
+                                consMap.put(index, list);
+                            } else {
+                                consMap.put(index, Arrays.asList(gasConsList.get(k)));
+                            }
+
+                            String color = indexColorMap.get(index);
+                            log.info("[{}]绘制的气体：index[{}],color[{}]", mode, index, color);
+
+                            if (!StringUtils.isEmpty(color)) {
+                                g.setColor(new Color(Integer.parseInt(color)));//画笔颜⾊
+                                if (mode.equals(VI)) {
+                                    g.drawRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                                    g.fillRect(pointInfo.getPointx_0(), pointInfo.getPointy_0(), pointInfo.getFovx_0(), pointInfo.getFovy_0());
+                                } else {
+                                    g.drawRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                                    g.fillRect(pointInfo.getPointx_1(), pointInfo.getPointy_1(), pointInfo.getFovx_1(), pointInfo.getFovy_1());
+                                }
+                            }
+                        }
+                    }
+                }
+                g.dispose();
+            }
+
+            // 写到输出流
+            ByteArrayOutputStream out = new ByteArrayOutputStream();//
+            ImageIO.write(image, "jpeg", out);
+
+            byteArrayInputStream = new ByteArrayInputStream(out.toByteArray());
+
+
+            // 完成后关闭
+            // 关闭warningInfo的查询
+            pointInfoRs.close();
             stmt.close();
             conn.close();
 
@@ -511,7 +636,7 @@ public class HistoryService {
             conn = getConnection(historySearchDTO.getId());
 
             StringBuilder sql = new StringBuilder();
-            sql.append("SELECT id, scanmode, dtime, gasnames, firstdtime, lastdtime FROM warninginfor where 1=1 ");
+            sql.append("SELECT id, scanid, scanmode, dtime, gasindexs, gasnames, gascolors, imagevi, imageir, firstdtime, lastdtime FROM warninginfor where 1=1 ");
             assembleCondition(historySearchDTO, sql);
             //排序
             sql.append("order by dtime desc ");
@@ -525,9 +650,14 @@ public class HistoryService {
                 History history = new History();
                 // 通过字段检索
                 history.setId(rs.getInt("id"));
+                history.setScanId(rs.getInt("scanid"));
                 history.setScanMode(rs.getInt("scanmode"));
                 history.setDTime(rs.getTimestamp("dtime"));
+                history.setGasIndexes(rs.getString("gasindexs"));
                 history.setGasNames(rs.getString("gasnames"));
+                history.setGasColors(rs.getString("gascolors"));
+                history.setImageVI(rs.getBlob("imagevi"));
+                history.setImageIR(rs.getBlob("imageir"));
                 history.setFirstDTime(rs.getTimestamp("firstdtime"));
                 history.setLastDTime(rs.getTimestamp("lastdtime"));
 
@@ -619,30 +749,104 @@ public class HistoryService {
         }
 
         if (CollectionUtil.isNotEmpty(historyList)) {
+            int rowIndex = 0;
+
             for (int i = 0; i < historyList.size(); i++) {
                 History history = historyList.get(i);
 
-                table.createRow();
-                table.getRow(4 + i).getCell(0).setText(String.valueOf(history.getId()));
-                int scanMode = history.getScanMode();
-                String time;
-                if (scanMode == 3) {
-                    time = DateUtil.format(history.getFirstDTime(), "yyyy-MM-dd HH:mm:ss") + "--" + DateUtil.format(history.getLastDTime(), "yyyy-MM-dd HH:mm:ss");
-                } else {
-                    time = DateUtil.format(history.getFirstDTime(), "yyyy-MM-dd HH:mm:ss");
+                //从warningInfo中得到气体与对应的颜色map
+                Map<String, String> indexColorMap = new HashMap<>();
+                List<String> gasIndexList = Arrays.asList(history.getGasIndexes().split("\\|"));
+                List<String> gasColorList = Arrays.asList(history.getGasColors().split("\\|"));
+                for (int index = 0; index < gasIndexList.size(); index++) {
+                    indexColorMap.put(gasIndexList.get(index), gasColorList.get(index));
                 }
-                table.getRow(4 + i).getCell(1).setText(time);
-                table.getRow(4 + i).getCell(2).setText(history.getGasNames());
-                table.getRow(4 + i).getCell(4).setText(getScanMode(scanMode));
-                XWPFParagraph p1 = table.getRow(4 + i).getCell(5).addParagraph();
-                XWPFRun run = p1.createRun();
 
-                String[] cons = {""}; // 采用引用传递修改cons浓度值
-                InputStream inputStream = getImageInputStreamForWord(historySearchDTO.getId(), String.valueOf(history.getId()), VI, cons);
-                if (inputStream != null) {
-                    run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, "Generated", Units.toEMU(64), Units.toEMU(34));
+                //从warningInfo中得到气体与对应的名称map
+                Map<String, String> indexNameMap = new HashMap<>();
+                List<String> gasNameList = Arrays.asList(history.getGasNames().split("\\|"));
+                for (int index = 0; index < gasIndexList.size(); index++) {
+                    indexNameMap.put(gasIndexList.get(index), gasNameList.get(index));
                 }
-                table.getRow(4 + i).getCell(3).setText(cons[0]);
+
+                // 如果是扇扫模式，图形分开绘制
+                int scanMode = history.getScanMode();
+                if (scanMode == 3) {
+                    for (String gasIndex : gasIndexList) {
+                        table.createRow();
+
+                        // 序号按自然数
+                        table.getRow(4 + rowIndex).getCell(0).setText(String.valueOf(i + 1));
+                        String time = DateUtil.format(history.getFirstDTime(), "yyyy-MM-dd HH:mm:ss") + "--" + DateUtil.format(history.getLastDTime(), "yyyy-MM-dd HH:mm:ss");
+                        table.getRow(4 + rowIndex).getCell(1).setText(time);
+                        table.getRow(4 + rowIndex).getCell(2).setText(history.getGasNames());
+                        table.getRow(4 + rowIndex).getCell(4).setText(getScanMode(scanMode));
+                        XWPFParagraph p1 = table.getRow(4 + rowIndex).getCell(5).addParagraph();
+                        XWPFRun run = p1.createRun();
+
+                        List<String> consList = new ArrayList<>();
+                        InputStream inputStream = getImageInputStreamForMode3(history, historySearchDTO.getId(), String.valueOf(history.getId()), VI, gasIndex, indexColorMap, consList);
+                        if (inputStream != null) {
+                            run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, "Generated", Units.toEMU(64), Units.toEMU(34));
+                        }
+                        String consText = "";
+                        if (CollectionUtils.isNotEmpty(consList)) {
+                            String s = consList.toString();
+                            consText = s.substring(1, s.length() - 1);
+                        }
+
+                        if (gasIndexList.size() > 1) {
+                            consText = indexNameMap.get(gasIndex) + ":" + consText;
+                        }
+                        table.getRow(4 + rowIndex).getCell(3).setText(consText);
+
+                        rowIndex++;
+                    }
+                    // 如果扇扫模式下有多个气体，合并单元格
+                    if (gasIndexList.size() > 1) {
+                        TableTools.mergeCellsVertically(table, 0, 4 + rowIndex - gasIndexList.size(), 4 + rowIndex - 1);
+                        TableTools.mergeCellsVertically(table, 1, 4 + rowIndex - gasIndexList.size(), 4 + rowIndex - 1);
+                        TableTools.mergeCellsVertically(table, 2, 4 + rowIndex - gasIndexList.size(), 4 + rowIndex - 1);
+                        TableTools.mergeCellsVertically(table, 4, 4 + rowIndex - gasIndexList.size(), 4 + rowIndex - 1);
+                    }
+                } else { // 如果不是扇扫模式
+                    table.createRow();
+
+                    // 序号按自然数
+                    table.getRow(4 + rowIndex).getCell(0).setText(String.valueOf(i + 1));
+                    String time = DateUtil.format(history.getFirstDTime(), "yyyy-MM-dd HH:mm:ss");
+                    table.getRow(4 + rowIndex).getCell(1).setText(time);
+                    table.getRow(4 + rowIndex).getCell(2).setText(history.getGasNames());
+                    table.getRow(4 + rowIndex).getCell(4).setText(getScanMode(scanMode));
+                    XWPFParagraph p1 = table.getRow(4 + rowIndex).getCell(5).addParagraph();
+                    XWPFRun run = p1.createRun();
+
+                    Map<String, List<String>> consMap = new HashMap<>();
+                    InputStream inputStream = getImageInputStreamForModeOther(history, historySearchDTO.getId(), String.valueOf(history.getId()), VI, gasIndexList, indexColorMap, consMap);
+                    if (inputStream != null) {
+                        run.addPicture(inputStream, XWPFDocument.PICTURE_TYPE_JPEG, "Generated", Units.toEMU(64), Units.toEMU(34));
+                    }
+
+                    String consText = "";
+                    if (gasIndexList.size() > 1) {
+                        for (String index : gasIndexList) {
+                            List<String> consList = consMap.get(index);
+                            String s = consList.toString();
+                            String cons = s.substring(1, s.length() - 1);
+                            consText += indexNameMap.get(index) + ":" + cons + ";";
+                        }
+                        consText = consText.substring(0, consText.length() - 1);
+                    } else {
+                        List<String> consList1 = consMap.get(gasIndexList.get(0));
+                        String s1 = consList1.toString();
+                        String cons1 = s1.substring(1, s1.length() - 1);
+                        consText = cons1;
+                    }
+                    table.getRow(4 + rowIndex).getCell(3).setText(consText);
+
+                    rowIndex++;
+                }
+
             }
         }
 

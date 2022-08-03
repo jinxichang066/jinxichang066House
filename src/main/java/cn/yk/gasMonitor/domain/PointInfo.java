@@ -33,4 +33,6 @@ public class PointInfo {
 
     private String gasnames;
 
+    private String cons;
+
 }
