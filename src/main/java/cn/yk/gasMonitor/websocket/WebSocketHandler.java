@@ -22,7 +22,7 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        log.info("接收到心跳检测消息:" + message);
+        log.info(message.toString());
     }
 
     @Override
@@ -80,10 +80,10 @@ public class WebSocketHandler extends AbstractWebSocketHandler {
 
     @Scheduled(cron = "0 0/1 * * * ?")
     public void heartCheck() {
-        log.info("心跳检测开始");
+        log.info("web端设备状态websocket连接心跳检测开始");
         sendToAll("ping");
 
-        log.info("心跳检测结束");
+        log.info("web端设备状态websocket连接心跳检测结束");
     }
 
 }
