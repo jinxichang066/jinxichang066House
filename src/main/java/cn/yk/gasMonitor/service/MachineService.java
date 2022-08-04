@@ -1,6 +1,5 @@
 package cn.yk.gasMonitor.service;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.yk.gasMonitor.common.MessageConstant;
 import cn.yk.gasMonitor.common.PageResult;
 import cn.yk.gasMonitor.common.StatusCode;
@@ -14,7 +13,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -154,37 +152,46 @@ public class MachineService {
         return machineMapper.selectList(Wrappers.lambdaQuery(Machine.class).orderByAsc(Machine::getCreateTime));
     }
 
-    // 30秒check一次
-    @Scheduled(cron = "0/30 0/1 * * * ? ")
-    public void checkMachineState() {
-        log.info("更新设备状态定时任务开始");
-        List<Machine> machineList = loadAllMachine();
-        if (CollectionUtil.isNotEmpty(machineList)) {
-            String messageHead = "监测到设备状态变更:\n";
-            String messageTail = "请刷新页面获取最新设备状态!";
-            String message = "";
-            for (Machine machine : machineList) {
-                // 上线
-                boolean open = MyWebSocketClient.valid(machine.getMachineUrl());
-                if (open && machine.getState().equals(Machine.State.OFFLINE)) {
-                    machine.setState(Machine.State.ONLINE);
-                    machineMapper.updateById(machine);
-                    message += machine.getMachineName() + ":" + "离线->" + "在线" + "\n";
-                } else if (!open && machine.getState().equals(Machine.State.ONLINE)) { // 下线
-                    machine.setState(Machine.State.OFFLINE);
-                    machineMapper.updateById(machine);
-                    message += machine.getMachineName() + ":" + "在线->" + "离线" + "\n";
-                }
-            }
-            if (!StringUtils.isEmpty(message)) {
-                log.info("有设备状态变更消息");
-                webSocketHandler.sendToAll(messageHead + message + messageTail);
-            } else {
-                log.info("没有设备状态变更消息");
-            }
-        }
-
-        log.info("更新设备状态定时任务结束");
+    public Machine getMachine(String id) {
+        return machineMapper.selectById(id);
     }
+
+    public void updateMachine(Machine machine) {
+        machineMapper.updateById(machine);
+    }
+
+    // 30秒check一次
+    //@Scheduled(cron = "0/30 0/1 * * * ? ")
+    //public void checkMachineState() {
+    //    log.info("更新设备状态定时任务开始");
+    //    List<Machine> machineList = loadAllMachine();
+    //    if (CollectionUtil.isNotEmpty(machineList)) {
+    //        String messageHead = "监测到设备状态变更:\n";
+    //        String messageTail = "请刷新页面获取最新设备状态!";
+    //        String message = "";
+    //        for (Machine machine : machineList) {
+    //            // 上线
+    //            //boolean open = MachineStatusWebSocketClient.valid(machine.getMachineUrl());
+    //            boolean open = false;
+    //            if (open && machine.getState().equals(Machine.State.OFFLINE)) {
+    //                machine.setState(Machine.State.ONLINE);
+    //                machineMapper.updateById(machine);
+    //                message += machine.getMachineName() + ":" + "离线->" + "在线" + "\n";
+    //            } else if (!open && machine.getState().equals(Machine.State.ONLINE)) { // 下线
+    //                machine.setState(Machine.State.OFFLINE);
+    //                machineMapper.updateById(machine);
+    //                message += machine.getMachineName() + ":" + "在线->" + "离线" + "\n";
+    //            }
+    //        }
+    //        if (!StringUtils.isEmpty(message)) {
+    //            log.info("有设备状态变更消息");
+    //            webSocketHandler.sendToAll(messageHead + message + messageTail);
+    //        } else {
+    //            log.info("没有设备状态变更消息");
+    //        }
+    //    }
+    //
+    //    log.info("更新设备状态定时任务结束");
+    //}
 
 }
