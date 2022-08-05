@@ -97,7 +97,7 @@ public class HistoryService {
                 sql1.append("SELECT id, scanmode, dtime, gasnames, firstdtime, lastdtime FROM warninginfor where 1=1 ");
                 assembleCondition(historySearchDTO, sql1);
                 //排序
-                sql1.append("order by dtime desc ");
+                sql1.append("order by dtime asc ");
                 //分页
                 sql1.append("limit ").append((historySearchDTO.getPageNum() - 1) * historySearchDTO.getPageSize()).append(",").append(historySearchDTO.getPageSize());
 
@@ -111,6 +111,7 @@ public class HistoryService {
                     history.setScanMode(rs1.getInt("scanmode"));
                     history.setDTime(rs1.getTimestamp("dtime"));
                     history.setGasNames(rs1.getString("gasnames"));
+                    history.setGasNames(history.getGasNames().substring(0, history.getGasNames().length() - 1));
                     history.setFirstDTime(rs1.getTimestamp("firstdtime"));
                     history.setLastDTime(rs1.getTimestamp("lastdtime"));
 
@@ -707,7 +708,7 @@ public class HistoryService {
             sql.append("SELECT id, scanid, scanmode, dtime, gasindexs, gasnames, gascolors, imagevi, imageir, firstdtime, lastdtime FROM warninginfor where 1=1 ");
             assembleCondition(historySearchDTO, sql);
             //排序
-            sql.append("order by dtime desc ");
+            sql.append("order by dtime asc ");
 
             // 执行查询
             log.info("实例化Statement对象...");
