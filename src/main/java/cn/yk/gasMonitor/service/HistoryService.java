@@ -308,33 +308,6 @@ public class HistoryService {
                 // 使用ImageIO处理图像
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
 
-                // 扇扫模式下，绘制扫描区域
-                if (scanMode == 3) {
-                    String scanInfoSql = "select * from scaninfor where id = " + scanid;
-                    ResultSet scanInfoRs = stmt.executeQuery(scanInfoSql);
-                    if (scanInfoRs.next()) {
-                        int originvix = scanInfoRs.getInt("originvix");
-                        int originviy = scanInfoRs.getInt("originviy");
-                        int endvix = scanInfoRs.getInt("endvix");
-                        int endviy = scanInfoRs.getInt("endviy");
-                        int originirx = scanInfoRs.getInt("originirx");
-                        int originiry = scanInfoRs.getInt("originiry");
-                        int endirx = scanInfoRs.getInt("endirx");
-                        int endiry = scanInfoRs.getInt("endiry");
-
-                        // 使用Graphics绘制矩形
-                        Graphics g = image.getGraphics();
-                        g.setColor(Color.RED);//画笔颜⾊
-                        if (mode.equals(VI)) {
-                            g.drawRect(originvix, originviy, endvix - originvix, endviy - originviy);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                        } else {
-                            g.drawRect(originirx, originiry, endirx - originirx, endiry - originiry);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                        }
-
-                        g.dispose();
-                    }
-                }
-
                 // 点位信息
                 String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames, cons from pointinfor where waringid = " + warningInfoId;
                 ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
@@ -385,6 +358,33 @@ public class HistoryService {
                     }
 
                     g.dispose();
+                }
+
+                // 扇扫模式下，绘制扫描区域
+                if (scanMode == 3) {
+                    String scanInfoSql = "select * from scaninfor where id = " + scanid;
+                    ResultSet scanInfoRs = stmt.executeQuery(scanInfoSql);
+                    if (scanInfoRs.next()) {
+                        int originvix = scanInfoRs.getInt("originvix");
+                        int originviy = scanInfoRs.getInt("originviy");
+                        int endvix = scanInfoRs.getInt("endvix");
+                        int endviy = scanInfoRs.getInt("endviy");
+                        int originirx = scanInfoRs.getInt("originirx");
+                        int originiry = scanInfoRs.getInt("originiry");
+                        int endirx = scanInfoRs.getInt("endirx");
+                        int endiry = scanInfoRs.getInt("endiry");
+
+                        // 使用Graphics绘制矩形
+                        Graphics g = image.getGraphics();
+                        g.setColor(Color.RED);//画笔颜⾊
+                        if (mode.equals(VI)) {
+                            g.drawRect(originvix, originviy, endvix - originvix, endviy - originviy);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                        } else {
+                            g.drawRect(originirx, originiry, endirx - originirx, endiry - originiry);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                        }
+
+                        g.dispose();
+                    }
                 }
 
                 // 写到输出流
@@ -454,31 +454,6 @@ public class HistoryService {
             // 使用ImageIO处理图像
             BufferedImage image = ImageIO.read(new ByteArrayInputStream(array));
 
-            // 扇扫模式下，绘制扫描区域
-            String scanInfoSql = "select * from scaninfor where id = " + history.getScanId();
-            ResultSet scanInfoRs = stmt.executeQuery(scanInfoSql);
-            if (scanInfoRs.next()) {
-                int originvix = scanInfoRs.getInt("originvix");
-                int originviy = scanInfoRs.getInt("originviy");
-                int endvix = scanInfoRs.getInt("endvix");
-                int endviy = scanInfoRs.getInt("endviy");
-                int originirx = scanInfoRs.getInt("originirx");
-                int originiry = scanInfoRs.getInt("originiry");
-                int endirx = scanInfoRs.getInt("endirx");
-                int endiry = scanInfoRs.getInt("endiry");
-
-                // 使用Graphics绘制矩形
-                Graphics g = image.getGraphics();
-                g.setColor(Color.RED);//画笔颜⾊
-                if (mode.equals(VI)) {
-                    g.drawRect(originvix, originviy, endvix - originvix, endviy - originviy);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                } else {
-                    g.drawRect(originirx, originiry, endirx - originirx, endiry - originiry);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
-                }
-
-                g.dispose();
-            }
-
             String pointInfoSql = "select id,waringid,pointx_0,pointy_0,fovx_0,fovy_0,pointx_1,pointy_1,fovx_1,fovy_1,gasindexs,gasnames, cons from pointinfor where waringid = " + warningInfoId;
             ResultSet pointInfoRs = stmt.executeQuery(pointInfoSql);
             List<PointInfo> pointInfoList = new ArrayList<>();
@@ -530,6 +505,31 @@ public class HistoryService {
                             }
                         }
                     }
+                }
+
+                g.dispose();
+            }
+
+            // 扇扫模式下，绘制扫描区域
+            String scanInfoSql = "select * from scaninfor where id = " + history.getScanId();
+            ResultSet scanInfoRs = stmt.executeQuery(scanInfoSql);
+            if (scanInfoRs.next()) {
+                int originvix = scanInfoRs.getInt("originvix");
+                int originviy = scanInfoRs.getInt("originviy");
+                int endvix = scanInfoRs.getInt("endvix");
+                int endviy = scanInfoRs.getInt("endviy");
+                int originirx = scanInfoRs.getInt("originirx");
+                int originiry = scanInfoRs.getInt("originiry");
+                int endirx = scanInfoRs.getInt("endirx");
+                int endiry = scanInfoRs.getInt("endiry");
+
+                // 使用Graphics绘制矩形
+                Graphics g = image.getGraphics();
+                g.setColor(Color.RED);//画笔颜⾊
+                if (mode.equals(VI)) {
+                    g.drawRect(originvix, originviy, endvix - originvix, endviy - originviy);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
+                } else {
+                    g.drawRect(originirx, originiry, endirx - originirx, endiry - originiry);//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
                 }
 
                 g.dispose();

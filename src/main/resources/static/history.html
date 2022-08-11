@@ -92,7 +92,7 @@
                                     </table>
                                 </div>
                                 <img class="modal-content" style="max-width: 960px" id="img01" onerror="document.getElementById('img01').style.display='none'">
-                                <img class="modal-content" style="max-width: 640px" id="img02" onerror="document.getElementById('img02').style.display='none'">
+<!--                                <img class="modal-content" style="max-width: 640px" id="img02" onerror="document.getElementById('img02').style.display='none'">-->
                             </div>
                             <!-- ./imageBox -->
 
@@ -326,13 +326,13 @@
                 let modal = document.getElementById('imageDiv');
 
                 let modalImg01 = document.getElementById("img01");
-                let modalIma02 = document.getElementById("img02");
+                // let modalIma02 = document.getElementById("img02");
 
                 modal.style.display = "block";
                 modalImg01.style.display = "block";
-                modalIma02.style.display = "block";
+                // modalIma02.style.display = "block";
                 modalImg01.src = apiPath + "/history/getImage?id=" + this.searchMap.id + "&warningInfoId=" + warningInfoId + "&mode=" + "VI";
-                modalIma02.src = apiPath + "/history/getImage?id=" + this.searchMap.id + "&warningInfoId=" + warningInfoId + "&mode=" + "IR";
+                // modalIma02.src = apiPath + "/history/getImage?id=" + this.searchMap.id + "&warningInfoId=" + warningInfoId + "&mode=" + "IR";
 
                 // 获取 <span> 元素，设置关闭按钮
                 let span = document.getElementById("closeBtn");
