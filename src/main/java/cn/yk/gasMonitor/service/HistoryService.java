@@ -342,9 +342,9 @@ public class HistoryService {
 
                                 if (!StringUtils.isEmpty(color)) {
                                     Color rgbColor = new Color(Integer.parseInt(color));
-                                    // 2022-08-05, 傻×客户不按业界标准rgb颜色来，自己整了个bgr，所以要重新生成color
+                                    // 用户不按业界标准rgb颜色来，自己整了个bgr，所以要重新生成color
                                     g.setColor(new Color(rgbColor.getBlue(), rgbColor.getGreen(), rgbColor.getRed()));//画笔颜⾊
-                                    // 2022-08-08, 客户说pointx、pointy不是点位左上角坐标，是中心点坐标
+                                    // 用户说pointx、pointy不是点位左上角坐标，是中心点坐标
                                     if (mode.equals(VI)) {
                                         g.drawRect(pointInfo.getPointx_0() - pointInfo.getFovx_0() / 2, pointInfo.getPointy_0() - pointInfo.getFovy_0() / 2, pointInfo.getFovx_0(), pointInfo.getFovy_0());//矩形框(原点x坐标，原点y坐标，矩形的长，矩形的宽)
                                         g.fillRect(pointInfo.getPointx_0() - pointInfo.getFovx_0() / 2, pointInfo.getPointy_0() - pointInfo.getFovy_0() / 2, pointInfo.getFovx_0(), pointInfo.getFovy_0());
